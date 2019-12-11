@@ -1,6 +1,6 @@
 {
   "name": "@atomic-reactor/reactium-sdk-core",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "lib/cjs/index.js",
   "module": "lib/esm/index.js",
   "browser": "lib/umd/index.js",
