@@ -16,13 +16,6 @@ module.exports = api => {
 
     return {
         presets: [
-            [
-                '@babel/preset-env',
-                {
-                    modules: false,
-                    useBuiltIns: false,
-                },
-            ],
             '@babel/preset-react',
         ],
         plugins: [

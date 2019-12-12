@@ -60,6 +60,7 @@ Component.register = async (
 ) => {
     const context = await Hook.run('capability-check', capabilities, strict);
     const permitted = op.get(context, 'permitted', true);
+    if (!permitted) return;
 
     // TODO: Add hook implementation in Reactium
     // if (Array.isArray(capabilities) && capabilities.length > 0) {
@@ -67,7 +68,7 @@ Component.register = async (
     //     if (!permitted) return;
     // }
 
-    await Hook.register(
+    return await Hook.register(
         hook,
         async (...params) => {
             const context = params.pop();

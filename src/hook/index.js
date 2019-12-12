@@ -66,6 +66,7 @@ Hook.register = (name, callback, order = Enums.priority.neutral, id) => {
     return id;
 };
 
+
 /**
  * @api {Function} Hook.list() Hook.list()
  * @apiName Hook.list

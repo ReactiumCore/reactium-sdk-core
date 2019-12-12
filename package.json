@@ -1,10 +1,8 @@
 {
   "name": "@atomic-reactor/reactium-sdk-core",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "lib/cjs/index.js",
-  "module": "lib/esm/index.js",
-  "browser": "lib/umd/index.js",
-  "tests": "lib/tests/test.js",
+  "testComponents": "test-components/index.js",
   "dependencies": {
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.15.1"
