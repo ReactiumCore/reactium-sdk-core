@@ -62,12 +62,6 @@ Component.register = async (
     const permitted = op.get(context, 'permitted', true);
     if (!permitted) return;
 
-    // TODO: Add hook implementation in Reactium
-    // if (Array.isArray(capabilities) && capabilities.length > 0) {
-    //     const permitted = await User.can(capabilities, strict);
-    //     if (!permitted) return;
-    // }
-
     return await Hook.register(
         hook,
         async (...params) => {

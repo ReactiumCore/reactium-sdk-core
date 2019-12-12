@@ -1,5 +1,4 @@
 src/named-exports/window.js
-src/named-exports/redux.js
 src/i18n
 src/routing
 src/setting
