@@ -1,10 +1,11 @@
 import Hook from '../hook';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, forwardRef } from 'react';
 import op from 'object-path';
 
 /**
  * @api {ReactHook} useHookComponent(hookName,defaultComponent,...params) useHookComponent()
- * @apiDescription A React hook used to define React component(s) that can be overrided by Reactium plugins, using the Reactium.Component.register() function.
+ * @apiDescription A React hook used to define React component(s) that can be
+ overrided by Reactium plugins, using the `Reactium.Component.register()` function.
  * @apiParam {String} hookName the unique string used to register component(s).
  * @apiParam {Component} defaultComponent the default React component(s) to be returned by the hook.
  * @apiParam {Mixed} params variadic list of parameters to be passed to the Reactium hook specified by hookName.
@@ -34,9 +35,14 @@ const ReplacementComponent = () => <div>My Plugin's Component</div>
 
 Reactium.Component.register('my-component', ReplacementComponent);
  */
+
+// Use forwardRef on default component in case registered
+// component requires forwarded ref;
+const forwardRefNoop = forwardRef((props, ref) => null);
+
 export const useHookComponent = (
     hook = 'component',
-    defaultComponent = () => null,
+    defaultComponent = forwardRefNoop,
     ...params
 ) => {
     const component = useRef({ component: defaultComponent });
