@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import CommonSDK, { useRegisterHandle, useHandle } from '../../lib/cjs';
+import CommonSDK, { useRegisterHandle, useHandle } from '../../lib';
 
 // handle tests
 export const someHandleState = 'some state';

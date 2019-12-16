@@ -5,7 +5,7 @@ import CommonSDK, {
     useReduxState,
     useRegisterHandle,
     useHandle,
-} from '../../lib/cjs';
+} from '../../lib';
 import op from 'object-path';
 
 const domainReducer = (state = {}, action) => {

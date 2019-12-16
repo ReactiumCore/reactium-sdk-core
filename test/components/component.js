@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import CommonSDK, { useHookComponent } from '../../lib/cjs';
+import CommonSDK, { useHookComponent } from '../../lib';
 
 // useHookComponent tests
 export const DefaultComponent = () => 'DefaultComponent';

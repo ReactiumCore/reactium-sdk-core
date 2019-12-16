@@ -11,11 +11,17 @@ module.exports = api => {
                 ],
                 '@babel/preset-react',
             ],
-        }
+        };
     }
 
     return {
         presets: [
+            [
+                '@babel/preset-env',
+                {
+                    targets: { node: 'current' },
+                },
+            ],
             '@babel/preset-react',
         ],
         plugins: [
@@ -26,6 +32,6 @@ module.exports = api => {
                 },
             ],
             ['@babel/plugin-proposal-export-default-from'],
-        ]
+        ],
     };
 };

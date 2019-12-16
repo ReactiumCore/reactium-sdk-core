@@ -4,7 +4,9 @@ import Enums from './enums';
 import Handle from './handle';
 import Hook from './hook';
 import Pulse from './pulse';
+import Plugin from './plugin';
 import Utils from './utils';
+import Zone from './zone';
 
 export * from './named-exports';
 
@@ -16,4 +18,6 @@ export default {
     Hook,
     Pulse,
     Utils,
+    Plugin,
+    Zone,
 };

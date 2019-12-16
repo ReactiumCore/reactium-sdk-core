@@ -1,4 +1,4 @@
-import SDK from '..';
+import SDK from '../lib';
 
 const { Cache } = SDK;
 
