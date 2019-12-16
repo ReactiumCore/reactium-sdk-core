@@ -101,7 +101,7 @@ Plugin.unregister = ID => {
 
 export default Plugin;
 
-Hook.register('plugin-init', Plugin.init, Enums.priority.highest);
+Hook.register('plugin-init', Plugin.callbacks, Enums.priority.highest);
 
 Hook.register(
     'plugin-dependencies',
