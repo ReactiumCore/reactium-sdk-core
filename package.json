@@ -44,7 +44,7 @@
   },
   "scripts": {
     "build": "babel src --out-dir lib",
-    "apidoc": "apidoc -i src",
+    "apidoc": "apidoc -i src -o docs",
     "test": "jest",
     "pretest": "npm run build",
     "prepublish": "rm -rf lib && npm run build"
