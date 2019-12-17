@@ -1,6 +1,8 @@
+[![Build Status](https://travis-ci.org/Atomic-Reactor/reactium-sdk-core.svg?branch=master)](https://travis-ci.org/Atomic-Reactor/reactium-sdk-core)
+
 # Reactium SDK Core
 
-Basis for SDK singleton in Reactium.
+Core subset of Reactium SDK singleton and named exports.
 
 ## Install
 
