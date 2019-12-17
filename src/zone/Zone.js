@@ -81,7 +81,7 @@ export default Zone;
  dynamically render in the zone. Plugins can be registered statically in Reactium by
  creating a `plugin.js` file that exports a component definition
  (`arcli plugin component` to generate boilerplate for one), or using the Reactium SDK
- `Reactium.Plugins.addComponent()` call.
+ `Reactium.Zone.addComponent()` call.
 
  See also the Zone SDK for filtering, sorting, or mapping over plugin components for a zone.
 
@@ -118,7 +118,7 @@ import MyHeaderWidget from './MyHeaderWidget';
 
 const registerPlugin = async () => {
     await Reactium.Plugin.register('MyHeaderPlugin');
-    Reactium.Plugin.addComponent({
+    Reactium.Zone.addComponent({
         id: 'MyHeaderWidget',
         zone: 'page-header',
         component: MyHeaderWidget,
