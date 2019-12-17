@@ -29,10 +29,9 @@ npm install --save-dev uuid
 ```
 
 ## Usage
-import Reactium from `@atomic-reactor/reactium-sdk-core`;
-
-For full SDK documentation, clone this project and run:
 
 ```
-npm run apidoc
+import Reactium from '@atomic-reactor/reactium-sdk-core';
 ```
+
+This project is best used with [Reactium](https://github.com/Atomic-Reactor/Reactium) but can also be used independently. See the [API documentation](https://atomic-reactor.github.io/reactium-sdk-core/).
