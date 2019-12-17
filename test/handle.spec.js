@@ -1,7 +1,7 @@
 import { render } from './enzyme';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { HandleRegisterer, HandleConsumer, someHandleState } from '../test-components';
+import { HandleRegisterer, HandleConsumer, someHandleState } from './components';
 
 test('useHandle', () => {
     const registerer = document.createElement("div");

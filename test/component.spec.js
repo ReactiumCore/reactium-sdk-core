@@ -6,7 +6,7 @@ import {
     SDK,
     RegisteredComponent,
     ComponentToRegister,
-} from '../test-components';
+} from './components';
 
 test('useHookComponent() - component not registered', async () => {
     const notRegistered = document.createElement('div');

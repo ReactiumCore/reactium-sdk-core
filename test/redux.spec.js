@@ -8,7 +8,7 @@ import {
     StoreProvider,
     StateUser,
     StateChanger,
-} from '../test-components';
+} from './components';
 import { mount } from './enzyme';
 
 test('store init', async () => {
