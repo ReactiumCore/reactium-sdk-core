@@ -11,8 +11,6 @@ const Component = {};
  * @apiParam {String} hook The hook name
  * @apiParam {Mixed} component component(s) to be output by useHookComponent
  * @apiParam {Number} order precedent of this if Component.register is called multiple times (e.g. if you are trying to override core or another plugin)
- * @apiParam {Array} [capabilities] list of capabilities to check registering the component.
- * @apiParam {Boolean} [strict=true] true to only add component if all capabilities are allowed, otherwise only one capability is necessary
  * @apiExample reactium-hooks.js
 import React from 'react';
 import Reactium from 'reactium-core/sdk';
@@ -55,22 +53,14 @@ Component.register = async (
     hook,
     component,
     order,
-    capabilities = [],
-    strict = true,
-) => {
-    const context = await Hook.run('capability-check', capabilities, strict);
-    const permitted = op.get(context, 'permitted', true);
-    if (!permitted) return;
-
-    return await Hook.register(
-        hook,
-        async (...params) => {
-            const context = params.pop();
-            context.component = component;
-        },
-        order,
-    );
-};
+) => Hook.register(
+    hook,
+    async (...params) => {
+        const context = params.pop();
+        context.component = component;
+    },
+    order,
+);
 
 /**
  * @api {Function} Component.unregister(uuid) Component.unregister()

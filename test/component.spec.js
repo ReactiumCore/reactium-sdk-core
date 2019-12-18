@@ -39,32 +39,3 @@ test('useHookComponent() - component registered', async () => {
     ReactDOM.unmountComponentAtNode(registered);
     await SDK.Hook.unregister(uuid);
 });
-
-test('useHookComponent() - capabilities denied', async () => {
-    const registered = document.createElement('div');
-    const uuid = await SDK.Hook.register(
-        'capability-check',
-        async (caps, strict, context) => {
-            context.permitted = false;
-        },
-    );
-
-    await ReactTestUtils.act(async () => {
-        await SDK.Component.register(
-            'registered-component',
-            ComponentToRegister,
-            0,
-            ['some.cap'],
-        );
-        ReactDOM.render(
-            <>
-                <RegisteredComponent />
-            </>,
-            registered,
-        );
-    });
-
-    expect(registered.innerHTML).toEqual('DefaultComponent');
-    ReactDOM.unmountComponentAtNode(registered);
-    await SDK.Hook.unregister(uuid);
-});
