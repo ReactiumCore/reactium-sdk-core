@@ -5,11 +5,21 @@ const shallowEquals = require('shallow-equals');
 
 /**
  * @api {ReactHook} useDerivedState(props,subscriptions,updateAll) useDerivedState()
- * @apiDescription Sometimes you would like to derive state from you component props,
- * and allow either a prop change, or an internal state change either to take effect.
+ * @apiDescription Sometimes you would like to derive state from your component props,
+ * and also allow either a prop change, or an internal state change either to take effect.
  * This hook will allow you to create a state object from your component props,
- * and subscribe by object-path, only to the prop changes you would like to see
- * reflected in a rendering update to your component state.
+ * and subscribe (by array of object-paths) only to those prop changes you would like to see
+ * reflected in a rendering updates to your component state.
+ * This hook returns an array similar in nature to the return of React's built-in
+ * `useState()` hook (`[state,setState]`), with some differences.
+ *
+ * 1. The initial value coming from props (on first render) will contain all that was present in
+ the props object passed to it. Note that any values that are not present in your component props
+ on first render, or that which are explicitly subscribed to, will not exist in the returned
+ state element.
+ * 2. The setState callback can receive whole or partial state objects, and will be merged
+ with the existing state.
+ * 3. There is a third element function `forceRefresh`
  * @apiParam {Object} props the component props
  * @apiParam {Array} [subscriptions] Array of string object-paths in your component
  props you would like to update your component state for. By default, this is empty,
