@@ -1,7 +1,8 @@
 import { useContext, useState, useEffect, useRef } from 'react';
 import { connect, ReactReduxContext } from 'react-redux';
 import op from 'object-path';
-const shallowEquals = require('shallow-equals')
+const shallowEquals = require('shallow-equals');
+import uuid from 'uuid/v4';
 
 const noop = () => {};
 
@@ -183,9 +184,9 @@ export const useSelect = params => {
         shouldUpdate = op.get(params, 'shouldUpdate', shouldUpdate);
     }
 
+    const [, setVersion] = useState(uuid());
     const { getState, subscribe } = useStore();
     const stateRef = useRef(select(getState()));
-    const [value, setValue] = useState(stateRef.current);
 
     const setState = () => {
         const newState = select(getState());
@@ -198,7 +199,7 @@ export const useSelect = params => {
             })
         ) {
             stateRef.current = newState;
-            setValue(stateRef.current);
+            setVersion(uuid());
         }
     };
 

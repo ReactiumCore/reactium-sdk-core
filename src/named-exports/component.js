@@ -1,6 +1,7 @@
 import Hook from '../hook';
 import { useState, useEffect, useRef, forwardRef } from 'react';
 import op from 'object-path';
+import uuid from 'uuid/v4';
 
 /**
  * @api {ReactHook} useHookComponent(hookName,defaultComponent,...params) useHookComponent()
@@ -46,14 +47,14 @@ export const useHookComponent = (
     ...params
 ) => {
     const component = useRef({ component: defaultComponent });
-    const [version, update] = useState(1);
+    const [, updateVersion] = useState(uuid());
     const setComponent = newComponent => {
         if (
             newComponent &&
             newComponent !== op.get(component, 'current.component')
         ) {
             op.set(component, 'current.component', newComponent);
-            update(version + 1);
+            updateVersion(uuid());
         }
     };
 

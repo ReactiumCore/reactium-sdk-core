@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import op from 'object-path';
 import _ from 'underscore';
 const shallowEquals = require('shallow-equals');
+import uuid from 'uuid/v4';
 
 /**
  * @api {ReactHook} useDerivedState(props,subscriptions,updateAll) useDerivedState()
@@ -71,16 +72,14 @@ export const useDerivedState = (props, subscriptions = [], updateAll = false) =>
         }, {});
 
     // rerender trigger
-    const [updated, setUpdated] = useState(1);
-    const forceRefresh = () => {
-        setUpdated(updated + 1);
-    };
+    const [, setUpdated] = useState(uuid());
+    const forceRefresh = () => setUpdated(uuid());
 
     // everything
     const derivedStateRef = useRef(props);
 
     // only what we care about in props
-    const propsVersion = useRef(0);
+    const propsVersion = useRef(uuid());
     const derivedState = getDerivedState(props);
     const subscribedRef = useRef(derivedState);
 
@@ -94,8 +93,11 @@ export const useDerivedState = (props, subscriptions = [], updateAll = false) =>
             op.set(newDerivedState, path, value);
             subscribedRef.current = newSubscribed;
             derivedStateRef.current = newDerivedState;
-            forceRefresh();
+
+            return true;
         }
+
+        return false;
     };
 
     // public setState always respected and merged everything
@@ -128,26 +130,28 @@ export const useDerivedState = (props, subscriptions = [], updateAll = false) =>
 
     // only trigger useEffect if subscriptions have changed or subscribed prop values have changed
     const changedDerived = getChanges(derivedState);
-    const hash = changedDerived
-        .sort()
-        .concat(changedDerived.length > 0 ? [propsVersion.current + 1] : [])
-        .join('|');
+
+    if (changedDerived.length > 0) {
+        propsVersion.current = uuid();
+    }
+
     useEffect(() => {
         if (changedDerived.length > 0) {
-            changedDerived.forEach(path =>
-                internalPropSetState(path, op.get(derivedState, [path])),
-            );
+            const shouldRerender = changedDerived.reduce((hasPropUpdates, path) => {
+                return hasPropUpdates || internalPropSetState(path, op.get(derivedState, [path]))
+            }, false);
 
-            if (updateAll) {
-                setState({
-                    ...derivedStateRef.current,
-                    ...props,
-                });
+            if (shouldRerender) {
+                if (updateAll) {
+                    setState({
+                        ...props,
+                    });
+                } else {
+                    forceRefresh();
+                }
             }
-
-            propsVersion.current = propsVersion.current + 1;
         }
-    }, [subscriptions.sort().join('|'), hash]);
+    }, [subscriptions.sort().join('|'), propsVersion.current]);
 
     // full derived state, public setState, and method to force refresh without changing anything
     return [derivedStateRef.current, setState, forceRefresh];
