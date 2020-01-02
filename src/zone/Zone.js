@@ -7,13 +7,14 @@ import React, { useRef, useState, useEffect } from 'react';
 import ZoneSDK from './index';
 import Component from '../component';
 import op from 'object-path';
+import uuid from 'uuid/v4';
 
 const useZoneComponents = zone => {
     const components = useRef(ZoneSDK.getZoneComponents(zone));
-    const [version, setVersion] = useState(1);
+    const [version, setVersion] = useState(uuid());
     useEffect(() => ZoneSDK.subscribe(zone, zoneComponents => {
         components.current = zoneComponents;
-        setVersion(version + 1);
+        setVersion(uuid());
     }), [zone]);
 
     return components.current;
