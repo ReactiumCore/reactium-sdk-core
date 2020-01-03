@@ -7,6 +7,7 @@ import Pulse from './pulse';
 import Plugin from './plugin';
 import Utils from './utils';
 import Zone from './zone';
+import Prefs from './prefs';
 
 export * from './named-exports';
 
@@ -20,4 +21,5 @@ export default {
     Utils,
     Plugin,
     Zone,
+    Prefs,
 };
