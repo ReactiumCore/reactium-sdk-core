@@ -9,7 +9,7 @@ import Component from '../component';
 import op from 'object-path';
 import uuid from 'uuid/v4';
 
-const useZoneComponents = zone => {
+export const useZoneComponents = zone => {
     const components = useRef(ZoneSDK.getZoneComponents(zone));
     const [version, setVersion] = useState(uuid());
     useEffect(() => ZoneSDK.subscribe(zone, zoneComponents => {
@@ -26,8 +26,10 @@ export const SimpleZone = props => {
 
     return components.map(zoneComponent => {
         const { id } = zoneComponent;
+        const { children, ...zoneProps } = props;
+
         const { component: Component, ...componentProps } = zoneComponent;
-        return Component && <Component id={id} key={id} {...props} {...componentProps} />;
+        return Component && <Component key={id} {...zoneProps} {...componentProps} />;
     });
 };
 
@@ -49,6 +51,11 @@ const PassThroughZone = props => {
     });
 };
 
+/**
+ * -----------------------------------------------------------------------------
+ * React Component: Zone
+ * -----------------------------------------------------------------------------
+ */
 const Zone = props => {
     const { children, passThrough = false } = props;
 
@@ -68,11 +75,6 @@ Component.register('Zone', Zone);
 
 export default Zone;
 
-/**
- * -----------------------------------------------------------------------------
- * React Component: Zone
- * -----------------------------------------------------------------------------
- */
 /**
  * @api {RegisteredComponent} Zone Zone
  * @apiVersion 3.1.19
@@ -138,3 +140,28 @@ export default props => {
    );
 };
  */
+
+ /**
+  * @api {ReactHook} useZoneComponents(zone) useZoneComponents()
+  * @apiDescription A React hook used in the `Zone` component to determine what
+  components should currently be rendered. Useful to observe a zone in another component.
+  If you want to observe to the zone components without necessarily causing a rerender in your component,
+  use `Reactium.Zone.getZoneComponents()` (to get a list of components in the zone), alone or
+  in combination with `Reactium.Zone.subscribe()`.
+  * @apiParam {String} zone the zone id.
+  * @apiName useZoneComponents
+  * @apiGroup ReactHook
+  * @apiExample Example
+ import React from 'react';
+ import { useZoneComponents } from 'reactium-core/sdk';
+
+ export props => {
+     const zoneComponents = useZoneComponents('my-zone');
+
+     return (
+         <div>
+             Components in Zone: {zoneComponents.length}
+         </div>
+     );
+ };
+  */

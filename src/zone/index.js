@@ -26,6 +26,7 @@ const FILTER = Symbol('FILTER');
 const MAP = Symbol('MAP');
 const SORT = Symbol('SORT');
 const UPDATE = Symbol('UPDATE');
+const UNSUBSCRIBE = Symbol('UNSUBSCRIBE');
 
 class Zones {
     constructor() {
@@ -126,6 +127,65 @@ class Zones {
         return id;
     }
 
+    async updateComponent(id, updates = {}) {
+        const componentUpdates = { ...updates };
+
+        // don't allow id change
+        op.del(componentUpdates, 'id');
+
+        if (op.has(this[ZONES], ['components', 'allById', id])) {
+            const component = op.get(this[ZONES], [
+                'components',
+                'allById',
+                id,
+            ]);
+            const existingZones = op.get(component, 'zone');
+            const updatedComponent = { ...component, ...componentUpdates };
+
+            let zones = op.get(updatedComponent, 'zone');
+            if (!zones || (Array.isArray(zones) && zones.length < 1))
+                throw new Error(
+                    `Plugin component ${id} missing target zone(s)`,
+                );
+
+            if (!Array.isArray(zones)) zones = [zones];
+
+            op.set(
+                this[ZONES],
+                ['components', 'allById', id],
+                updatedComponent,
+            );
+
+            zones.forEach(zone => {
+                op.set(
+                    this[ZONES],
+                    ['components', 'zoneComponentIds', zone, id],
+                    id,
+                );
+            });
+
+            existingZones
+                .filter(zone => !zones.includes(zone))
+                .forEach(zone => {
+                    op.del(this[ZONES], [
+                        'components',
+                        'zoneComponentIds',
+                        zone,
+                        id,
+                    ]);
+                });
+
+            if (this[INITIALIZED]) {
+                await Hook.run('zone-update-component', updatedComponent);
+                _.chain(zones.concat(existingZones))
+                    .compact()
+                    .uniq()
+                    .value()
+                    .forEach(zone => this[UPDATE](zone));
+            }
+        }
+    }
+
     async removeComponent(id) {
         if (op.has(this[ZONES], ['components', 'allById', id])) {
             const component = op.get(this[ZONES], [
@@ -133,7 +193,7 @@ class Zones {
                 'allById',
                 id,
             ]);
-            let zones = op.get(component, 'zone');
+            const zones = op.get(component, 'zone');
 
             op.del(this[ZONES], ['components', 'allById', id]);
             zones.forEach(zone => {
@@ -228,13 +288,6 @@ class Zones {
         return this.removeControl(id);
     }
 
-    unsubscribe(id) {
-        if (id in this[ZONES].subscribers) {
-            op.del(this[ZONES], ['subscribers', 'byId', id]);
-            op.del(this[ZONES], ['subscribers', 'zoneIds', zone, id]);
-        }
-    }
-
     subscribe(zone, cb) {
         const id = uuid();
         if (typeof cb === 'function') {
@@ -244,10 +297,17 @@ class Zones {
             });
 
             op.set(this[ZONES], ['subscribers', 'zoneIds', zone, id], id);
-            return () => this.unsubscribe(id);
+            return () => this[UNSUBSCRIBE](id);
         }
         throw new Error('Zone.subscribe must be passed a callback function.');
     }
+
+    [UNSUBSCRIBE] = id => {
+        if (id in this[ZONES].subscribers) {
+            op.del(this[ZONES], ['subscribers', 'byId', id]);
+            op.del(this[ZONES], ['subscribers', 'zoneIds', zone, id]);
+        }
+    };
 
     [FILTER] = (zoneComponents, zone) => {
         const filters = _.sortBy(
@@ -473,9 +533,41 @@ Reactium.Plugin.register('myPlugin').then(() => {
 */
 
 /**
+ * @api {Function} Zone.updateComponent(id, updatedComponent) Zone.updateComponent()
+ * @apiName Zone.updateComponent
+ * @apiDescription Register a component to a component zone.
+ * @apiParam {String} ID the unique component object id.
+ * @apiParam {Object} updatedComponent updated zone component object, will be merged with existing.
+ * @apiGroup Reactium.Zone
+ */
+
+/**
  * @api {Function} Zone.removeComponent(ID) Zone.removeComponent()
  * @apiName Zone.removeComponent
  * @apiDescription Removes a component added by `Zone.addComponent()` from a component zone by id.
  * @apiParam {String} ID the unique component object id.
  * @apiGroup Reactium.Zone
  */
+
+/**
+  * @api {Function} Zone.subscribe(zone,cb) Zone.subscribe()
+  * @apiName Zone.subscribe
+  * @apiDescription Subscribe to components added, removed, or updated in a particular rendering zone.
+  Returns an unsubscribe function. Call this function to unsubscribe from changes.
+  * @apiParam {String} zone the zone to subscribe to
+  * @apiParam {Function} callback a function that will be called when a change occurs to zone.
+  * @apiGroup Reactium.Zone
+  * @apiExample useZoneComponents.js
+  import Reactium from 'reactium-core/sdk';
+  import { useState, useEffect } from 'react';
+
+  export const useZoneComponents = zone => {
+      const [components, updateComponents] = useState(Reactium.Zone.getZoneComponents(zone));
+
+      useEffect(() => Reactium.Zone.subscribe(zone, zoneComponents => {
+          updateComponents(zoneComponents)
+      }), [zone]);
+
+      return components;
+  };
+  */
