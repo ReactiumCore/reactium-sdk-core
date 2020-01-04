@@ -533,7 +533,7 @@ Reactium.Plugin.register('myPlugin').then(() => {
 */
 
 /**
- * @api {Function} Zone.updateComponent(id, updatedComponent) Zone.updateComponent()
+ * @api {Function} Zone.updateComponent(id,updatedComponent) Zone.updateComponent()
  * @apiName Zone.updateComponent
  * @apiDescription Register a component to a component zone.
  * @apiParam {String} ID the unique component object id.
