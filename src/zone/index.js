@@ -196,7 +196,8 @@ class Zones {
                 'allById',
                 id,
             ]);
-            const zones = op.get(component, 'zone');
+            let zones = op.get(component, 'zone');
+            if (!Array.isArray(zones)) zones = _.compact([zones]);
 
             op.del(this[ZONES], ['components', 'allById', id]);
             zones.forEach(zone => {
