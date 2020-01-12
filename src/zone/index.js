@@ -139,7 +139,10 @@ class Zones {
                 'allById',
                 id,
             ]);
-            const existingZones = op.get(component, 'zone');
+            let existingZones = op.get(component, 'zone', []);
+            if (!Array.isArray(existingZones))
+                existingZones = _.compact([existingZones]);
+
             const updatedComponent = { ...component, ...componentUpdates };
 
             let zones = op.get(updatedComponent, 'zone');
