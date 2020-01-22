@@ -97,7 +97,7 @@ Reactium.Cache.subscribe('values.foo', ({op, ...params}) => {
         }
 
         return () => {
-            op.del(this._subscribers, id);
+            delete this._subscribers[id];
             for (let i = 0; i < keyParts.length; i++) {
                 const partial = keyParts.slice(0, i + 1);
                 const key = normalizeKey(partial);
