@@ -9,9 +9,18 @@ import memory from 'memory-cache';
 import op from 'object-path';
 import moment from 'moment';
 import _ from 'underscore';
+import uuid from 'uuid/v4';
+
+const denormalizeKey = keyString => {
+    return Array.isArray(keyString) ? keyString : keyString.split('.');
+};
+
+const normalizeKey = key => {
+    return Array.isArray(key) ? key.join('.') : key;
+};
 
 const getKeyRoot = key => {
-    const k = String(key).split('.')[0];
+    const k = denormalizeKey(key)[0];
     return k;
 };
 
@@ -19,6 +28,103 @@ const getValue = key => {
     const v = memory.get(getKeyRoot(key));
     return v;
 };
+
+const subscribers = {};
+const subscribedPaths = {};
+
+class Cache {
+    /**
+     * @api {Function} Cache.subscribe(key,cb) Cache.subscribe()
+     * @apiGroup Reactium.Cache
+     * @apiName Cache.subscribe
+     * @apiDescription Subscribe to cache changes that impact a particular key. Returns an unsubscribe function.
+     * @apiParam {Mixed} key object path of the cache value (array or string)
+     * @apiParam {Function} cb The callback function to call when impacting changes have been made to the subscribed cache. Changes include
+     any set/put, delete, clear, merge, or expiration that *may* impact the value you care about.
+     *
+     * @apiExample Example Usage:
+const foo = Reactium.Cache.get('values.foo');
+Reactium.Cache.subscribe('values.foo', ({op, ...params}) => {
+    switch(op) {
+        case 'set': {
+            const { key, value } = params;
+            // do something with new value if applicable
+            // you can see the key that impacted the cache value
+            break;
+        }
+
+        case 'del': {
+            // the key that was deleted
+            const { key } = params;
+            // do something about the deletion
+            break;
+        }
+
+        case 'expire': {
+            // do something about expiration (which will have impacted your value for sure)
+            // this will never be called if your value doesn't expire
+            break;
+        }
+
+        case 'merge': {
+            // complete cache object after merge
+            // may impact you, you'll have to check
+            const { obj } = params;
+            if (op.get(obj, 'values.foo') !== foo) {
+                // do something
+            }
+            break;
+        }
+
+        default:
+        break;
+    }
+});
+     */
+    subscribe(key, cb) {
+        const id = uuid();
+        const keyParts = denormalizeKey(normalizeKey(key));
+
+        subscribers[id] = cb;
+        for (let i = 0; i < keyParts.length; i++) {
+            const partial = keyParts.slice(0, i + 1);
+            const key = normalizeKey(partial);
+            if (!(key in subscribedPaths)) {
+                subscribedPaths[key] = {};
+            }
+
+            op.set(subscribedPaths[key], id, id);
+        }
+
+        return () => {
+            op.del(subscribers, id);
+            for (let i = 0; i < keyParts.length; i++) {
+                const partial = keyParts.slice(0, i + 1);
+                const key = normalizeKey(partial);
+                op.del(subscribedPaths[key], id);
+            }
+        };
+    }
+
+    keySubscribers(key) {
+        const keyParts = denormalizeKey(normalizeKey(key));
+        let keySubs = [];
+        for (let i = 0; i < keyParts.length; i++) {
+            const partial = keyParts.slice(0, i + 1);
+            const key = normalizeKey(partial);
+            if (key in subscribedPaths) {
+                keySubs = _.uniq(keySubs.concat(Object.keys(subscribedPaths[key])))
+            }
+        }
+
+        return keySubs.reduce((subs, id) => subs.concat([subscribers[id]]), []);
+    }
+}
+
+// Statics
+Cache.denormalizeKey = denormalizeKey;
+Cache.normalizeKey = normalizeKey;
+Cache.getKeyRoot = getKeyRoot;
 
 /**
  * @api {Function} Cache.clear() Cache.clear()
@@ -40,6 +146,7 @@ const getValue = key => {
  * @apiName Cache.size
  * @apiDescription Returns the current number of entries in the cache.
  */
+Cache.prototype.size = memory.size;
 
 /**
  * @api {Function} Cache.memsize() Cache.memsize()
@@ -48,6 +155,7 @@ const getValue = key => {
  * @apiName Cache.memsize
  * @apiDescription Returns the number of entries taking up space in the cache.
  */
+Cache.prototype.memsize = memory.memsize;
 
 /**
  * @api {Function} Cache.keys() Cache.keys()
@@ -56,10 +164,7 @@ const getValue = key => {
  * @apiName Cache.keys
  * @apiDescription Returns an array of the cached keys.
  */
-
-const cache = {
-    ...memory,
-};
+Cache.prototype.keys = memory.keys;
 
 /**
  * @api {Function} Cache.get(key) Cache.get()
@@ -76,8 +181,8 @@ const cache = {
  * Reactium.Cache.get('foo.bar'); // returns: 123;
  * Reactium.Cache.get('foo');     // returns: { bar: 123 }
  */
-cache.get = (key, defaultValue) => {
-    key = Array.isArray(key) ? key.join('.') : key;
+Cache.prototype.get = (key, defaultValue) => {
+    key = normalizeKey(key);
 
     if (!key) {
         const keys = memory.keys();
@@ -120,23 +225,37 @@ cache.get = (key, defaultValue) => {
  * // Set to expire in 5 seconds and use a timeoutCallback
  * Reactium.Cache.set('foo', { bar: 456 }, 5000, (key, value) => console.log(key, value));
  */
-cache.put = (key, value, ...args) => {
-    key = Array.isArray(key) ? key.join('.') : key;
+Cache.prototype.put = function(key, value, time, timeoutCallback) {
+    key = normalizeKey(key);
 
     let curr = getValue(key);
-    const keyRoot = getKeyRoot(key);
-    const keyArray = String(key).split('.');
+    const keyArray = denormalizeKey(key);
+    const keyRoot = keyArray[0];
+
+    const subscribers = this.keySubscribers(key);
+    subscribers.forEach(cb => {
+        cb({op: 'set', key, value});
+    });
+
+    const params = [time];
+    const expireCallback = () => {
+        if (timeoutCallback) timeoutCallback();
+        subscribers.forEach(cb => {
+            cb({op: 'expire', key});
+        });
+    };
+    if (time) params.push(expireCallback);
 
     if (keyArray.length > 1) {
         curr = curr || {};
         keyArray.shift();
         op.set(curr, keyArray.join('.'), value);
-        return memory.put(keyRoot, curr, ...args);
+        return memory.put(keyRoot, curr, ...params);
     } else {
-        return memory.put(key, value, ...args);
+        return memory.put(key, value, ...params);
     }
 };
-cache.set = cache.put;
+Cache.prototype.set = Cache.prototype.put;
 
 /**
  * @api {Function} Cache.del(key) Cache.del()
@@ -152,8 +271,8 @@ cache.set = cache.put;
  * Reactium.Cache.del('foo.bar'); // returns: { blah: 'hahaha' }
  * Reactium.Cache.del('foo');     // returns: true
  */
-cache.del = (key, ...args) => {
-    key = Array.isArray(key) ? key.join('.') : key;
+Cache.prototype.del = function (key, ...args) {
+    key = normalizeKey(key);
 
     let curr = getValue(key);
     if (!curr) {
@@ -161,7 +280,12 @@ cache.del = (key, ...args) => {
     }
 
     const keyRoot = getKeyRoot(key);
-    const keyArray = String(key).split('.');
+    const keyArray = denormalizeKey(key);
+
+    const subscribers = this.keySubscribers(key);
+    subscribers.forEach(cb => {
+        cb({op: 'del', key});
+    });
 
     if (keyArray.length > 1) {
         curr = curr || {};
@@ -195,7 +319,7 @@ cache.del = (key, ...args) => {
  * Reactium.Cache.get()
  * // returns: { foo: 'bar', test: 123 }
  */
-cache.merge = (values, options) => {
+Cache.prototype.merge = (values, options) => {
     options = options || { skipDuplicates: false };
 
     values = Object.keys(values).reduce((obj, key) => {
@@ -210,10 +334,15 @@ cache.merge = (values, options) => {
         }
 
         obj[key] = value;
+
+        Object.values(subscribers).forEach(cb => {
+            cb({ op: 'merge', obj })
+        });
+
         return obj;
     }, {});
 
     return memory.importJson(JSON.stringify(values));
 };
 
-export default cache;
+export default new Cache();

@@ -2,7 +2,10 @@ import SDK from '../lib';
 
 const { Cache } = SDK;
 
-test('Cache.set()', () => {
+test('Cache.set()', done => {
+    const subscriber = jest.fn();
+    Cache.subscribe('foo', subscriber);
+
     Cache.set('foo.baz', 'bar');
     Cache.set('foo.bar', 'baz', 500);
     expect(Cache.get('foo')).toMatchObject({
@@ -12,7 +15,9 @@ test('Cache.set()', () => {
 
     // Should have expired by now
     setTimeout(() => {
-        expect(Cache.get('foo.bar')).toBeUndefined();
-        expect(Cache.get('foo.baz')).toEqual('bar');
+        // expire for one root is an expire for others
+        expect(Cache.get('foo')).toBeUndefined();
+        expect(subscriber).toHaveBeenCalledTimes(3);
+        done();
     }, 600)
 })
