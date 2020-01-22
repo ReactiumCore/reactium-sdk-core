@@ -29,10 +29,10 @@ const getValue = key => {
     return v;
 };
 
-const subscribers = {};
-const subscribedPaths = {};
-
 class Cache {
+    _subscribers = {};
+    _subscribedPaths = {};
+
     /**
      * @api {Function} Cache.subscribe(key,cb) Cache.subscribe()
      * @apiGroup Reactium.Cache
@@ -85,23 +85,23 @@ Reactium.Cache.subscribe('values.foo', ({op, ...params}) => {
         const id = uuid();
         const keyParts = denormalizeKey(normalizeKey(key));
 
-        subscribers[id] = cb;
+        this._subscribers[id] = cb;
         for (let i = 0; i < keyParts.length; i++) {
             const partial = keyParts.slice(0, i + 1);
             const key = normalizeKey(partial);
-            if (!(key in subscribedPaths)) {
-                subscribedPaths[key] = {};
+            if (!(key in this._subscribedPaths)) {
+                this._subscribedPaths[key] = {};
             }
 
-            op.set(subscribedPaths[key], id, id);
+            op.set(this._subscribedPaths[key], id, id);
         }
 
         return () => {
-            op.del(subscribers, id);
+            op.del(this._subscribers, id);
             for (let i = 0; i < keyParts.length; i++) {
                 const partial = keyParts.slice(0, i + 1);
                 const key = normalizeKey(partial);
-                op.del(subscribedPaths[key], id);
+                op.del(this._subscribedPaths[key], id);
             }
         };
     }
@@ -112,12 +112,12 @@ Reactium.Cache.subscribe('values.foo', ({op, ...params}) => {
         for (let i = 0; i < keyParts.length; i++) {
             const partial = keyParts.slice(0, i + 1);
             const key = normalizeKey(partial);
-            if (key in subscribedPaths) {
-                keySubs = _.uniq(keySubs.concat(Object.keys(subscribedPaths[key])))
+            if (key in this._subscribedPaths) {
+                keySubs = _.uniq(keySubs.concat(Object.keys(this._subscribedPaths[key])))
             }
         }
 
-        return keySubs.reduce((subs, id) => subs.concat([subscribers[id]]), []);
+        return keySubs.reduce((subs, id) => subs.concat([this._subscribers[id]]), []);
     }
 }
 
@@ -239,6 +239,7 @@ Cache.prototype.put = function(key, value, time, timeoutCallback) {
 
     const params = [time];
     const expireCallback = () => {
+        const subscribers = this.keySubscribers(key);
         if (timeoutCallback) timeoutCallback();
         subscribers.forEach(cb => {
             cb({op: 'expire', key});
