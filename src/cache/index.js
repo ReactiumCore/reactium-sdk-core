@@ -233,9 +233,6 @@ Cache.prototype.put = function(key, value, time, timeoutCallback) {
     const keyRoot = keyArray[0];
 
     const subscribers = this.keySubscribers(key);
-    subscribers.forEach(cb => {
-        cb({op: 'set', key, value});
-    });
 
     const params = [time];
     const expireCallback = () => {
@@ -251,10 +248,14 @@ Cache.prototype.put = function(key, value, time, timeoutCallback) {
         curr = curr || {};
         keyArray.shift();
         op.set(curr, keyArray.join('.'), value);
-        return memory.put(keyRoot, curr, ...params);
+        memory.put(keyRoot, curr, ...params);
     } else {
-        return memory.put(key, value, ...params);
+        memory.put(key, value, ...params);
     }
+
+    subscribers.forEach(cb => {
+        cb({op: 'set', key, value});
+    });
 };
 Cache.prototype.set = Cache.prototype.put;
 
@@ -274,28 +275,25 @@ Cache.prototype.set = Cache.prototype.put;
  */
 Cache.prototype.del = function (key, ...args) {
     key = normalizeKey(key);
-
     let curr = getValue(key);
-    if (!curr) {
-        return true;
-    }
-
     const keyRoot = getKeyRoot(key);
     const keyArray = denormalizeKey(key);
-
     const subscribers = this.keySubscribers(key);
+
+    if (curr) {
+        if (keyArray.length > 1) {
+            curr = curr || {};
+            keyArray.shift();
+            op.del(curr, keyArray.join('.'));
+            memory.put(keyRoot, curr, ...args);
+        } else {
+            memory.del(key);
+        }
+    }
+
     subscribers.forEach(cb => {
         cb({op: 'del', key});
     });
-
-    if (keyArray.length > 1) {
-        curr = curr || {};
-        keyArray.shift();
-        op.del(curr, keyArray.join('.'));
-        return memory.put(keyRoot, curr, ...args);
-    } else {
-        return memory.del(key);
-    }
 };
 
 /**
