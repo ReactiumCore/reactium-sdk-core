@@ -138,6 +138,13 @@ Cache.getKeyRoot = getKeyRoot;
  * @apiExample Example Usage:
  * Reactium.Cache.clear();
  */
+Cache.prototype.clear = () => {
+    memory.clear();
+    const subscribers = Object.values(this._subscribers);
+    subscribers.forEach(cb => {
+        cb({op: 'clear'});
+    });
+};
 
 /**
  * @api {Function} Cache.size() Cache.size()
