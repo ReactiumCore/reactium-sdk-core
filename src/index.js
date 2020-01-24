@@ -1,3 +1,4 @@
+import './node-polyfill';
 import Cache from './cache';
 import Component from './component';
 import Enums from './enums';
