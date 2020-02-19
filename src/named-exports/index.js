@@ -4,6 +4,7 @@ export * from './event-handle';
 export * from './handle';
 export * from './is-container';
 export * from './redux';
+export * from './async-effect';
 export * from '../zone/Zone';
 
 export { default as Zone } from '../zone/Zone';

@@ -6,4 +6,5 @@ export * from './handle';
 export * from './redux';
 export * from './zone';
 export * from './derived';
+export * from './async-effect';
 export const SDK = CommonSDK;

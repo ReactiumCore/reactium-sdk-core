@@ -1,6 +1,6 @@
 {
   "name": "@atomic-reactor/reactium-sdk-core",
-  "version": "0.0.28",
+  "version": "0.0.29",
   "main": "lib/index.js",
   "dependencies": {
     "enzyme": "^3.10.0",
