@@ -134,8 +134,10 @@ describe('Zone', () => {
 
     describe('After subscribing to zone-another and adding a component to zone.', () => {
         it('Should get updated zone information', async () => {
+            const cb = jest.fn();
             const subscription = new Promise((resolve) => {
                 const unsub = SDK.Zone.subscribe('zone-another', results => {
+                    cb();
                     resolve({ unsub, results });
                 })
             });
@@ -144,11 +146,23 @@ describe('Zone', () => {
             const {unsub, results} = await subscription;
 
             expect(typeof unsub).toEqual('function');
+            expect(cb).toHaveBeenCalled();
             expect(results).toMatchObject([{
                 ...anotherComponent,
                 zone: ['zone-another'],
             }]);
             unsub();
+        })
+    });
+
+    describe('After unsubscribing from a zone.', () => {
+        it('Should not get zone information', async () => {
+            const subscriberCallback = jest.fn();
+            const unsub = SDK.Zone.subscribe('zone-unsub-test', subscriberCallback);
+
+            unsub();
+            const componentId = SDK.Zone.addComponent(anotherComponent);
+            expect(subscriberCallback).not.toHaveBeenCalled();
         })
     });
 

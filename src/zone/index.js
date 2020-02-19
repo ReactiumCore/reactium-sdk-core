@@ -307,7 +307,8 @@ class Zones {
     }
 
     [UNSUBSCRIBE] = id => {
-        if (id in this[ZONES].subscribers) {
+        if (op.has(this[ZONES], ['subscribers', 'byId', id])) {
+            const zone = op.get(this[ZONES], ['subscribers', 'byId', id, 'zone']);
             op.del(this[ZONES], ['subscribers', 'byId', id]);
             op.del(this[ZONES], ['subscribers', 'zoneIds', zone, id]);
         }
