@@ -1,6 +1,7 @@
 export * from './component';
 export * from './derived-state';
 export * from './event-handle';
+export * from './focus-effect';
 export * from './handle';
 export * from './is-container';
 export * from './redux';
