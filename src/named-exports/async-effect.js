@@ -9,18 +9,19 @@ class AsyncUpdate {
     }
 
     get mounted() {
-        return this._mounted || false;
+        return !!this._mounted;
     }
+
+    isMounted = () => !!this._mounted;
 
     update = (...params) => {
         if (this._mounted) {
-            this.update(...params);
+            this._update(...params);
         }
     };
 
     unmount = () => {
         this._mounted = false;
-        this.update = () => {};
     };
 }
 
@@ -65,7 +66,7 @@ export const useAsyncEffect = (cb, deps) => {
     const updater = new AsyncUpdate(cb);
 
     const doEffect = async () => {
-        return updater.update(updater.mounted);
+        return updater.update(updater.isMounted);
     }
 
     useEffect(() => {

@@ -25,11 +25,10 @@ describe('When component with useAsyncEffect unmounts', () => {
     it('should not perform state update', async () => {
         const cb = jest.fn();
         const child = mount(<AsyncEffectUser action={cb} />);
+        child.unmount();
 
         await ReactTestUtils.act(async () => {
-            await new Promise(resolve => setTimeout(resolve, 1));
-            child.unmount();
-            await new Promise(resolve => setTimeout(resolve, 50));
+            await new Promise(resolve => setTimeout(resolve, 51));
         });
 
         expect(cb).not.toHaveBeenCalled();
