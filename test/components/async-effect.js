@@ -5,7 +5,7 @@ export const AsyncEffectUser = props => {
     const { action } = props;
     useAsyncEffect(async isMounted => {
         await new Promise(resolve => setTimeout(resolve, 50));
-        if (isMounted()) {
+        if (isMounted) {
             action();
         }
     }, [action]);

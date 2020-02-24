@@ -1,22 +1,25 @@
-import React, { useEffect, useState, useRef } from 'react';
+
 import op from 'object-path';
+import React, { useEffect } from 'react';
 
 class AsyncUpdate {
     constructor(update) {
-        this.mounted = true;
-        this.update = update;
+        this._mounted = true;
+        this._update = update;
     }
 
-    getMounted = () => op.get(this, 'mounted', false);
+    get mounted() {
+        return this._mounted || false;
+    }
 
     update = (...params) => {
-        if (this.mounted) {
+        if (this._mounted) {
             this.update(...params);
         }
     };
 
     unmount = () => {
-        this.mounted = false;
+        this._mounted = false;
         this.update = () => {};
     };
 }
@@ -58,22 +61,22 @@ const MyComponent = props => {
 * @apiExample StandAlone Import
 import { useAsyncEffect } from '@atomic-reactor/reactium-sdk-core';
  */
-export const useAsyncEffect = (cb, ...params) => {
-    const updater = useRef(new AsyncUpdate(cb));
+export const useAsyncEffect = (cb, deps) => {
+    const updater = new AsyncUpdate(cb);
+
     const doEffect = async () => {
-        const update = op.get(updater.current, 'update', () => {});
-        return update(op.get(updater.current, 'getMounted', () => false));
-    };
+        return updater.update(updater.mounted);
+    }
 
     useEffect(() => {
         const effectPromise = doEffect();
         return () => {
-            updater.current.unmount();
+            updater.unmount();
             effectPromise.then(unmountCB => {
                 if (typeof unmountCB === 'function') {
                     unmountCB();
                 }
             });
         };
-    }, ...params);
+    }, deps);
 };
