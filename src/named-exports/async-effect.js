@@ -1,27 +1,13 @@
-
 import op from 'object-path';
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 class AsyncUpdate {
-    constructor(update) {
-        this._mounted = true;
-        this._update = update;
+    constructor() {
+        this.mounted = true;
     }
-
-    get mounted() {
-        return !!this._mounted;
-    }
-
-    isMounted = () => !!this._mounted;
-
-    update = (...params) => {
-        if (this._mounted) {
-            this._update(...params);
-        }
-    };
-
+    isMounted = () => !!this.mounted;
     unmount = () => {
-        this._mounted = false;
+        this.mounted = false;
     };
 }
 
@@ -63,10 +49,10 @@ const MyComponent = props => {
 import { useAsyncEffect } from '@atomic-reactor/reactium-sdk-core';
  */
 export const useAsyncEffect = (cb, deps) => {
-    const updater = new AsyncUpdate(cb);
+    const [updater] = useState(new AsyncUpdate());
 
     const doEffect = async () => {
-        return updater.update(updater.isMounted);
+        return cb(updater.isMounted);
     }
 
     useEffect(() => {
