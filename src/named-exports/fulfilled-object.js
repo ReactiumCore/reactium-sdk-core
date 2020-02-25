@@ -1,6 +1,9 @@
+import { useRef, useState } from 'react';
+import { useAsyncEffect } from 'reactium-core/sdk';
+
 /**
- * @api {ReactHook} useFulFilledObject(object,keys) useFulFilledObject()
- * @apiName useFulFilledObject
+ * @api {ReactHook} useFulfilledObject(object,keys) useFulfilledObject()
+ * @apiName useFulfilledObject
  * @apiGroup ReactHook
  * @apiDescription Asyncronous React hook that determines if the supplied object
  has values for the supplied keys. Useful when you have many `useEffect` calls
@@ -10,12 +13,12 @@
  * @apiExample Example Usage:
 
 import React, { useEffect, useState } from 'react';
-import { useFulFilledObject } from 'reactium-core/sdk';
+import { useFulfilledObject } from 'reactium-core/sdk';
 
 const MyComponent = () => {
 
     const [state, setNewState] = useState({});
-    const [updatedState, ready, attempts] = useFulFilledObject(state, ['msg', 'timestamp']);
+    const [updatedState, ready, attempts] = useFulfilledObject(state, ['msg', 'timestamp']);
 
     const setState = newState => {
         newState = { ...state, ...newState };
@@ -41,7 +44,7 @@ const MyComponent = () => {
     return render();
 };
  */
- export const useFulFilledObject = (obj = {}, keys = []) => {
+ export const useFulfilledObject = (obj = {}, keys = []) => {
      const [ready, setReady] = useState(false);
      const count = useRef(0);
      const ival = useRef();
