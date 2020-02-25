@@ -3,12 +3,18 @@ import React, { useState, useEffect } from 'react';
 
 class AsyncUpdate {
     constructor() {
-        this.mounted = true;
+        this.__mounted = true;
     }
-    isMounted = () => !!this.mounted;
-    unmount = () => {
-        this.mounted = false;
-    };
+
+    get mounted() {
+        return this.__mounted;
+    }
+
+    set mounted(value) {
+        this.__mounted = value;
+    }
+
+    isMounted = () => this.__mounted;
 }
 
 /**
@@ -49,16 +55,18 @@ const MyComponent = props => {
 import { useAsyncEffect } from '@atomic-reactor/reactium-sdk-core';
  */
 export const useAsyncEffect = (cb, deps) => {
-    const [updater] = useState(new AsyncUpdate());
+    const updater = new AsyncUpdate();
 
     const doEffect = async () => {
         return cb(updater.isMounted);
     }
 
     useEffect(() => {
+        updater.mounted = true;
         const effectPromise = doEffect();
+
         return () => {
-            updater.unmount();
+            updater.mounted = false;
             effectPromise.then(unmountCB => {
                 if (typeof unmountCB === 'function') {
                     unmountCB();
@@ -66,4 +74,5 @@ export const useAsyncEffect = (cb, deps) => {
             });
         };
     }, deps);
+
 };
