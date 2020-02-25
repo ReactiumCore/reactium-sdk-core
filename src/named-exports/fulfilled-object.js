@@ -9,8 +9,8 @@ import { useRef, useState } from 'react';
  * @apiDescription Asyncronous React hook that determines if the supplied object
  has values for the supplied keys. Useful when you have many `useEffect` calls
  and need to know if multiple pieces of the state are set and ready for rendering.
- * @apiParam {Object} The object to check.
- * @apiParam {Array} List of object paths to validate.
+ * @apiParam {Object} object The object to check.
+ * @apiParam {Array} keys List of object paths to validate.
  * @apiExample Example Usage:
 
 import React, { useEffect, useState } from 'react';
