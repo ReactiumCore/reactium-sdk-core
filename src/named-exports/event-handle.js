@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 
 class ComponentTarget extends EventTarget {
-    constructor(handle) {
+    constructor(handle = {}) {
+        delete handle.update;
+
         super();
-        this.update = handle => {
-            Object.entries(handle).forEach(
+
+        this.update = values =>
+            Object.entries(values).forEach(
                 ([key, value]) => (this[key] = value),
             );
-        };
         this.update(handle);
     }
 }
