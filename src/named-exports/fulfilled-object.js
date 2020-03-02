@@ -79,5 +79,5 @@ export const useFulfilledObject = (obj = {}, keys = []) => {
         [obj, keys, count.current],
     );
 
-    return [obj, ready, count.current];
+    return [ready, obj, count.current];
 };
