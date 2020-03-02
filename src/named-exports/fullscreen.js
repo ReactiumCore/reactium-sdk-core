@@ -51,23 +51,30 @@ const MyComponent = () => {
  */
 class FullscreenClass {
     constructor(element) {
-        this.element = element || document.body;
-
-        this.update = () => {
-            document.body.classList.remove('fullscreen');
-
-            if (!this) {
-                document.removeEventListener('fullscreenchange', this.update);
-                return;
-            }
-
-            if (document.fullscreen) {
-                document.body.classList.add('fullscreen');
-            }
-        };
-
-        document.addEventListener('fullscreenchange', this.update);
+        this.initialized = false;
+        this.element = element;
     }
+
+    init() {
+        if (this.initialized === true) return;
+        if (!this.element) { this.element = document; }
+        document.addEventListener('fullscreenchange', update);
+
+        this.initialized = true;
+    }
+
+    update() {
+        document.body.classList.remove('fullscreen');
+
+        if (!this) {
+            document.removeEventListener('fullscreenchange', update);
+            return;
+        }
+
+        if (document.fullscreen) {
+            document.body.classList.add('fullscreen');
+        }
+    };
 
     /**
      * @api {Function} Fullscreen.isExpanded() Fullscreen.isExpanded()
@@ -99,7 +106,10 @@ class FullscreenClass {
      * @apiName Fullscreen.expand
      * @apiDescription Enters fullscreen mode.
      */
-    expand = async () => this.element.requestFullscreen();
+    expand = async () => {
+        init();
+        this.element.requestFullscreen();
+    }
 
     /**
      * @api {Function} Fullscreen.toggle() Fullscreen.toggle()
