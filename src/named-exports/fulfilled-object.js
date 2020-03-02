@@ -2,7 +2,6 @@ import op from 'object-path';
 import { useAsyncEffect } from '.';
 import { useRef, useState } from 'react';
 
-
 /**
  * @api {ReactHook} useFulfilledObject(object,keys) useFulfilledObject()
  * @apiName useFulfilledObject
@@ -46,37 +45,39 @@ const MyComponent = () => {
     return render();
 };
  */
- export const useFulfilledObject = (obj = {}, keys = []) => {
-     const [ready, setReady] = useState(false);
-     const count = useRef(0);
-     const ival = useRef();
+export const useFulfilledObject = (obj = {}, keys = []) => {
+    const [ready, setReady] = useState(false);
+    const count = useRef(0);
+    const ival = useRef();
 
-     const clear = () =>  {
-         clearInterval(ival.current);
-         return () => {};
-     };
+    const clear = () => {
+        clearInterval(ival.current);
+        return () => {};
+    };
 
-     const validate = () =>
-         new Promise(resolve => {
-             clear();
-             ival.current = setInterval(() => {
-                 count.current += 1;
-                 const completed = keys.filter(key => !!op.get(obj, key));
-                 if (completed.length !== keys.length) return;
-                 clear();
-                 resolve(true);
-             }, 1);
-         });
+    const validate = () =>
+        new Promise(resolve => {
+            clear();
+            ival.current = setInterval(() => {
+                count.current += 1;
+                const completed = keys.filter(
+                    key => typeof op.get(obj, key) !== 'undefined',
+                );
+                if (completed.length !== keys.length) return;
+                clear();
+                resolve(true);
+            }, 1);
+        });
 
-     useAsyncEffect(
-         async mounted => {
-             if (ready === true) return clear();
-             const results = await validate();
-             if (mounted()) setReady(results);
-             return clear();
-         },
-         [obj, keys, count.current],
-     );
+    useAsyncEffect(
+        async mounted => {
+            if (ready === true) return clear();
+            const results = await validate();
+            if (mounted()) setReady(results);
+            return clear();
+        },
+        [obj, keys, count.current],
+    );
 
-     return [obj, ready, count.current];
- };
+    return [obj, ready, count.current];
+};

@@ -3,6 +3,7 @@ export * from './derived-state';
 export * from './event-handle';
 export * from './focus-effect';
 export * from './fulfilled-object';
+export * from './fullscreen';
 export * from './handle';
 export * from './is-container';
 export * from './redux';
