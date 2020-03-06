@@ -73,7 +73,7 @@ export const useDerivedState = (props, subscriptions = [], updateAll = false) =>
 
     // rerender trigger
     const [, setUpdated] = useState(uuid());
-    const forceRefresh = () => setUpdated(uuid());
+    const forceRefresh = () => _.defer(() => setUpdated(uuid()));
 
     // everything
     const derivedStateRef = useRef(props);
