@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import op from 'object-path';
 import _ from 'underscore';
 const shallowEquals = require('shallow-equals');
-import uuid from 'uuid/v4';
 
 /**
  * @api {ReactHook} useDerivedState(props,subscriptions,updateAll) useDerivedState()
@@ -64,25 +63,25 @@ const MyComponent = props => {
 
 export default MyComponent;
  */
-export const useDerivedState = (props, subscriptions = [], updateAll = false) => {
+export const useDerivedState = (
+    props,
+    subscriptions = [],
+    updateAll = false,
+) => {
     const getDerivedState = fromValues =>
         subscriptions.reduce((values, path) => {
             values[path] = op.get(fromValues, path);
             return values;
         }, {});
-
     // rerender trigger
-    const [, setUpdated] = useState(uuid());
-    const forceRefresh = () => _.defer(() => setUpdated(uuid()));
-
+    const [, setUpdated] = useState(Date.now());
+    const forceRefresh = () => setUpdated(Date.now());
     // everything
-    const derivedStateRef = useRef(props);
-
+    const derivedStateRef = useRef({ ...props });
     // only what we care about in props
-    const propsVersion = useRef(uuid());
+    const propsVersion = useRef(Date.now());
     const derivedState = getDerivedState(props);
     const subscribedRef = useRef(derivedState);
-
     // ignores irrelevant prop changes
     const internalPropSetState = (path, value) => {
         const currentValue = op.get(subscribedRef.current, [path]);
@@ -93,21 +92,17 @@ export const useDerivedState = (props, subscriptions = [], updateAll = false) =>
             op.set(newDerivedState, path, value);
             subscribedRef.current = newSubscribed;
             derivedStateRef.current = newDerivedState;
-
             return true;
         }
-
         return false;
     };
 
     // public setState always respected and merged everything
     const setState = newExternalState => {
-        const newDerivedState = {
-            ...derivedStateRef.current,
-            ...newExternalState,
-        };
+        Object.entries(newExternalState).forEach(([key, value]) => {
+            op.set(derivedStateRef.current, key, value);
+        });
 
-        derivedStateRef.current = newDerivedState;
         forceRefresh();
     };
 
@@ -117,7 +112,6 @@ export const useDerivedState = (props, subscriptions = [], updateAll = false) =>
         subscriptions.forEach(path => {
             const oldVal = op.get(subscribedRef.current, [path]);
             const newVal = op.get(fromValues, [path]);
-
             if (
                 typeof oldVal !== typeof newVal ||
                 !shallowEquals(oldVal, newVal)
@@ -127,20 +121,22 @@ export const useDerivedState = (props, subscriptions = [], updateAll = false) =>
         });
         return changed;
     };
-
     // only trigger useEffect if subscriptions have changed or subscribed prop values have changed
     const changedDerived = getChanges(derivedState);
-
     if (changedDerived.length > 0) {
-        propsVersion.current = uuid();
+        propsVersion.current = Date.now();
     }
-
     useEffect(() => {
         if (changedDerived.length > 0) {
-            const shouldRerender = changedDerived.reduce((hasPropUpdates, path) => {
-                return hasPropUpdates || internalPropSetState(path, op.get(derivedState, [path]))
-            }, false);
-
+            const shouldRerender = changedDerived.reduce(
+                (hasPropUpdates, path) => {
+                    return (
+                        hasPropUpdates ||
+                        internalPropSetState(path, op.get(derivedState, [path]))
+                    );
+                },
+                false,
+            );
             if (shouldRerender) {
                 if (updateAll) {
                     setState({
@@ -152,7 +148,6 @@ export const useDerivedState = (props, subscriptions = [], updateAll = false) =>
             }
         }
     }, [subscriptions.sort().join('|'), propsVersion.current]);
-
     // full derived state, public setState, and method to force refresh without changing anything
     return [derivedStateRef.current, setState, forceRefresh];
 };

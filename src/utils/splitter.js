@@ -65,4 +65,4 @@ class SplitParts {
 }
 SplitParts.splitter = splitter;
 
-module.exports = SplitParts;
+export default SplitParts;
