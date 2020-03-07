@@ -29,12 +29,6 @@ test('useReduxState() no dispatch', async () => {
 test('useReduxState() and useHandle() dispatch update', async () => {
     let reduxUser, changer;
     reduxUser = document.createElement('div');
-    changer = document.createElement('div');
-
-    ReactDOM.render(
-        <StateChanger />,
-        changer,
-    );
 
     await ReactTestUtils.act(async () => {
         // the subscribing component
@@ -45,7 +39,9 @@ test('useReduxState() and useHandle() dispatch update', async () => {
             reduxUser,
         );
 
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // dispatches change through handle
+        changer = mount(<StateChanger />);
+        await changer.find('button').simulate('click')
     });
 
     expect(reduxUser.innerHTML).toEqual('updated');

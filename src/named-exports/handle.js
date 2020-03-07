@@ -1,7 +1,7 @@
 import Handle from '../handle';
 import op from 'object-path';
 import { useRef, useState, useEffect } from 'react';
-const shallowEquals = require('shallow-equals');
+import uuid from 'uuid/v4';
 
 /**
 * @api {ReactHook} useRegisterHandle(id,cb,deps) useRegisterHandle()
@@ -78,16 +78,13 @@ export default CounterControl;
  */
 export const useHandle = (ID, defaultValue) => {
     const ref = useRef(op.get(Handle.get(ID), 'current', defaultValue));
-    const [, updateVersion] = useState(Date.now());
+    const [, updateVersion] = useState(uuid());
     const setHandle = newRef => {
         const handle = op.get(newRef, 'current', defaultValue);
 
-        if (handle && !shallowEquals(handle, ref.current)) {
-            Object.entries(handle).forEach(([key,value]) => {
-                op.set(ref.current, key, value);
-            });
-
-            updateVersion(Date.now());
+        if (op.has(newRef, 'current') && handle !== ref.current) {
+            ref.current = handle;
+            updateVersion(uuid());
         }
     };
 
