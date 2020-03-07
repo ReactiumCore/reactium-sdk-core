@@ -2,7 +2,6 @@ import { useContext, useState, useEffect, useRef } from 'react';
 import { connect, ReactReduxContext } from 'react-redux';
 import op from 'object-path';
 const shallowEquals = require('shallow-equals');
-import uuid from 'uuid/v4';
 
 const noop = () => {};
 
@@ -184,13 +183,13 @@ export const useSelect = params => {
         shouldUpdate = op.get(params, 'shouldUpdate', shouldUpdate);
     }
 
-    const [, setVersion] = useState(uuid());
+    const [, setVersion] = useState(Date.now());
     const { getState, subscribe } = useStore();
     const stateRef = useRef(select(getState()));
 
     const setState = () => {
         const newState = select(getState());
-        const prevState = stateRef.current;
+        const prevState = {...stateRef.current};
 
         if (
             shouldUpdate({
@@ -198,8 +197,16 @@ export const useSelect = params => {
                 prevState,
             })
         ) {
-            stateRef.current = newState;
-            setVersion(uuid());
+            if (newState && (typeof newState === 'object' || Array.isArray(newState))) {
+                Object.entries(newState).forEach(([key, value]) =>
+                    op.set(stateRef.current, key, value),
+                );
+            }
+            else {
+                stateRef.current = newState;
+            }
+
+            setVersion(Date.now());
         }
     };
 
@@ -250,6 +257,7 @@ export const useReduxState = (...params) => {
 
     const state = useSelect({ select, shouldUpdate });
     const { dispatch } = useStore();
+
     return [
         state,
         update =>

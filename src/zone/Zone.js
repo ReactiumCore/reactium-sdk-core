@@ -7,24 +7,25 @@ import React, { useRef, useState, useEffect } from 'react';
 import ZoneSDK from './index';
 import Component from '../component';
 import op from 'object-path';
-import uuid from 'uuid/v4';
+import _ from 'underscore';
 
 export const useZoneComponents = zone => {
     const components = useRef(ZoneSDK.getZoneComponents(zone));
-    const [version, setVersion] = useState(uuid());
+
+    const [version, setVersion] = useState(Date.now());
     useEffect(() => ZoneSDK.subscribe(zone, zoneComponents => {
         components.current = zoneComponents;
-        setVersion(uuid());
+        setVersion(Date.now());
     }), [zone]);
 
-    return components.current;
+    return components;
 };
 
 export const SimpleZone = props => {
     const { zone } = props;
     const components = useZoneComponents(zone);
 
-    return components.map(zoneComponent => {
+    return components.current.map(zoneComponent => {
         const { id } = zoneComponent;
         const { children, ...zoneProps } = props;
 
@@ -39,7 +40,7 @@ const PassThroughZone = props => {
 
     return React.Children.map(children, Child => {
         return React.cloneElement(Child, {
-            components: components.reduce((passThroughComponents, component) => {
+            components: components.current.reduce((passThroughComponents, component) => {
                 let name = op.get(component, 'name', op.get(component, 'component.name'));
                 if (name && component.component) {
                     passThroughComponents[name] = component.component;

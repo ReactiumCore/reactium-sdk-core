@@ -22,10 +22,8 @@ test('useHookComponent() - component not registered', async () => {
 
 test('useHookComponent() - component registered', async () => {
     const registered = document.createElement('div');
-    const uuid = await SDK.Component.register(
-        'registered-component',
-        ComponentToRegister,
-    );
+    let uuid;
+
     await ReactTestUtils.act(async () => {
         ReactDOM.render(
             <>
@@ -33,6 +31,11 @@ test('useHookComponent() - component registered', async () => {
             </>,
             registered,
         );
+        uuid = await SDK.Component.register(
+           'registered-component',
+           ComponentToRegister,
+       );
+       await new Promise(resolve => setTimeout(resolve, 1));
     });
 
     expect(registered.innerHTML).toEqual('RegisteredComponent');

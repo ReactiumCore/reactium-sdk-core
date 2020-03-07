@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import CommonSDK, {
@@ -38,14 +38,16 @@ export const StoreProvider = ({ children }) => (
 );
 export const StateChanger = () => {
     const { updateDomain } = useHandle('TestDomain');
-    return (
-        <button id="state-changer" onClick={() => updateDomain({ value: 'updated' })}>
-            Update Me
-        </button>
-    );
+
+    useEffect(() => {
+        updateDomain({ value: 'updated' });
+    });
+
+    return null;
 };
 export const StateUser = () => {
     const [domain, updateDomain] = useReduxState('TestDomain');
+
     useRegisterHandle(
         'TestDomain',
         () => {
