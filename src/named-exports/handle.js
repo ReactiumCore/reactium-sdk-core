@@ -83,13 +83,9 @@ export const useHandle = (ID, defaultValue) => {
         const handle = op.get(newRef, 'current', defaultValue);
 
         if (handle && !shallowEquals(handle, ref.current)) {
-            if (ref.current) {
-                Object.entries(handle).forEach(([key,value]) => {
-                    op.set(ref.current, key, value);
-                });
-            } else {
-                ref.current = handle;
-            }
+            Object.entries(handle).forEach(([key,value]) => {
+                op.set(ref.current, key, value);
+            });
 
             updateVersion(Date.now());
         }
