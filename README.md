@@ -16,6 +16,7 @@ plan to use this on another project, install them:
 
 ```
 npm install --save-dev action-sequence
+npm install --save-dev classnames
 npm install --save-dev react-redux
 npm install --save-dev memory-cache
 npm install --save-dev moment

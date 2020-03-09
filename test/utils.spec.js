@@ -58,3 +58,15 @@ describe('splitParts(original)', () => {
         })
     })
 });
+
+describe('cxFactory()', () => {
+    const cx = SDK.Utils.cxFactory('my-component');
+    describe('used like classnames library', () => {
+        it('should work just like classnames, but prefix the namespace', async () => {
+            const isTrue = true;
+            const isFalse = false;
+            expect(cx('1', '2', '3')).toEqual('my-component-1 my-component-2 my-component-3');
+            expect(cx({'something-true': isTrue, 'something-false': isFalse})).toEqual('my-component-something-true');
+        })
+    })
+})
