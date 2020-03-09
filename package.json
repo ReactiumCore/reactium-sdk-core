@@ -1,7 +1,11 @@
 {
   "name": "@atomic-reactor/reactium-sdk-core",
-  "version": "0.0.55",
+  "version": "0.0.56",
   "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Atomic-Reactor/reactium-sdk-core.git"
+  },
   "dependencies": {
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.15.1"
