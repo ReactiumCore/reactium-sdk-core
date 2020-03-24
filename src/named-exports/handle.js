@@ -19,7 +19,6 @@ rerenders.
  */
 export const useRegisterHandle = (ID, cb, deps = []) => {
     const ref = useRef(cb());
-    Handle.register(ID, ref);
 
     useEffect(() => {
         ref.current = cb();
