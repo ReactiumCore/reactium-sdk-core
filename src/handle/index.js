@@ -70,6 +70,7 @@ export default () => {
      `useRegisterHandle()` React hook for easier pattern for functional components.
      * @apiParam {Mixed} id Array of properties, or `.` separated object path. e.g. ['path','to','handle'] or 'path.to.handle'
      * @apiParam {Ref} ref React reference created with `React.createRef()`` or `React.useRef()`.
+     * @apiParam {Boolean} [update=true] Update `useHandle` subscribers of this handle id.
      * @apiName Handle.register
      * @apiGroup Reactium.Handle
      * @apiExample MyControllableComponent.js
@@ -93,10 +94,10 @@ export default () => {
     return (<div>Count is {count}</div>);
 };
      */
-    register(id = '', ref) {
+    register(id = '', ref, update = true) {
         const path = Array.isArray(id) ? id : id.split('.');
         op.set(this.handles, path, ref);
-        this._update();
+        if (update) this._update();
     }
 
     /**

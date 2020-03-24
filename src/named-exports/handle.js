@@ -19,6 +19,7 @@ rerenders.
  */
 export const useRegisterHandle = (ID, cb, deps = []) => {
     const ref = useRef(cb());
+    Handle.register(ID, ref, false);
 
     useEffect(() => {
         ref.current = cb();
@@ -75,7 +76,7 @@ const CounterControl = () => {
 
 export default CounterControl;
  */
-export const useHandle = (ID, defaultValue) => {
+export const useHandle = (ID, defaultValue = {}) => {
     const ref = useRef(op.get(Handle.get(ID), 'current', defaultValue));
     const [, updateVersion] = useState(uuid());
     const setHandle = newRef => {

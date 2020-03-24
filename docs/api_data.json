@@ -941,6 +941,14 @@
             "optional": false,
             "field": "ref",
             "description": "<p>React reference created with <code>React.createRef()`` or </code>React.useRef()`.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": true,
+            "field": "update",
+            "defaultValue": "true",
+            "description": "<p>Update <code>useHandle</code> subscribers of this handle id.</p>"
           }
         ]
       }

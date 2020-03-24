@@ -1,6 +1,6 @@
 {
   "name": "@atomic-reactor/reactium-sdk-core",
-  "version": "0.0.59",
+  "version": "0.0.60",
   "main": "lib/index.js",
   "repository": {
     "type": "git",
