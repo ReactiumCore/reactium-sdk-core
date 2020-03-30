@@ -1,5 +1,6 @@
 import Hook from '../hook';
-import { useState, useEffect, useRef, forwardRef } from 'react';
+import { useAsyncEffect } from './async-effect';
+import { useState, useRef, forwardRef } from 'react';
 import op from 'object-path';
 import uuid from 'uuid/v4';
 
@@ -47,24 +48,21 @@ export const useHookComponent = (
     ...params
 ) => {
     const component = useRef({ component: defaultComponent });
-    const [, updateVersion] = useState(uuid());
+    const [, updateVersion] = useState(new Date);
     const setComponent = newComponent => {
         if (
             newComponent &&
             newComponent !== op.get(component, 'current.component')
         ) {
             op.set(component, 'current.component', newComponent);
-            updateVersion(uuid());
+            updateVersion(new Date);
         }
     };
 
-    useEffect(() => {
-        const getComponent = async () => {
-            const context = await Hook.run(hook, ...params);
-            setComponent(op.get(context, 'component'));
-        };
-        getComponent();
-    }, [hook, defaultComponent, ...params]);
+    useAsyncEffect(async isMounted => {
+        const context = await Hook.run(hook, ...params);
+        if (isMounted()) setComponent(op.get(context, 'component'));
+    }, [hook, defaultComponent, params]);
 
     return op.get(component, 'current.component');
 };
