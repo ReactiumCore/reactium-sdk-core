@@ -53,9 +53,9 @@ Component.register = async (
     hook,
     component,
     order,
-) => Hook.register(
+) => Hook.registerSync(
     hook,
-    async (...params) => {
+    (...params) => {
         const context = params.pop();
         context.component = component;
     },

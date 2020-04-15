@@ -1,6 +1,6 @@
 define({
   "name": "@atomic-reactor/reactium-sdk-core",
-  "version": "0.0.60",
+  "version": "0.0.63",
   "description": "Reactium SDK Core",
   "title": "Reactium SDK Core",
   "sampleUrl": false,
@@ -8,7 +8,7 @@ define({
   "apidoc": "0.3.0",
   "generator": {
     "name": "apidoc",
-    "time": "2020-03-24T17:45:12.944Z",
+    "time": "2020-04-15T03:10:23.604Z",
     "url": "http://apidocjs.com",
     "version": "0.19.1"
   }

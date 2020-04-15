@@ -48,21 +48,12 @@ export const useHookComponent = (
     ...params
 ) => {
     const component = useRef({ component: defaultComponent });
-    const [, updateVersion] = useState(new Date);
-    const setComponent = newComponent => {
-        if (
-            newComponent &&
-            newComponent !== op.get(component, 'current.component')
-        ) {
-            op.set(component, 'current.component', newComponent);
-            updateVersion(new Date);
-        }
-    };
+    const context = Hook.runSync(hook, ...params);
+    op.set(
+        component.current,
+        'component',
+        op.get(context, 'component', defaultComponent),
+    );
 
-    useAsyncEffect(async isMounted => {
-        const context = await Hook.run(hook, ...params);
-        if (isMounted()) setComponent(op.get(context, 'component'));
-    }, [hook, defaultComponent, params]);
-
-    return op.get(component, 'current.component');
+    return op.get(component.current, 'component');
 };
