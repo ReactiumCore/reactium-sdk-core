@@ -328,6 +328,8 @@ anotherPlugin();
 import SDK from '@atomic-reactor/reactium-sdk-core';
 export default SDK.Utils.registryFactory('MyRegistry');
  */
-Utils.registryFactory = (name, idField) => new Registry(name, idField);
+Utils.registryFactory = (name, idField, mode) => new Registry(name, idField, mode);
+
+Utils.Registry = Registry;
 
 export default Utils;
