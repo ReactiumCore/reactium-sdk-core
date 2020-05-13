@@ -102,7 +102,7 @@ export default class Registry {
             .uniq()
             .value();
 
-        if (this.__mode === Register.MODES.CLEAN) {
+        if (this.__mode === Registry.MODES.CLEAN) {
             this.cleanup(id);
         }
 
@@ -146,7 +146,7 @@ export default class Registry {
         data['order'] = op.get(data, 'order', 100);
         const item = { ...data, [this.__idField]: id };
 
-        if (this.__mode === Register.MODES.CLEAN) {
+        if (this.__mode === Registry.MODES.CLEAN) {
             this.cleanup(id);
         }
 
@@ -172,7 +172,7 @@ export default class Registry {
         id.forEach(() => {
             if (this.__protected.includes(id)) return;
 
-            if (this.__mode === Register.MODES.CLEAN) {
+            if (this.__mode === Registry.MODES.CLEAN) {
                 this.cleanup(id);
                 return;
             }
