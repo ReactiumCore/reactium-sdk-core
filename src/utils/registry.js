@@ -110,10 +110,11 @@ export default class Registry {
     }
 
     cleanup(id) {
+        const [remove] = _.flatten([id]);
         if (this.isProtected(id)) return this;
 
         this.__registered = this.__registered.filter(
-            item => item[this.__idField] !== id,
+            item => item[this.__idField] !== remove,
         );
 
         return this;
