@@ -177,7 +177,10 @@ export default class Registry {
                 return;
             }
 
-            this.__unregister.push(id);
+            this.__unregister = _.chain(this.__unregister.concat(id))
+                .flatten()
+                .uniq()
+                .value();
         });
 
         return this;
