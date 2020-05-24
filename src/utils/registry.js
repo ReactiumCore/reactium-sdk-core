@@ -110,10 +110,11 @@ export default class Registry {
     }
 
     cleanup(id) {
+        const [remove] = _.flatten([id]);
         if (this.isProtected(id)) return this;
 
         this.__registered = this.__registered.filter(
-            item => item[this.__idField] !== id,
+            item => item[this.__idField] !== remove,
         );
 
         return this;
@@ -177,7 +178,10 @@ export default class Registry {
                 return;
             }
 
-            this.__unregister.push(id);
+            this.__unregister = _.chain(this.__unregister.concat(id))
+                .flatten()
+                .uniq()
+                .value();
         });
 
         return this;
