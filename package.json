@@ -53,6 +53,7 @@
     "build": "babel src --out-dir lib",
     "apidoc": "apidoc -i src -o docs",
     "test": "jest",
+    "test:registry": "jest test/registry.spec.js",
     "pretest": "npm run build",
     "prepublish": "rm -rf lib && npm run build"
   },
