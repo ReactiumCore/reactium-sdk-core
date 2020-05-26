@@ -152,7 +152,7 @@ export default class Registry {
         }
 
         this.__registered.push(item);
-        this.__unregistered = _.without(this.__unregistered, id);
+        this.__unregister = _.without(this.__unregister, id);
 
         return this;
     }

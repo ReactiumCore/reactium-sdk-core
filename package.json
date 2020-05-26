@@ -1,6 +1,6 @@
 {
   "name": "@atomic-reactor/reactium-sdk-core",
-  "version": "0.0.68",
+  "version": "0.0.69",
   "main": "lib/index.js",
   "repository": {
     "type": "git",
@@ -53,7 +53,6 @@
     "build": "babel src --out-dir lib",
     "apidoc": "apidoc -i src -o docs",
     "test": "jest",
-    "test:registry": "jest test/registry.spec.js",
     "pretest": "npm run build",
     "prepublish": "rm -rf lib && npm run build"
   },

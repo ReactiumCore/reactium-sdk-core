@@ -3,7 +3,7 @@ import SDK from '../lib';
 import { expect } from 'chai';
 
 describe('hotkeys', () => {
-    const { Registry } = SDK;
+    const { Registry } = SDK.Utils;
 
     const Hotkeys = new Registry('Hotkeys', 'id');
 
@@ -36,7 +36,7 @@ describe('hotkeys', () => {
         Hotkeys.unregister('media-save');
         Hotkeys.unregister('content-save');
         Hotkeys.unregister('shortkey-save');
-
+        
         expect(Hotkeys.list).to.have.lengthOf(0);
     });
 });
