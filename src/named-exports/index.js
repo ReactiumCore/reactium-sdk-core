@@ -8,6 +8,7 @@ export * from './is-container';
 export * from './redux';
 export * from './async-effect';
 export * from '../zone/Zone';
+export * from './useStatus';
 
 export { default as Zone } from '../zone/Zone';
 
