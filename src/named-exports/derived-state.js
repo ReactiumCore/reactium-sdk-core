@@ -98,12 +98,12 @@ export const useDerivedState = (
     };
 
     // public setState always respected and merged everything
-    const setState = newExternalState => {
+    const setState = (newExternalState, silent = false) => {
         Object.entries(newExternalState).forEach(([key, value]) => {
             op.set(derivedStateRef.current, key, value);
         });
 
-        forceRefresh();
+        if (silent !== true) { forceRefresh(); }
     };
 
     // compare last knows subscribed prop values with current version
