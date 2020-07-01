@@ -9,6 +9,7 @@ export * from './redux';
 export * from './async-effect';
 export * from '../zone/Zone';
 export * from './useStatus';
+export * from './useRefs';
 
 export { default as Zone } from '../zone/Zone';
 
