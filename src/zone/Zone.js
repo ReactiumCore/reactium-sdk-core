@@ -5,6 +5,7 @@
  */
 import React, { useRef, useState, useEffect } from 'react';
 import ZoneSDK from './index';
+import { useHookComponent } from '../named-exports/component';
 import Component from '../component';
 import op from 'object-path';
 import uuid from 'uuid/v4';
@@ -12,12 +13,21 @@ import uuid from 'uuid/v4';
 export const useZoneComponents = zone => {
     const components = useRef(ZoneSDK.getZoneComponents(zone));
     const [version, setVersion] = useState(uuid());
-    useEffect(() => ZoneSDK.subscribe(zone, zoneComponents => {
-        components.current = zoneComponents;
-        setVersion(uuid());
-    }), [zone]);
+    useEffect(
+        () =>
+            ZoneSDK.subscribe(zone, zoneComponents => {
+                components.current = zoneComponents;
+                setVersion(uuid());
+            }),
+        [zone],
+    );
 
     return components.current;
+};
+
+const resolveHookComponent = component => props => {
+    const Component = useHookComponent(component);
+    return Component && <Component {...props} />;
 };
 
 export const SimpleZone = props => {
@@ -29,7 +39,21 @@ export const SimpleZone = props => {
         const { children, ...zoneProps } = props;
 
         const { component: Component, ...componentProps } = zoneComponent;
-        return Component && <Component key={id} {...zoneProps} {...componentProps} />;
+        const allProps = {
+            ...zoneProps,
+            ...componentProps,
+        };
+
+        if (typeof Component === 'string') {
+            const Dynamic = resolveHookComponent(Component);
+            return <Dynamic key={id} {...allProps} />;
+        }
+
+        return (
+            Component && (
+                <Component key={id} {...zoneProps} {...componentProps} />
+            )
+        );
     });
 };
 
@@ -39,13 +63,23 @@ const PassThroughZone = props => {
 
     return React.Children.map(children, Child => {
         return React.cloneElement(Child, {
-            components: components.reduce((passThroughComponents, component) => {
-                let name = op.get(component, 'name', op.get(component, 'component.name'));
-                if (name && component.component) {
-                    passThroughComponents[name] = component.component;
-                }
-                return passThroughComponents;
-            }, {}),
+            components: components.reduce(
+                (passThroughComponents, component) => {
+                    let name = op.get(
+                        component,
+                        'name',
+                        op.get(component, 'component.name'),
+                    );
+                    if (name && component.component) {
+                        passThroughComponents[name] = component.component;
+                        if (typeof component.component === 'string') {
+                            passThroughComponents[name] = resolveHookComponent(component.component);
+                        }
+                    }
+                    return passThroughComponents;
+                },
+                {},
+            ),
             bindings,
         });
     });
@@ -62,11 +96,7 @@ const Zone = props => {
     return (
         <>
             {!passThrough && <SimpleZone {...props} />}
-            {passThrough ? (
-                <PassThroughZone {...props} />
-            ) : (
-                children
-            )}
+            {passThrough ? <PassThroughZone {...props} /> : children}
         </>
     );
 };
@@ -141,7 +171,7 @@ export default props => {
 };
  */
 
- /**
+/**
   * @api {ReactHook} useZoneComponents(zone) useZoneComponents()
   * @apiDescription A React hook used in the `Zone` component to determine what
   components should currently be rendered. Useful to observe a zone in another component.

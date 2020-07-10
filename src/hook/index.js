@@ -4,22 +4,14 @@ import op from 'object-path';
 import ActionSequence from 'action-sequence';
 import Enums from '../enums';
 
-const noop = () => Promise.resolve();
+const noop = {
+    sync: () => {},
+    async: () => Promise.resolve(),
+};
 
 const Hook = {
-    action: {
-        middleware: {},
-        install: {},
-        start: {},
-        uninstall: {},
-        activate: {},
-        deactivate: {},
-        warning: {},
-    },
-    silent: ['warning', 'install'],
-    chill: {
-        install: 0,
-    },
+    action: {},
+    actionIds: {},
 };
 
 /**
@@ -27,21 +19,40 @@ const Hook = {
  * @apiName Hook.flush
  * @apiDescription Clear all registered callbacks for a hook.
  * @apiParam {String} name the hook name
+ * @apiParam {String} [type='async'] 'async' or 'sync' hooks
  * @apiGroup Reactium.Hook
  */
-Hook.flush = name => op.set(Hook.action, name, {});
+Hook.flush = (name, type = 'async') =>
+    op.set(Hook.action, `${type}.${name}`, {});
 
 /**
  * @api {Function} Hook.unregister(id) Hook.unregister()
  * @apiName Hook.unregister
- * @apiDescription Unregister a registered callback by id.
+ * @apiDescription Unregister a registered hook callback by id.
  * @apiParam {String} id the unique id provided by Hook.register() or Hook.list()
  * @apiGroup Reactium.Hook
  */
-Hook.unregister = id =>
-    Object.keys(Hook.action).forEach(action => {
-        op.del(Hook.action, `${action}.${id}`);
-    });
+Hook.unregister = id => {
+    const path = op.get(Hook.actionIds, [id]);
+    if (path) {
+        op.del(Hook.action, path);
+        op.del(Hook.actionIds, [id]);
+    }
+};
+
+Hook._register = (type = 'async') => (
+    name,
+    callback,
+    order = Enums.priority.neutral,
+    id,
+) => {
+    id = id || uuid();
+    const path = `${type}.${name}.${id}`;
+    op.set(Hook.actionIds, [id], path);
+    op.set(Hook.action, `${type}.${name}.${id}`, { id, order, callback });
+
+    return id;
+};
 
 /**
  * @api {Function} Hook.register(name,callback,order,id) Hook.register()
@@ -60,11 +71,7 @@ Reactium.Hook.register('plugin-init', async context => {
     console.log('Plugins initialized!');
 }, Enums.priority.highest);
 */
-Hook.register = (name, callback, order = Enums.priority.neutral, id) => {
-    id = id || uuid();
-    op.set(Hook.action, `${name}.${id}`, { id, order, callback });
-    return id;
-};
+Hook.register = Hook._register('async');
 
 /**
  * @api {Function} Hook.registerSync(name,callback,order,id) Hook.registerSync()
@@ -83,7 +90,7 @@ Reactium.Hook.registerSync('my-sync-hook', context => {
     console.log('my-sync-hook run!');
 }, Enums.priority.highest);
 */
-Hook.registerSync = Hook.register;
+Hook.registerSync = Hook._register('sync');
 
 /**
  * @api {Function} Hook.list() Hook.list()
@@ -91,17 +98,18 @@ Hook.registerSync = Hook.register;
  * @apiDescription Register a hook callback.
  * @apiGroup Reactium.Hook
  */
-Hook.list = () => Object.keys(Hook.action).sort();
+Hook.list = (type = 'async') =>
+    Object.keys(op.get(Hook.action, type, {})).sort();
 
-Hook._actions = (name, params) =>
-    _.sortBy(Object.values(op.get(Hook.action, `${name}`, {})), 'order').reduce(
-        (acts, action) => {
-            const { callback = noop, id } = action;
-            acts[id] = ({ context }) => callback(...params, context);
-            return acts;
-        },
-        {},
-    );
+Hook._actions = (name, type = 'async', params) =>
+    _.sortBy(
+        Object.values(op.get(Hook.action, `${type}.${name}`, {})),
+        'order',
+    ).reduce((acts, action) => {
+        const { callback = noop[type], id } = action;
+        acts[id] = ({ context }) => callback(...params, context);
+        return acts;
+    }, {});
 
 /**
  * @api {Function} Hook.run(name,...params) Hook.run()
@@ -114,7 +122,7 @@ Hook._actions = (name, params) =>
  */
 Hook.run = (name, ...params) => {
     return ActionSequence({
-        actions: Hook._actions(name, params),
+        actions: Hook._actions(name, 'async', params),
         context: { hook: name, params },
     });
 };
@@ -130,7 +138,9 @@ Hook.run = (name, ...params) => {
  */
 Hook.runSync = (name, ...params) => {
     const context = { hook: name, params };
-    Object.values(Hook._actions(name, params)).forEach(callback => callback({ context }));
+    Object.values(Hook._actions(name, 'sync', params)).forEach(callback =>
+        callback({ context }),
+    );
 
     return context;
 };

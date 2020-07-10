@@ -95,16 +95,6 @@ class Zones {
 
         if (!Array.isArray(zones)) zones = [zones];
 
-        if (typeof component.component === 'string') {
-            // useHookComponent equivalent
-            const context = await Hook.run(component.component);
-            component.component = op.get(
-                context,
-                'component',
-                forwardRef(() => null),
-            );
-        }
-
         op.set(this[ZONES], ['components', 'allById', id], {
             ...component,
             zone: zones,

@@ -394,6 +394,24 @@ define({ "api": [
   },
   {
     "type": "ReactHook",
+    "url": "useRefs()",
+    "title": "useRefs()",
+    "group": "ReactHook",
+    "name": "useRefs",
+    "description": "<p>Creates a single reference object that can be managed using the <code>get</code>/<code>set</code>/<code>del</code>/<code>clear</code> functions.</p>",
+    "examples": [
+      {
+        "title": "Usage",
+        "content": "import React, { useEffect, useState } from 'react';\nimport { useRefs } from '@atomic-reactor/reactium-sdk-core';\n\nconst MyComponent = () => {\n    const refs = useRefs();\n    const [state, setState] = useState({ input: null });\n\n    const onClick = () => {\n        const inputElm = refs.get('input');\n        setState({ ...state, input: inputElm.value });\n        inputElm.value = '';\n    };\n\n    return (\n        <div ref={elm => refs.set('container', elm)}>\n            {state.input && <div>{state.input}</div>}\n            <input type='text' ref={elm => refs.set('input', elm)} />\n            <button onClick={onClick}>Update</button>\n        </div>\n    );\n};",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "src/named-exports/useRefs.js",
+    "groupTitle": "ReactHook"
+  },
+  {
+    "type": "ReactHook",
     "url": "useRegisterHandle(id,cb,deps)",
     "title": "useRegisterHandle()",
     "description": "<p>React hook to create a new imperative handle reference, similar to <code>useImperativeHandle()</code> except that instead of using <code>React.forwardRef()</code> to attach the handle to a parent compenent ref. A ref is generated for you and is assigned the current value of the callback <code>cb</code>, is registered with <code>Reactium.Handle</code>, and made available to all other components at the object path <code>id</code>.</p>",
@@ -478,6 +496,31 @@ define({ "api": [
     ],
     "version": "0.0.0",
     "filename": "src/named-exports/redux.js",
+    "groupTitle": "ReactHook"
+  },
+  {
+    "type": "ReactHook",
+    "url": "useStatus(initialStatus)",
+    "title": "useStatus()",
+    "group": "ReactHook",
+    "name": "useStatus",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "initialStatus",
+            "defaultValue": "pending",
+            "description": "<p>The initial status of the hook.</p>"
+          }
+        ]
+      }
+    },
+    "description": "<p>Synchronously set a status value that can be checked within a function scope without updating the state of the component. Useful when doing asynchronous activities and the next activity depends on a status of some sort from the previous activity.</p> <p>Returns [status:String, setStatus:Function, isStatus:Function]</p> <h3>status</h3> <p>The current status value.</p> <h3>setStatus(status:String, forceRender:Boolean = false)</h3> <p>Set the status value. If forceRender is true, a rerender will be triggered. <em><strong>Beware:</strong></em> forceRender may have unintended consequence and should be used in last status before re-rendering situations only.</p> <h3>isStatus(statuses:Array)</h3> <p>Check if the current status matches the statuses passed.</p>",
+    "version": "0.0.0",
+    "filename": "src/named-exports/useStatus.js",
     "groupTitle": "ReactHook"
   },
   {
@@ -1047,6 +1090,14 @@ define({ "api": [
             "optional": false,
             "field": "name",
             "description": "<p>the hook name</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "type",
+            "defaultValue": "async",
+            "description": "<p>'async' or 'sync' hooks</p>"
           }
         ]
       }
@@ -1266,7 +1317,7 @@ define({ "api": [
     "url": "Hook.unregister(id)",
     "title": "Hook.unregister()",
     "name": "Hook.unregister",
-    "description": "<p>Unregister a registered callback by id.</p>",
+    "description": "<p>Unregister a registered hook callback by id.</p>",
     "parameter": {
       "fields": {
         "Parameter": [

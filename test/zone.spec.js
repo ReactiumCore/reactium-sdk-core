@@ -79,7 +79,7 @@ describe('Zone', () => {
             expect(zoneComponents[0].name).toEqual('ZoneRegistered');
             expect(zoneComponents[0]).toMatchObject({
                 ...setupComponents[4],
-                component: ZoneRegistered,
+                component: 'ZoneRegistered',
                 zone: ['zone-everything'],
             });
             expect(zoneComponents[1].name).toEqual('C Component');
@@ -126,7 +126,7 @@ describe('Zone', () => {
             expect(zoneComponents[4].name).toEqual('ZoneRegistered');
             expect(zoneComponents[4]).toMatchObject({
                 ...setupComponents[4],
-                component: ZoneRegistered,
+                component: 'ZoneRegistered',
                 zone: ['zone-everything'],
             });
         })
