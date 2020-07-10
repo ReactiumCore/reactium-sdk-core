@@ -2839,6 +2839,12 @@
             "optional": false,
             "field": "unregister",
             "description": "<p>{Method} pass an identifier to unregister an object. When in HISTORY mode (default), previous registration will be retained, but the object will not be listed. In CLEAN mode, the previous registrations will be removed, unless protected.</p>"
+          },
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "flush",
+            "description": "<p>{Method} clear all registrations. Resets registry to newly constructed state.</p>"
           }
         ]
       }
