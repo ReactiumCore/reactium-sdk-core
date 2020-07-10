@@ -42,6 +42,7 @@ export const SimpleZone = props => {
         const allProps = {
             ...zoneProps,
             ...componentProps,
+            zone,
         };
 
         if (typeof Component === 'string') {
@@ -63,6 +64,7 @@ const PassThroughZone = props => {
 
     return React.Children.map(children, Child => {
         return React.cloneElement(Child, {
+            zone,
             components: components.reduce(
                 (passThroughComponents, component) => {
                     let name = op.get(
