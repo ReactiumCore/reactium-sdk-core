@@ -1,4 +1,4 @@
-import Hook from '../hook';
+import Component from '../component';
 import { useAsyncEffect } from './async-effect';
 import { useState, useRef, forwardRef } from 'react';
 import op from 'object-path';
@@ -47,12 +47,11 @@ export const useHookComponent = (
     defaultComponent = forwardRefNoop,
     ...params
 ) => {
-    const component = useRef({ component: defaultComponent });
-    const context = Hook.runSync(hook, ...params);
+    const component = useRef({});
     op.set(
         component.current,
         'component',
-        op.get(context, 'component', defaultComponent),
+        Component.get(hook, defaultComponent, ...params),
     );
 
     return op.get(component.current, 'component');

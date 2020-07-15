@@ -72,4 +72,17 @@ Component.register = async (
  */
 Component.unregister = Hook.unregister;
 
+/**
+ * @api {Function} Component.get(hook,defaultComponent) Component.get()
+ * @apiGroup Reactium.Component
+ * @apiName Component.get
+ * @apiDescription Call the hook and obtain the registered component. Get the defaultComponent if no hook component was registered.
+ * @apiParam {String} hook The hook name
+ * @apiParam {Mixed} [defaultComponent] the default component if no component is provided
+ */
+Component.get = (hook, defaultComponent, ...params) => {
+    const context = Hook.runSync(hook, ...params);
+    return op.get(context, 'component', defaultComponent);
+};
+
 export default Component;
