@@ -2774,6 +2774,12 @@ define({ "api": [
           {
             "group": "Parameter",
             "optional": false,
+            "field": "listById",
+            "description": "<p>{Getter} get Object keyed by id of most recent (or highest order) registered objects, filtering out unregistered or banned objects.</p>"
+          },
+          {
+            "group": "Parameter",
+            "optional": false,
             "field": "list",
             "description": "<p>{Getter} get list of most recent (or highest order) registered objects, filtering out unregistered or banned objects.</p>"
           },
@@ -2810,6 +2816,12 @@ define({ "api": [
           {
             "group": "Parameter",
             "optional": false,
+            "field": "get",
+            "description": "<p>{Method} pass the identifier of an object get that object from the registry</p>"
+          },
+          {
+            "group": "Parameter",
+            "optional": false,
             "field": "isProtected",
             "description": "<p>{Method} pass the identifier of an object to see if it has been protected</p>"
           },
@@ -2818,6 +2830,12 @@ define({ "api": [
             "optional": false,
             "field": "isRegistered",
             "description": "<p>{Method} pass the identifier of an object to see if it has been registered</p>"
+          },
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "isUnRegistered",
+            "description": "<p>{Method} pass the identifier of an object to see is NOT registered.</p>"
           },
           {
             "group": "Parameter",

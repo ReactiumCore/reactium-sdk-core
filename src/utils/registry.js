@@ -12,6 +12,7 @@ import uuid from 'uuid/v4';
  *
  * There are many registry objects attached by default to the SDK, and developers can
  * create new ones using `Utils.registryFactory()`.
+ * @apiParam listById {Getter} get Object keyed by id of most recent (or highest order) registered objects, filtering out unregistered or banned objects.
  * @apiParam list {Getter} get list of most recent (or highest order) registered objects, filtering out unregistered or banned objects.
  * @apiParam registered {Getter} get list of all historically registrated objects, even duplicates, ordered by order property of object (defaults to 100).
  * @apiParam protected {Getter} get list of protected registrations ids
@@ -19,8 +20,10 @@ import uuid from 'uuid/v4';
  * @apiParam banned {Getter} get list of all banned objects ids.
  * @apiParam mode {Getter} get current mode (Default Utils.Registry.MODES.HISTORY)
  * @apiParam mode {Setter} set current mode (Default Utils.Registry.MODES.HISTORY)
+ * @apiParam get {Method} pass the identifier of an object get that object from the registry
  * @apiParam isProtected {Method} pass the identifier of an object to see if it has been protected
  * @apiParam isRegistered {Method} pass the identifier of an object to see if it has been registered
+ * @apiParam isUnRegistered {Method} pass the identifier of an object to see is NOT registered.
  * @apiParam isBanned {Method} pass the identifier of an object to see if it has been banned
  * @apiParam ban {Method} pass the identifier of an object to ban. Banned objects can not be registered and will not be show in list. Useful when you have code
  * that needs to preempt the registration of an object from code you do not control. E.g. a plugin is introducing undesireable or disabled functionality
@@ -36,15 +39,15 @@ export default class Registry {
     constructor(name, idField, mode = Registry.MODES.HISTORY) {
         this.__name = name || 'Registry';
         this.__idField = idField || 'id';
-        this.__protected = [];
         this.__registered = [];
-        this.__unregister = [];
-        this.__banned = [];
+        this.__protected = {};
+        this.__unregister = {};
+        this.__banned = {};
         this.__mode = mode in Registry.MODES ? mode : Registry.MODES.HISTORY;
     }
 
     get protected() {
-        return this.__protected;
+        return Object.values(this.__protected);
     }
 
     get registered() {
@@ -52,28 +55,30 @@ export default class Registry {
     }
 
     get unregistered() {
-        return this.__unregister;
+        return Object.values(this.__unregister);
     }
 
     get banned() {
-        return this.__banned;
+        return Object.values(this.__banned);
+    }
+
+    get listById() {
+        const unregister = this.__unregister;
+        const banned = this.__banned;
+        const registered = Array.from(this.__registered).filter(
+            item =>
+                !(item[this.__idField] in unregister) &&
+                !(item[this.__idField] in banned),
+        );
+
+        return _.chain(registered)
+            .sortBy('order')
+            .indexBy(this.__idField)
+            .value();
     }
 
     get list() {
-        const unregister = _.uniq(this.__unregister);
-        const banned = _.uniq(this.__banned);
-        const registered = Array.from(this.__registered).filter(
-            item =>
-                !unregister.includes(item[this.__idField]) &&
-                !this.isBanned(item[this.__idField]),
-        );
-
-        return Object.values(
-            _.chain(registered)
-                .sortBy('order')
-                .indexBy(this.__idField)
-                .value(),
-        );
+        return Object.values(this.listById);
     }
 
     set mode(newMode = Registry.MODES.HISTORY) {
@@ -85,23 +90,29 @@ export default class Registry {
         return this.__mode;
     }
 
+    get(id) {
+        return op.get(this.listById, [id]);
+    }
+
     isProtected(id) {
-        return this.__protected.includes(id);
+        return id in this.__protected;
     }
 
     isRegistered(id) {
         return !!_.findWhere(this.__registered, { id });
     }
 
+    isUnRegistered(id) {
+        return !(id in this.listById);
+    }
+
     isBanned(id) {
-        return !!_.findWhere(this.__banned, { id });
+        return id in this.__banned;
     }
 
     ban(id) {
-        this.__banned = _.chain([this.__banned, [id]])
-            .flatten()
-            .uniq()
-            .value();
+        const ids = _.flatten([id]);
+        ids.forEach(id => op.set(this.__banned, [id], id));
 
         if (this.__mode === Registry.MODES.CLEAN) {
             this.cleanup(id);
@@ -112,7 +123,7 @@ export default class Registry {
 
     cleanup(id) {
         const [remove] = _.flatten([id]);
-        if (this.isProtected(id)) return this;
+        if (this.isProtected(remove)) return this;
 
         this.__registered = this.__registered.filter(
             item => item[this.__idField] !== remove,
@@ -122,24 +133,26 @@ export default class Registry {
     }
 
     flush() {
-        this.__protected = [];
         this.__registered = [];
-        this.__unregister = [];
-        this.__banned = [];
+        this.__protected = {};
+        this.__unregister = {};
+        this.__banned = {};
     }
 
     protect(id) {
-        this.__protected = _.chain([this.__protected, [id]])
-            .flatten()
-            .uniq()
-            .value();
-
+        const ids = _.flatten([id]);
+        ids.forEach(id => op.set(this.__protected, [id], id));
         return this;
     }
 
     register(id, data = {}) {
-        if (!id) id = uuid();
+        // one argument register
+        if (typeof id === 'object' && this.__idField in id) {
+            data = id;
+            id = data[this.__idField];
+        }
 
+        if (!id) id = uuid();
         if (this.isBanned(id)) {
             return new Error(
                 `${this.__name} unable to register banned item ${id}`,
@@ -160,36 +173,34 @@ export default class Registry {
         }
 
         this.__registered.push(item);
-        this.__unregister = _.without(this.__unregister, id);
+        op.del(this.__unregister, [id]);
 
         return this;
     }
 
     unprotect(id) {
-        this.__protected = _.without(this.__protected, id);
+        const ids = _.flatten([id]);
+        ids.forEach(id => op.del(this.__protected, id));
         return this;
     }
 
     unregister(id) {
         if (!id) return this;
 
-        id = _.chain([id])
+        const ids = _.chain([id])
             .flatten()
             .uniq()
             .value();
 
-        id.forEach(() => {
-            if (this.__protected.includes(id)) return;
+        ids.forEach(id => {
+            if (id in this.__protected) return;
 
             if (this.__mode === Registry.MODES.CLEAN) {
                 this.cleanup(id);
                 return;
             }
 
-            this.__unregister = _.chain(this.__unregister.concat(id))
-                .flatten()
-                .uniq()
-                .value();
+            op.set(this.__unregister, [id], id);
         });
 
         return this;
