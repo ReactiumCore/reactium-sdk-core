@@ -14,16 +14,21 @@ import op from 'object-path';
  */
 const clear = key => {
     if (typeof window !== 'undefined') {
-        let prefs = get();
-
-        if (key) {
-            op.del(prefs, key);
+        if (!key) {
+            localStorage.setItem('ar-prefs', '{}');
+            return {};
         } else {
-            op.set(prefs, {});
-        }
+            let prefs = get();
 
-        localStorage.setItem('ar-prefs', JSON.stringify(prefs));
-        return prefs;
+            if (key) {
+                op.del(prefs, key);
+            } else {
+                op.set(prefs, {});
+            }
+
+            localStorage.setItem('ar-prefs', JSON.stringify(prefs));
+            return prefs;
+        }
     }
 };
 
