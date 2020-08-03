@@ -2825,7 +2825,7 @@ define({ "api": [
             "type": "Method",
             "optional": false,
             "field": "get",
-            "description": "<p>pass the identifier of an object get that object from the registry</p>"
+            "description": "<p><code>reg.get(id)</code> pass the identifier of an object get that object from the registry</p>"
           },
           {
             "group": "Parameter",
@@ -2916,14 +2916,14 @@ define({ "api": [
             "type": "Method",
             "optional": false,
             "field": "unsubscribe",
-            "description": "<p>unsubscribe a subscriber by id</p>"
+            "description": "<p><code>reg.unsubscribe(id)</code> unsubscribe a subscriber by id</p>"
           },
           {
             "group": "Parameter",
             "type": "Method",
             "optional": false,
             "field": "unsubscribeAll",
-            "description": "<p>unsubscribe all subscribers to changes made on the registry</p>"
+            "description": "<p><code>reg.unsubscribeAll()</code> unsubscribe all subscribers to changes made on the registry</p>"
           }
         ],
         "register": [

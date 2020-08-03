@@ -20,7 +20,7 @@ import uuid from 'uuid/v4';
  * @apiParam {Getter} banned get list of all banned objects ids.
  * @apiParam {Getter} mode get current mode (Default Utils.Registry.MODES.HISTORY)
  * @apiParam {Setter} mode set current mode (Default Utils.Registry.MODES.HISTORY)
- * @apiParam {Method} get pass the identifier of an object get that object from the registry
+ * @apiParam {Method} get `reg.get(id)` pass the identifier of an object get that object from the registry
  * @apiParam {Method} isProtected pass the identifier of an object to see if it has been protected
  * @apiParam {Method} isRegistered pass the identifier of an object to see if it has been registered
  * @apiParam {Method} isUnRegistered pass the identifier of an object to see is NOT registered.
@@ -38,9 +38,9 @@ import uuid from 'uuid/v4';
  * @apiParam {Method} subscribe `reg.subscribe(cb,id)` Adds a callback to indicate changes to the registry. Callback is called on register, unregister, protect, unprotect, ban, cleanup, and flush. Returns unsubscribe function.
  * @apiParam (subscribe) {Function} cb Callback to be invoked on changes to the registry.
  * @apiParam (subscribe) {String} [id] optional id of the callback, if you want to invoke unsubscribe manually by id, instead of the callback returned from subscribe method
- * @apiParam {Method} unsubscribe unsubscribe a subscriber by id
+ * @apiParam {Method} unsubscribe `reg.unsubscribe(id)` unsubscribe a subscriber by id
  * @apiParam (unsubscribe) {String} id the id of the subscriber to unsubscribe
- * @apiParam {Method} unsubscribeAll unsubscribe all subscribers to changes made on the registry
+ * @apiParam {Method} unsubscribeAll `reg.unsubscribeAll()` unsubscribe all subscribers to changes made on the registry
  */
 
 export default class Registry {
