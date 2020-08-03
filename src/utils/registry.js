@@ -12,27 +12,35 @@ import uuid from 'uuid/v4';
  *
  * There are many registry objects attached by default to the SDK, and developers can
  * create new ones using `Utils.registryFactory()`.
- * @apiParam listById {Getter} get Object keyed by id of most recent (or highest order) registered objects, filtering out unregistered or banned objects.
- * @apiParam list {Getter} get list of most recent (or highest order) registered objects, filtering out unregistered or banned objects.
- * @apiParam registered {Getter} get list of all historically registrated objects, even duplicates, ordered by order property of object (defaults to 100).
- * @apiParam protected {Getter} get list of protected registrations ids
- * @apiParam unregistered {Getter} get list of all existing registered objects ids that have been subsequently unregistered.
- * @apiParam banned {Getter} get list of all banned objects ids.
- * @apiParam mode {Getter} get current mode (Default Utils.Registry.MODES.HISTORY)
- * @apiParam mode {Setter} set current mode (Default Utils.Registry.MODES.HISTORY)
- * @apiParam get {Method} pass the identifier of an object get that object from the registry
- * @apiParam isProtected {Method} pass the identifier of an object to see if it has been protected
- * @apiParam isRegistered {Method} pass the identifier of an object to see if it has been registered
- * @apiParam isUnRegistered {Method} pass the identifier of an object to see is NOT registered.
- * @apiParam isBanned {Method} pass the identifier of an object to see if it has been banned
- * @apiParam ban {Method} pass the identifier of an object to ban. Banned objects can not be registered and will not be show in list. Useful when you have code
+ * @apiParam {Getter} listById get Object keyed by id of most recent (or highest order) registered objects, filtering out unregistered or banned objects.
+ * @apiParam {Getter} list get list of most recent (or highest order) registered objects, filtering out unregistered or banned objects.
+ * @apiParam {Getter} registered get list of all historically registrated objects, even duplicates, ordered by order property of object (defaults to 100).
+ * @apiParam {Getter} protected get list of protected registrations ids
+ * @apiParam {Getter} unregistered get list of all existing registered objects ids that have been subsequently unregistered.
+ * @apiParam {Getter} banned get list of all banned objects ids.
+ * @apiParam {Getter} mode get current mode (Default Utils.Registry.MODES.HISTORY)
+ * @apiParam {Setter} mode set current mode (Default Utils.Registry.MODES.HISTORY)
+ * @apiParam {Method} get pass the identifier of an object get that object from the registry
+ * @apiParam {Method} isProtected pass the identifier of an object to see if it has been protected
+ * @apiParam {Method} isRegistered pass the identifier of an object to see if it has been registered
+ * @apiParam {Method} isUnRegistered pass the identifier of an object to see is NOT registered.
+ * @apiParam {Method} isBanned pass the identifier of an object to see if it has been banned
+ * @apiParam {Method} ban `reg.ban(id)` pass the identifier of an object to ban. Banned objects can not be registered and will not be show in list. Useful when you have code
  * that needs to preempt the registration of an object from code you do not control. E.g. a plugin is introducing undesireable or disabled functionality
- * @apiParam cleanup {Method} pass the identifier of an object to be purged from historical registrations (i.e. free up memory) Automatically performed in mode Utils.Registry.CLEAN
- * @apiParam protect {Method} pass the identifier of an object to protect. Protected objects can not be overridden or cleaned up.
- * @apiParam register {Method} pass an identifier and a data object to register the object. The identifier will be added if it is not already registered (but protected) and not banned.
- * @apiParam unprotect {Method} pass an identifier to unprotect an object
- * @apiParam unregister {Method} pass an identifier to unregister an object. When in HISTORY mode (default), previous registration will be retained, but the object will not be listed. In CLEAN mode, the previous registrations will be removed, unless protected.
- * @apiParam flush {Method} clear all registrations. Resets registry to newly constructed state.
+ * @apiParam {Method} cleanup `reg.cleanup(id)` pass the identifier of an object to be purged from historical registrations (i.e. free up memory) Automatically performed in mode Utils.Registry.CLEAN
+ * @apiParam {Method} protect `reg.protect(id)` pass the identifier of an object to protect. Protected objects can not be overridden or cleaned up.
+ * @apiParam {Method} register `reg.register(id,data)` pass an identifier and a data object to register the object. The identifier will be added if it is not already registered (but protected) and not banned.
+ * @apiParam (register) {String} id the id of the data object to be registered
+ * @apiParam (register) {Object} data the object to be registered
+ * @apiParam {Method} unprotect `reg.unprotect(id)` pass an identifier to unprotect an object
+ * @apiParam {Method} unregister `reg.unregister(id)` pass an identifier to unregister an object. When in HISTORY mode (default), previous registration will be retained, but the object will not be listed. In CLEAN mode, the previous registrations will be removed, unless protected.
+ * @apiParam {Method} flush `reg.flush()` clear all registrations. Resets registry to newly constructed state.
+ * @apiParam {Method} subscribe `reg.subscribe(cb,id)` Adds a callback to indicate changes to the registry. Callback is called on register, unregister, protect, unprotect, ban, cleanup, and flush. Returns unsubscribe function.
+ * @apiParam (subscribe) {Function} cb Callback to be invoked on changes to the registry.
+ * @apiParam (subscribe) {String} [id] optional id of the callback, if you want to invoke unsubscribe manually by id, instead of the callback returned from subscribe method
+ * @apiParam {Method} unsubscribe unsubscribe a subscriber by id
+ * @apiParam (unsubscribe) {String} id the id of the subscriber to unsubscribe
+ * @apiParam {Method} unsubscribeAll unsubscribe all subscribers to changes made on the registry
  */
 
 export default class Registry {
@@ -43,6 +51,7 @@ export default class Registry {
         this.__protected = {};
         this.__unregister = {};
         this.__banned = {};
+        this.__subscribers = {};
         this.__mode = mode in Registry.MODES ? mode : Registry.MODES.HISTORY;
     }
 
@@ -118,6 +127,8 @@ export default class Registry {
             this.cleanup(id);
         }
 
+        this.notify({ type: 'ban', id });
+
         return this;
     }
 
@@ -129,6 +140,8 @@ export default class Registry {
             item => item[this.__idField] !== remove,
         );
 
+        this.notify({ type: 'cleanup', id });
+
         return this;
     }
 
@@ -137,11 +150,19 @@ export default class Registry {
         this.__protected = {};
         this.__unregister = {};
         this.__banned = {};
+
+        this.notify({ type: 'flush' });
     }
 
     protect(id) {
         const ids = _.flatten([id]);
         ids.forEach(id => op.set(this.__protected, [id], id));
+
+        this.notify({
+            type: 'protect',
+            id,
+        });
+
         return this;
     }
 
@@ -175,12 +196,24 @@ export default class Registry {
         this.__registered.push(item);
         op.del(this.__unregister, [id]);
 
+        this.notify({
+            type: 'register',
+            id,
+            data: item,
+        });
+
         return this;
     }
 
     unprotect(id) {
         const ids = _.flatten([id]);
         ids.forEach(id => op.del(this.__protected, id));
+
+        this.notify({
+            type: 'unprotect',
+            id,
+        });
+
         return this;
     }
 
@@ -203,7 +236,36 @@ export default class Registry {
             op.set(this.__unregister, [id], id);
         });
 
+        this.notify({
+            type: 'unregister',
+            id,
+        });
+
         return this;
+    }
+
+    subscribe(cb, id) {
+        if (!id) id = uuid();
+
+        if (typeof cb === 'function') {
+            this.__subscribers[id] = cb;
+        }
+
+        return () => this.unsubscribe(id);
+    }
+
+    unsubscribe(id) {
+        op.del(this.__subscribers, [id]);
+    }
+
+    unsubscribeAll() {
+        this.__subscribers = {};
+    }
+
+    notify(context) {
+        Object.entries(this.__subscribers).forEach(([id, cb]) => {
+            if (typeof cb === 'function') cb(this, context);
+        });
     }
 }
 
