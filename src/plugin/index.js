@@ -68,6 +68,28 @@ Plugin.register = (ID, order = Enums.priority.neutral) => {
 };
 
 /**
+ * @api {Function} Plugin.isActive(ID) Plugin.isActive()
+ * @apiGroup Reactium.Plugin
+ * @apiName Plugin.isActive
+ * @apiDescription Determine if a plugin ID is active.
+ * @apiParam {String} ID the plugin id.
+ * @apiExample Example Usage:
+ Reactium.Plugin.isActive('Media');
+ */
+Plugin.isActive = ID => {
+    const plugin = _.findWhere(Plugin.list(), { ID }) || {};
+    return op.get(plugin, 'active', false);
+};
+
+/**
+ * @api {Function} Plugin.list() Plugin.list()
+ * @apiGroup Reactium.Plugin
+ * @apiName Plugin.list
+ * @apiDescription Return the list of registered plugins.
+ */
+Plugin.list = () => op.get(Plugin.redux.store.getState(), 'PluginManager.plugins', []);
+
+/**
  * @api {Function} Plugin.unregister(ID) Plugin.unregister()
  * @apiName Plugin.unregister
  * @apiDescription Unregister a Reactium plugin by unique id. This can only be called prior to the `plugin-dependencies` hook, or `Reactium.Plugin.ready === true`.
