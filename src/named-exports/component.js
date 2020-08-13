@@ -45,13 +45,12 @@ const forwardRefNoop = forwardRef((props, ref) => null);
 export const useHookComponent = (
     hook = 'component',
     defaultComponent = forwardRefNoop,
-    ...params
 ) => {
     const component = useRef({});
     op.set(
         component.current,
         'component',
-        Component.get(hook, defaultComponent, ...params),
+        Component.get(hook, defaultComponent),
     );
 
     return op.get(component.current, 'component');
