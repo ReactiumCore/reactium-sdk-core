@@ -20,7 +20,7 @@ import uuid from 'uuid/v4';
  * @apiParam {Getter} banned get list of all banned objects ids.
  * @apiParam {Getter} mode get current mode (Default Utils.Registry.MODES.HISTORY)
  * @apiParam {Setter} mode set current mode (Default Utils.Registry.MODES.HISTORY)
- * @apiParam {Method} get `reg.get(id)` pass the identifier of an object get that object from the registry
+ * @apiParam {Method} get `reg.get(id,defaultValue)` pass the identifier of an object get that object from the registry. Optionally provide a default value if the id doesn't exist in the registry.
  * @apiParam {Method} isProtected pass the identifier of an object to see if it has been protected
  * @apiParam {Method} isRegistered pass the identifier of an object to see if it has been registered
  * @apiParam {Method} isUnRegistered pass the identifier of an object to see is NOT registered.
@@ -99,8 +99,8 @@ export default class Registry {
         return this.__mode;
     }
 
-    get(id) {
-        return op.get(this.listById, [id]);
+    get(id, defaultValue) {
+        return op.get(this.listById, [id], defaultValue);
     }
 
     isProtected(id) {
