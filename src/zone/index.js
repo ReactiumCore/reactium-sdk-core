@@ -473,7 +473,7 @@ Reactium.Zone.removeSort('myPlugin', 'zone-1');
   */
 
 /**
- * @api {Function} Zone.addComponent(component,capabilities,strict) Zone.addComponent()
+ * @api {Async} Zone.addComponent(component,capabilities,strict) Zone.addComponent()
  * @apiName Zone.addComponent
  * @apiDescription Register a component to a component zone.
  * @apiParam {Object} zone component object, determines what component renders in a zone, what order
@@ -528,7 +528,7 @@ Reactium.Plugin.register('myPlugin').then(() => {
 */
 
 /**
- * @api {Function} Zone.updateComponent(id,updatedComponent) Zone.updateComponent()
+ * @api {Async} Zone.updateComponent(id,updatedComponent) Zone.updateComponent()
  * @apiName Zone.updateComponent
  * @apiDescription Register a component to a component zone.
  * @apiParam {String} ID the unique component object id.
@@ -537,7 +537,7 @@ Reactium.Plugin.register('myPlugin').then(() => {
  */
 
 /**
- * @api {Function} Zone.removeComponent(ID) Zone.removeComponent()
+ * @api {Async} Zone.removeComponent(ID) Zone.removeComponent()
  * @apiName Zone.removeComponent
  * @apiDescription Removes a component added by `Zone.addComponent()` from a component zone by id.
  * @apiParam {String} ID the unique component object id.
