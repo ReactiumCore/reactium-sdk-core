@@ -1,6 +1,6 @@
 import op from 'object-path';
 import { useEffect, useRef } from 'react';
-import { useEventHandle, CustomEvent } from './event-handle';
+import { useEventHandle, ComponentEvent } from './event-handle';
 import React from 'react';
 
 const refsProxyHandler = (refs, key) => ({
