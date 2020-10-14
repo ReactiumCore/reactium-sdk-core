@@ -3,21 +3,25 @@ import { useEffect, useRef } from 'react';
 import { useEventHandle, CustomEvent } from './event-handle';
 import React from 'react';
 
-const refsProxyHandler = key => ({
-    get(refs, prop) {
-        if (prop in refs) return refs[prop];
+const refsProxyHandler = (refs, key) => ({
+    get(target, prop) {
         if (prop === 'current') return refs.get(key);
+        if (prop in target) return target[prop];
     },
 
-    set(refs, prop, value) {
-        if (prop in refs) refs[prop] = value;
-        if (prop === 'current') return refs.set(key, value);
+    set(target, prop, value) {
+        if (prop === 'current') {
+            refs.set(key, value);
+            return true;
+        }
+
+        if (target in refs) target[prop] = value;
         return true;
     },
 });
 
 export const createRefsProxyFactory = refs => key =>
-    React.createRef(new Proxy(refs, refsProxyHandler(key)));
+    new Proxy(React.createRef(), refsProxyHandler(refs, key));
 
 export const useRefs = (initialRefs = {}) => {
     const ref = useRef(initialRefs);
@@ -141,7 +145,7 @@ import { useRefs } from '@atomic-reactor/reactium-sdk-core';
 const MyComponent = () => {
    const refs = useRefs();
    // creates a factory for React.createRef() object to your refs
-   const refProxy = refs.createProxy();
+   const refProxy = refs.createProxy('form');
 
    const [state, setState] = useState({});
 
@@ -154,7 +158,7 @@ const MyComponent = () => {
    // When EventForm references ref.current, it will actually get refs.get('form').
    // When EventForm sets the ref.current value, it will actually perform refs.set('form', value);
    return (
-       <EventForm ref={refProxy('form')} onSubmit={onSubmit}>
+       <EventForm ref={refProxy} onSubmit={onSubmit}>
            <input type='text' name="foo" />
            <button type="submit">Submit the Form</button>
        </EventForm>
