@@ -17,7 +17,7 @@ const refsProxyHandler = key => ({
 });
 
 export const createRefsProxyFactory = refs => key =>
-    React.createRef(new Proxy(refs, handler(key)));
+    React.createRef(new Proxy(refs, refsProxyHandler(key)));
 
 export const useRefs = (initialRefs = {}) => {
     const ref = useRef(initialRefs);
