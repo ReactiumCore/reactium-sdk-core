@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import op from 'object-path';
 
 class ComponentEvent extends CustomEvent {
@@ -8,7 +8,9 @@ class ComponentEvent extends CustomEvent {
         op.del(data, 'type');
         op.del(data, 'target');
 
-        Object.entries(data).forEach(([key, value]) => {
+        Object.entries(data || {}).forEach(([key, value]) => {
+            if (key === 'proto__' || key === '__proto__') return;
+
             if (!this[key]) {
                 try {
                     this[key] = value;
@@ -109,4 +111,84 @@ export const useEventHandle = value => {
         handle.update(value);
     };
     return [handle, setHandle];
+};
+
+/**
+ * @api {ReactHook} useEventEffect(eventTarget, eventCallbacks, deps) useEventEffect()
+ * @apiDescription React hook to short hand for addEventListener and removeEventLister for one or more callbacks.
+ * @apiParam {Object} eventTarget Some event target object (implementing addEventListener and removeEventLister)
+ * @apiParam {Object} eventCallbacks Object keys are event names, and Object values are callbacks to be subscribed/unsubscribed.
+ * @apiParam {useEffectDeps} deps consistent with React useEffect deps list.
+ * @apiName useEventEffect
+ * @apiGroup ReactHook
+ * @apiExample EventEffectComponent.js
+ import React, { useState } from 'react';
+ import { useEventEffect } from 'reactium-core/sdk';
+
+ const EventEffectComponent = () => {
+     const [size, setSize] = useState({
+         width: window.innerWidth,
+         height: window.innerHeight,
+     });
+
+     const [online, setOnline] = useState(window.onLine);
+
+     const onResize = e => {
+         setSize({
+             width: window.innerWidth,
+             height: window.innerHeight,
+         });
+     };
+
+     const onNetworkChange = e => {
+         setOnline(window.onLine);
+     };
+
+     useEventEffect(
+         window,
+         {
+             resize: onResize,
+             online: onNetworkChange,
+             offline: onNetworkChange,
+         },
+         [],
+     );
+
+     return (
+         <div className='status'>
+             <span className='status-width'>width: {size.width}</span>
+             <span className='status-height'>height: {size.height}</span>
+             <span className={`status-${online ? 'online' : 'offline'}`}></span>
+         </div>
+     );
+ };
+*/
+export const useEventEffect = (target = null, handlers = {}, deps) => {
+    useEffect(() => {
+        const subs = {};
+
+        // sanitize handlers
+        Object.entries(handlers).forEach(([type, cb]) => {
+            if (typeof cb === 'function') {
+                subs[type] = cb;
+            }
+        });
+
+        // duck-type EventTarget
+        if (
+            typeof target === 'object' &&
+            'addEventListener' in target &&
+            'removeEventListener' in target
+        ) {
+            Object.entries(subs).forEach(([type, cb]) =>
+                target.addEventListener(type, cb),
+            );
+        }
+
+        return () => {
+            Object.entries(subs).forEach(([type, cb]) =>
+                target.removeEventListener(type, cb),
+            );
+        };
+    }, deps);
 };

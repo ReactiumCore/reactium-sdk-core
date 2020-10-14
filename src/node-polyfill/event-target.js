@@ -6,8 +6,6 @@ class EventTarget {
         this.listeners[type] = [];
       }
       this.listeners[type].push(callback);
-
-      console.log('addEventListener', type, this.listeners);
     }
 
     removeEventListener(type, callback) {
