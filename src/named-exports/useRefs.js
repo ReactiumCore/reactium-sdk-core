@@ -109,6 +109,7 @@ const MyComponent = () => {
 
 /**
   * @api {ReactHook} useEventRefs() useEventRefs()
+  * @apiVersion 1.0.7
   * @apiGroup ReactHook
   * @apiName useEventRefs
   * @apiDescription Like useRefs, creates a single reference object that can be managed using the `get`/`set`/`del`/`clear` functions, however also an EventTarget object.

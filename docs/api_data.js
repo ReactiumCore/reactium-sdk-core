@@ -100,6 +100,51 @@ define({ "api": [
   },
   {
     "type": "ReactHook",
+    "url": "useEventEffect(eventTarget,",
+    "title": "eventCallbacks, deps) useEventEffect()",
+    "version": "1.0.7",
+    "description": "<p>React hook to short hand for addEventListener and removeEventLister for one or more callbacks.</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "eventTarget",
+            "description": "<p>Some event target object (implementing addEventListener and removeEventLister)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "eventCallbacks",
+            "description": "<p>Object keys are event names, and Object values are callbacks to be subscribed/unsubscribed.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "useEffectDeps",
+            "optional": false,
+            "field": "deps",
+            "description": "<p>consistent with React useEffect deps list.</p>"
+          }
+        ]
+      }
+    },
+    "name": "useEventEffect",
+    "group": "ReactHook",
+    "examples": [
+      {
+        "title": "EventEffectComponent.js",
+        "content": "import React, { useState } from 'react';\nimport { useEventEffect } from 'reactium-core/sdk';\n\nconst EventEffectComponent = () => {\n    const [size, setSize] = useState({\n        width: window.innerWidth,\n        height: window.innerHeight,\n    });\n\n    const [online, setOnline] = useState(window.onLine);\n\n    const onResize = e => {\n        setSize({\n            width: window.innerWidth,\n            height: window.innerHeight,\n        });\n    };\n\n    const onNetworkChange = e => {\n        setOnline(window.onLine);\n    };\n\n    useEventEffect(\n        window,\n        {\n            resize: onResize,\n            online: onNetworkChange,\n            offline: onNetworkChange,\n        },\n        [],\n    );\n\n    return (\n        <div className='status'>\n            <span className='status-width'>width: {size.width}</span>\n            <span className='status-height'>height: {size.height}</span>\n            <span className={`status-${online ? 'online' : 'offline'}`}></span>\n        </div>\n    );\n};",
+        "type": "json"
+      }
+    ],
+    "filename": "src/named-exports/event-handle.js",
+    "groupTitle": "ReactHook"
+  },
+  {
+    "type": "ReactHook",
     "url": "useEventHandle(handle)",
     "title": "useEventHandle()",
     "description": "<p>React hook to create an imperative handle that is also an implementation of EventTarget. Can be used in conjunction with useImperativeHandle (React built-in) or useRegisterHandle/useHandle (Reactium SDK hooks).</p>",
@@ -132,6 +177,24 @@ define({ "api": [
     ],
     "version": "0.0.0",
     "filename": "src/named-exports/event-handle.js",
+    "groupTitle": "ReactHook"
+  },
+  {
+    "type": "ReactHook",
+    "url": "useEventRefs()",
+    "title": "useEventRefs()",
+    "version": "1.0.7",
+    "group": "ReactHook",
+    "name": "useEventRefs",
+    "description": "<p>Like useRefs, creates a single reference object that can be managed using the <code>get</code>/<code>set</code>/<code>del</code>/<code>clear</code> functions, however also an EventTarget object. <code>set</code>/<code>del</code>/<code>clear</code> methods dispatch <code>before-set</code>/<code>set</code>, <code>before-del</code>/<code>del</code>, and <code>before-clear</code>/<code>clear</code> events respectively.</p>",
+    "examples": [
+      {
+        "title": "Usage",
+        "content": "import React, { useState } from 'react';\nimport { useRefs } from '@atomic-reactor/reactium-sdk-core';\n\nconst MyComponent = () => {\n    const refs = useEventRefs();\n    const [ready, setReady] = useState(false);\n\n    const onChildRefReady = e => {\n        if (e.key === 'my.component') {\n            setReady(refs.get(e.key) !== undefined);\n        }\n    };\n\n    useEffect(() => {\n        refs.addEventListener('set', onChildRefReady);\n        return () => refs.removeEventListener('set', onChildRefReady);\n    }, []);\n\n    return (\n        <MyForwardRefComponent ref={cmp => refs.set('my.component', cmp)} />\n        {ready && <Controller control={refs.get('my.component')} />}\n    );\n};",
+        "type": "json"
+      }
+    ],
+    "filename": "src/named-exports/useRefs.js",
     "groupTitle": "ReactHook"
   },
   {
@@ -2333,7 +2396,7 @@ define({ "api": [
     "groupTitle": "Reactium.Utils"
   },
   {
-    "type": "Function",
+    "type": "Async",
     "url": "Zone.addComponent(component,capabilities,strict)",
     "title": "Zone.addComponent()",
     "name": "Zone.addComponent",
@@ -2526,7 +2589,7 @@ define({ "api": [
     "groupTitle": "Reactium.Zone"
   },
   {
-    "type": "Function",
+    "type": "Async",
     "url": "Zone.removeComponent(ID)",
     "title": "Zone.removeComponent()",
     "name": "Zone.removeComponent",
@@ -2668,7 +2731,7 @@ define({ "api": [
     "groupTitle": "Reactium.Zone"
   },
   {
-    "type": "Function",
+    "type": "Async",
     "url": "Zone.updateComponent(id,updatedComponent)",
     "title": "Zone.updateComponent()",
     "name": "Zone.updateComponent",
