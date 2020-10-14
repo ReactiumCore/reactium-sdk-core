@@ -1,6 +1,23 @@
 import op from 'object-path';
 import { useEffect, useRef } from 'react';
 import { useEventHandle, CustomEvent } from './event-handle';
+import React from 'react';
+
+const refsProxyHandler = key => ({
+    get(refs, prop) {
+        if (prop in refs) return refs[prop];
+        if (prop === 'current') return refs.get(key);
+    },
+
+    set(refs, prop, value) {
+        if (prop in refs) refs[prop] = value;
+        if (prop === 'current') return refs.set(key, value);
+        return true;
+    },
+});
+
+export const createRefsProxyFactory = refs => key =>
+    React.createRef(new Proxy(refs, handler(key)));
 
 export const useRefs = (initialRefs = {}) => {
     const ref = useRef(initialRefs);
@@ -27,15 +44,20 @@ export const useRefs = (initialRefs = {}) => {
         ref.current = null;
     };
 
-    return { get, set, del, clear, ...ref.current };
+    const refs = { get, set, del, clear, ...ref.current };
+
+    refs.createProxy = createRefsProxyFactory(refs);
+
+    return refs;
 };
 
-export const useEventRefs = (initialRefs = {}) => {
+export const useEventRefs = (initialRefs = {}, refProxy = false) => {
     const {
         get: refsGet,
         set: refsSet,
         del: refsDel,
         clear: refsClear,
+        createProxy: refsCreateProxy,
         ...refs
     } = useRefs(initialRefs);
     const [handle, setHandle] = useEventHandle({});
@@ -67,13 +89,17 @@ export const useEventRefs = (initialRefs = {}) => {
         handle.dispatchEvent(new ComponentEvent('clear', {}));
     };
 
-    setHandle({
+    const handleDecorated = {
         get: refsGet,
         set,
         del,
         clear,
         ...refs,
-    });
+    };
+
+    setHandle(handleDecorated);
+
+    handle.createProxy = createRefsProxyFactory(handle);
 
     return handle;
 };
@@ -104,6 +130,35 @@ const MyComponent = () => {
             <button onClick={onClick}>Update</button>
         </div>
     );
+};
+* @apiExample Proxy Reference Usage
+// sometimes you need a forwarded ref to be a ref object from useRef() or React.createRef()
+// You can create proxy factory for the refs to achieve this.
+import React, { useEffect, useState } from 'react';
+import { EventForm } from '@atomic-reactor/reactium-ui';
+import { useRefs } from '@atomic-reactor/reactium-sdk-core';
+
+const MyComponent = () => {
+   const refs = useRefs();
+   // creates a factory for React.createRef() object to your refs
+   const refProxy = refs.createProxy();
+
+   const [state, setState] = useState({});
+
+   const onSubmit = e => {
+       const formRef = refs.get('form');
+       setState({ ...formRef.getValue() });
+   };
+
+   // EventForm expects a reference object, not a callback function
+   // When EventForm references ref.current, it will actually get refs.get('form').
+   // When EventForm sets the ref.current value, it will actually perform refs.set('form', value);
+   return (
+       <EventForm ref={refProxy('form')} onSubmit={onSubmit}>
+           <input type='text' name="foo" />
+           <button type="submit">Submit the Form</button>
+       </EventForm>
+   );
 };
  */
 
