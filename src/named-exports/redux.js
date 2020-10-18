@@ -212,9 +212,7 @@ export const useSelect = params => {
         return subscribe(setState);
     });
 
-    const getter = key => {
-        op.get(stateRef.current, key);
-    };
+    const getter = key => op.get(stateRef.current, key);
 
     switch (returnMode) {
         case 'ref':
