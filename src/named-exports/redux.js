@@ -212,7 +212,8 @@ export const useSelect = params => {
         return subscribe(setState);
     });
 
-    const getter = key => op.get(stateRef.current, key);
+    const getter = (key, defaultValue) =>
+        op.get(stateRef.current, key, defaultValue);
 
     switch (returnMode) {
         case 'ref':
