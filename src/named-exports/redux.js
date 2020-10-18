@@ -185,7 +185,7 @@ export const useSelect = params => {
     } else {
         select = op.get(params, 'select', select);
         shouldUpdate = op.get(params, 'shouldUpdate', shouldUpdate);
-        returnMode = op.get(params, 'returnRef', 'state');
+        returnMode = op.get(params, 'returnMode', 'state');
     }
 
     const [, setVersion] = useState(uuid());
