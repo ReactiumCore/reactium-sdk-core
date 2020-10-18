@@ -122,12 +122,13 @@ you have specifically targeted.
  * @apiParam {Mixed} params
  1. Callback function taking current state object from Redux store, and
  returning what you care about, or
- 2. an Object with `select` and `shouldUpdate` props.
+ 2. an Object with `select`, `shouldUpdate` and `returnMode` props.
  * @apiParam {Function} params.select Callback function taking current state object from Redux store, and
  returning what you care about.
  * @apiParam {Function} [params.shouldUpdate] Callback function object with 2 properties `newState` and `prevState`, containing the current
  results of the select function, and the previous results of the select function, respectively. Returns true if your component should update, otherwise
  false. By default, `useSelect` will do a shallow comparison.
+ * @apiParam {String} [params.returnMode=state] `state` to get the current state, `ref` to get the whole React reference object (for more realtime updates), and `get` for a getter function that takes object-path
  * @apiName useSelect
  * @apiGroup ReactHook
  * @apiExample Simple.js
@@ -177,11 +178,14 @@ export default () => {
 export const useSelect = params => {
     let select = newState => newState;
     let shouldUpdate = defaultShouldUpdate;
+    let returnMode = 'state';
+
     if (typeof params === 'function') {
         select = params;
     } else {
         select = op.get(params, 'select', select);
         shouldUpdate = op.get(params, 'shouldUpdate', shouldUpdate);
+        returnMode = op.get(params, 'returnRef', 'state');
     }
 
     const [, setVersion] = useState(uuid());
@@ -208,7 +212,18 @@ export const useSelect = params => {
         return subscribe(setState);
     });
 
-    return stateRef.current;
+    const getter = key => {
+        op.get(stateRef.current, key);
+    };
+
+    switch (returnMode) {
+        case 'ref':
+            return stateRef;
+        case 'get':
+            return getter;
+        default:
+            return stateRef.current;
+    }
 };
 
 /**
