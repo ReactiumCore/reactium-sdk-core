@@ -11,10 +11,10 @@ import { useRef, useState } from 'react';
  asynchronous activities and the next activity depends on a status of some sort
  from the previous activity.
 
- Returns [status:String, setStatus:Function, isStatus:Function]
+ Returns [status:String, setStatus:Function, isStatus:Function, getStatus:Function]
 
  ### status
- The current status value.
+ The current asynchronous status value. (is accurate once per render)
 
  ### setStatus(status:String, forceRender:Boolean = false)
  Set the status value. If forceRender is true, a rerender will be triggered.
@@ -22,6 +22,9 @@ import { useRef, useState } from 'react';
 
  ### isStatus(statuses:Array)
  Check if the current status matches the statuses passed.
+
+ ### getStatus()
+Get the synchrounous value of the status. This can matter if you need to set and check the value in the same render cycle.
  */
 export const useStatus = (initialStatus = 'pending') => {
     const statusRef = useRef(initialStatus);
@@ -36,5 +39,7 @@ export const useStatus = (initialStatus = 'pending') => {
     const isStatus = statuses =>
         _.flatten([statuses]).includes(statusRef.current);
 
-    return [statusRef.current, setStatus, isStatus];
+    const getStatus = () => statusRef.current;
+
+    return [statusRef.current, setStatus, isStatus, getStatus];
 };
