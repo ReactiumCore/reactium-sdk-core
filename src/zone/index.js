@@ -77,14 +77,12 @@ class Zones {
                 `components must be array of objects, typeof ${typeof components} provided.`,
             );
 
-        const ids = await Promise.all(
-            components.map(component => this.addComponent(component)),
-        );
+        const ids = components.map(component => this.addComponent(component));
         this[INITIALIZED] = true;
         return ids;
     }
 
-    async addComponent(component) {
+    addComponent(component) {
         let id = op.get(component, 'id');
         if (!id || op.has(this[ZONES], ['components', 'allById', id]))
             id = uuid();
@@ -110,14 +108,14 @@ class Zones {
         });
 
         if (this[INITIALIZED]) {
-            await Hook.run('zone-add-component', component);
+            Hook.runSync('zone-add-component', component);
             zones.forEach(zone => this[UPDATE](zone));
         }
 
         return id;
     }
 
-    async updateComponent(id, updates = {}) {
+    updateComponent(id, updates = {}) {
         const componentUpdates = { ...updates };
 
         // don't allow id change
@@ -169,7 +167,7 @@ class Zones {
                 });
 
             if (this[INITIALIZED]) {
-                await Hook.run('zone-update-component', updatedComponent);
+                Hook.runSync('zone-update-component', updatedComponent);
                 _.chain(zones.concat(existingZones))
                     .compact()
                     .uniq()
@@ -179,7 +177,7 @@ class Zones {
         }
     }
 
-    async removeComponent(id) {
+    removeComponent(id) {
         if (op.has(this[ZONES], ['components', 'allById', id])) {
             const component = op.get(this[ZONES], [
                 'components',
@@ -200,7 +198,7 @@ class Zones {
             });
 
             if (this[INITIALIZED]) {
-                await Hook.run('zone-remove-component', component);
+                Hook.runSync('zone-remove-component', component);
                 zones.forEach(zone => this[UPDATE](zone));
             }
         }
@@ -224,6 +222,15 @@ class Zones {
         }
 
         return zoneComponents;
+    }
+
+    getZoneComponent(zone, id) {
+        const components = this.getZoneComponents(zone);
+        return _.findWhere(components, {id});
+    }
+
+    hasZoneComponent(zone, id) {
+        return !!getZoneComponent(zone, id);
     }
 
     addControl(type, zone, argument, order = Enums) {
@@ -473,7 +480,7 @@ Reactium.Zone.removeSort('myPlugin', 'zone-1');
   */
 
 /**
- * @api {Async} Zone.addComponent(component,capabilities,strict) Zone.addComponent()
+ * @api {Function} Zone.addComponent(component,capabilities,strict) Zone.addComponent()
  * @apiName Zone.addComponent
  * @apiDescription Register a component to a component zone.
  * @apiParam {Object} zone component object, determines what component renders in a zone, what order
@@ -528,7 +535,7 @@ Reactium.Plugin.register('myPlugin').then(() => {
 */
 
 /**
- * @api {Async} Zone.updateComponent(id,updatedComponent) Zone.updateComponent()
+ * @api {Function} Zone.updateComponent(id,updatedComponent) Zone.updateComponent()
  * @apiName Zone.updateComponent
  * @apiDescription Register a component to a component zone.
  * @apiParam {String} ID the unique component object id.
@@ -537,11 +544,36 @@ Reactium.Plugin.register('myPlugin').then(() => {
  */
 
 /**
- * @api {Async} Zone.removeComponent(ID) Zone.removeComponent()
+ * @api {Function} Zone.removeComponent(ID) Zone.removeComponent()
  * @apiName Zone.removeComponent
  * @apiDescription Removes a component added by `Zone.addComponent()` from a component zone by id.
  * @apiParam {String} ID the unique component object id.
  * @apiGroup Reactium.Zone
+ */
+
+/**
+ * @api {Function} Zone.getZoneComponents(zone,raw) Zone.getZoneComponents()
+ * @apiName Zone.getZoneComponents
+ * @apiDescription Get existing registrations for a zone, by default goes through mapping, sorting, filtering. Add raw=true to get unadulterated list, even if they may not be renderable in the Zone.
+ * Returns the object used in Zone.addComponent()
+ * @apiParam {String} zone the zone name to get components from
+ * @apiParam {Boolean} [raw=false] Set to true to get all components, whether or not they are currently filtered, and without mapping or extra sorting.
+ */
+
+/**
+ * @api {Function} Zone.getZoneComponent(zone,id) Zone.getZoneComponent()
+ * @apiName Zone.getZoneComponent
+ * @apiDescription Get the component from a zone by its id.
+ * @apiParam {String} zone the zone name to get components from
+ * @apiParam {String} id the id of the registered component, specified in the object passed to Zone.addComponent() or returned by it.
+ */
+
+/**
+ * @api {Function} Zone.hasZoneComponent(zone,id) Zone.hasZoneComponent()
+ * @apiName Zone.hasZoneComponent
+ * @apiDescription Returns true if component with id is present in the zone.
+ * @apiParam {String} zone the zone name to get components from
+ * @apiParam {String} id the id of the registered component, specified in the object passed to Zone.addComponent() or returned by it.
  */
 
 /**

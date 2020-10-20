@@ -188,7 +188,7 @@ export const useSelect = params => {
         returnMode = op.get(params, 'returnMode', 'state');
     }
 
-    const [, setVersion] = useState(uuid());
+    const [, setVersion] = useState(new Date);
     const { getState, subscribe } = useStore();
     const stateRef = useRef(select(getState()));
 
@@ -203,14 +203,14 @@ export const useSelect = params => {
             })
         ) {
             stateRef.current = newState;
-            setVersion(uuid());
+            setVersion(new Date);
         }
     };
 
     useEffect(() => {
         setState();
         return subscribe(setState);
-    });
+    }, []);
 
     const getter = (key, defaultValue) =>
         op.get(stateRef.current, key, defaultValue);

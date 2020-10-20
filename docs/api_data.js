@@ -1,5 +1,99 @@
 define({ "api": [
   {
+    "type": "Function",
+    "url": "Zone.getZoneComponent(zone,id)",
+    "title": "Zone.getZoneComponent()",
+    "name": "Zone.getZoneComponent",
+    "description": "<p>Get the component from a zone by its id.</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "zone",
+            "description": "<p>the zone name to get components from</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>the id of the registered component, specified in the object passed to Zone.addComponent() or returned by it.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "src/zone/index.js",
+    "group": "/Users/johndillick/dev/atomic-reactor/reactium-sdk-core/src/zone/index.js",
+    "groupTitle": "/Users/johndillick/dev/atomic-reactor/reactium-sdk-core/src/zone/index.js"
+  },
+  {
+    "type": "Function",
+    "url": "Zone.getZoneComponents(zone,raw)",
+    "title": "Zone.getZoneComponents()",
+    "name": "Zone.getZoneComponents",
+    "description": "<p>Get existing registrations for a zone, by default goes through mapping, sorting, filtering. Add raw=true to get unadulterated list, even if they may not be renderable in the Zone. Returns the object used in Zone.addComponent()</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "zone",
+            "description": "<p>the zone name to get components from</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": true,
+            "field": "raw",
+            "defaultValue": "false",
+            "description": "<p>Set to true to get all components, whether or not they are currently filtered, and without mapping or extra sorting.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "src/zone/index.js",
+    "group": "/Users/johndillick/dev/atomic-reactor/reactium-sdk-core/src/zone/index.js",
+    "groupTitle": "/Users/johndillick/dev/atomic-reactor/reactium-sdk-core/src/zone/index.js"
+  },
+  {
+    "type": "Function",
+    "url": "Zone.hasZoneComponent(zone,id)",
+    "title": "Zone.hasZoneComponent()",
+    "name": "Zone.hasZoneComponent",
+    "description": "<p>Returns true if component with id is present in the zone.</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "zone",
+            "description": "<p>the zone name to get components from</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>the id of the registered component, specified in the object passed to Zone.addComponent() or returned by it.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "src/zone/index.js",
+    "group": "/Users/johndillick/dev/atomic-reactor/reactium-sdk-core/src/zone/index.js",
+    "groupTitle": "/Users/johndillick/dev/atomic-reactor/reactium-sdk-core/src/zone/index.js"
+  },
+  {
     "type": "ReactHook",
     "url": "useAsyncEffect(cb,dependencies)",
     "title": "useAsyncEffect()",
@@ -594,7 +688,7 @@ define({ "api": [
         ]
       }
     },
-    "description": "<p>Synchronously set a status value that can be checked within a function scope without updating the state of the component. Useful when doing asynchronous activities and the next activity depends on a status of some sort from the previous activity.</p> <p>Returns [status:String, setStatus:Function, isStatus:Function]</p> <h3>status</h3> <p>The current status value.</p> <h3>setStatus(status:String, forceRender:Boolean = false)</h3> <p>Set the status value. If forceRender is true, a rerender will be triggered. <em><strong>Beware:</strong></em> forceRender may have unintended consequence and should be used in last status before re-rendering situations only.</p> <h3>isStatus(statuses:Array)</h3> <p>Check if the current status matches the statuses passed.</p>",
+    "description": "<p>Synchronously set a status value that can be checked within a function scope without updating the state of the component. Useful when doing asynchronous activities and the next activity depends on a status of some sort from the previous activity.</p> <p>Returns [status:String, setStatus:Function, isStatus:Function, getStatus:Function]</p> <h3>status</h3> <p>The current asynchronous status value. (is accurate once per render)</p> <h3>setStatus(status:String, forceRender:Boolean = false)</h3> <p>Set the status value. If forceRender is true, a rerender will be triggered. <em><strong>Beware:</strong></em> forceRender may have unintended consequence and should be used in last status before re-rendering situations only.</p> <h3>isStatus(statuses:Array)</h3> <p>Check if the current status matches the statuses passed.</p> <h3>getStatus()</h3> <p>Get the synchrounous value of the status. This can matter if you need to set and check the value in the same render cycle.</p>",
     "version": "0.0.0",
     "filename": "src/named-exports/useStatus.js",
     "groupTitle": "ReactHook"
@@ -2409,7 +2503,7 @@ define({ "api": [
     "groupTitle": "Reactium.Utils"
   },
   {
-    "type": "Async",
+    "type": "Function",
     "url": "Zone.addComponent(component,capabilities,strict)",
     "title": "Zone.addComponent()",
     "name": "Zone.addComponent",
@@ -2602,7 +2696,7 @@ define({ "api": [
     "groupTitle": "Reactium.Zone"
   },
   {
-    "type": "Async",
+    "type": "Function",
     "url": "Zone.removeComponent(ID)",
     "title": "Zone.removeComponent()",
     "name": "Zone.removeComponent",
@@ -2744,7 +2838,7 @@ define({ "api": [
     "groupTitle": "Reactium.Zone"
   },
   {
-    "type": "Async",
+    "type": "Function",
     "url": "Zone.updateComponent(id,updatedComponent)",
     "title": "Zone.updateComponent()",
     "name": "Zone.updateComponent",
