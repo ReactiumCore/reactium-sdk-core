@@ -1,6 +1,6 @@
 {
   "name": "@atomic-reactor/reactium-sdk-core",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "main": "lib/index.js",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
     "jest-cli": "^26.2.2",
     "memory-cache": "^0.2.0",
     "moment": "^2.24.0",
-    "object-path": "^0.11.4",
+    "object-path": "^0.11.5",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-redux": "^7.1.3",

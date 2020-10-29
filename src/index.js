@@ -13,6 +13,19 @@ import Server from './server';
 
 export * from './named-exports';
 
+export { default as Cache } from './cache';
+export { default as Component } from './component';
+export { default as Enums } from './enums';
+export { default as Handle } from './handle';
+export { default as Hook } from './hook';
+export { default as Pulse } from './pulse';
+export { default as Plugin } from './plugin';
+export { default as Utils } from './utils';
+export { default as Registry } from './utils/registry';
+export { default as Zone } from './zone';
+export { default as Prefs } from './prefs';
+export { default as Server } from './server';
+
 export default {
     Cache,
     Component,

@@ -11,7 +11,5 @@ export * from '../zone/Zone';
 export * from './useStatus';
 export * from './useRefs';
 
-export { default as Zone } from '../zone/Zone';
-
 // deprecated name
 export { default as Plugins } from '../zone/Zone';
