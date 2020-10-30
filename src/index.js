@@ -22,7 +22,7 @@ export { default as Pulse } from './pulse';
 export { default as Plugin } from './plugin';
 export { default as Utils } from './utils';
 export { default as Registry } from './utils/registry';
-export { default as Zone } from './zone';
+export { default as ZoneRegistry } from './zone';
 export { default as Prefs } from './prefs';
 export { default as Server } from './server';
 
