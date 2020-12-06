@@ -558,6 +558,7 @@ Reactium.Plugin.register('myPlugin').then(() => {
  * Returns the object used in Zone.addComponent()
  * @apiParam {String} zone the zone name to get components from
  * @apiParam {Boolean} [raw=false] Set to true to get all components, whether or not they are currently filtered, and without mapping or extra sorting.
+ * @apiGroup Reactium.Zone
  */
 
 /**
@@ -566,6 +567,7 @@ Reactium.Plugin.register('myPlugin').then(() => {
  * @apiDescription Get the component from a zone by its id.
  * @apiParam {String} zone the zone name to get components from
  * @apiParam {String} id the id of the registered component, specified in the object passed to Zone.addComponent() or returned by it.
+ * @apiGroup Reactium.Zone
  */
 
 /**
@@ -574,6 +576,7 @@ Reactium.Plugin.register('myPlugin').then(() => {
  * @apiDescription Returns true if component with id is present in the zone.
  * @apiParam {String} zone the zone name to get components from
  * @apiParam {String} id the id of the registered component, specified in the object passed to Zone.addComponent() or returned by it.
+ * @apiGroup Reactium.Zone
  */
 
 /**

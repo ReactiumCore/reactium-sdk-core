@@ -25,9 +25,9 @@ export const useZoneComponents = zone => {
     return components.current;
 };
 
-const resolveHookComponent = component => props => {
-    const Component = useHookComponent(component);
-    return Component && <Component {...props} />;
+const HookComponent = ({ hookName = '', ...props }) => {
+    const DynamicComponent = useHookComponent(hookName);
+    return <DynamicComponent { ...props } />;
 };
 
 export const SimpleZone = props => {
@@ -46,15 +46,12 @@ export const SimpleZone = props => {
         };
 
         if (typeof Component === 'string') {
-            const Dynamic = resolveHookComponent(Component);
-            return <Dynamic key={id} {...allProps} />;
+            return (
+                <HookComponent key={id} hookName={Component} {...allProps} />
+            );
         }
 
-        return (
-            Component && (
-                <Component key={id} {...zoneProps} {...componentProps} />
-            )
-        );
+        return Component && <Component key={id} {...allProps} />;
     });
 };
 
@@ -75,7 +72,9 @@ const PassThroughZone = props => {
                     if (name && component.component) {
                         passThroughComponents[name] = component.component;
                         if (typeof component.component === 'string') {
-                            passThroughComponents[name] = resolveHookComponent(component.component);
+                            passThroughComponents[name] = resolveHookComponent(
+                                component.component,
+                            );
                         }
                     }
                     return passThroughComponents;
