@@ -10,6 +10,7 @@ export * from './async-effect';
 export * from '../zone/Zone';
 export * from './useStatus';
 export * from './useRefs';
+export * from './window';
 
 export { default as Zone } from '../zone/Zone';
 
