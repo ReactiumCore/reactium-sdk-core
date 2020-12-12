@@ -1,4 +1,4 @@
-import Utils from '../Utils';
+import Utils from '../utils';
 
 export const isWindow = Utils.isWindow
 export const isServerWindow = Utils.isServerWindow;
