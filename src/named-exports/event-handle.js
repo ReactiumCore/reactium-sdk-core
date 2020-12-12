@@ -114,7 +114,7 @@ export const useEventHandle = value => {
 };
 
 /**
- * @api {ReactHook} useEventEffect(eventTarget, eventCallbacks, deps) useEventEffect()
+ * @api {ReactHook} useEventEffect(eventTarget,eventCallbacks,deps) useEventEffect()
  * @apiVersion 1.0.7
  * @apiDescription React hook to short hand for addEventListener and removeEventLister for one or more callbacks.
  * @apiParam {Object} eventTarget Some event target object (implementing addEventListener and removeEventLister)
