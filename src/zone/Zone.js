@@ -8,16 +8,15 @@ import ZoneSDK from './index';
 import { useHookComponent } from '../named-exports/component';
 import Component from '../component';
 import op from 'object-path';
-import uuid from 'uuid/v4';
 
 export const useZoneComponents = zone => {
     const components = useRef(ZoneSDK.getZoneComponents(zone));
-    const [version, setVersion] = useState(uuid());
+    const [version, setVersion] = useState(Date.now());
     useEffect(
         () =>
             ZoneSDK.subscribe(zone, zoneComponents => {
                 components.current = zoneComponents;
-                setVersion(uuid());
+                setVersion(Date.now());
             }),
         [zone],
     );
