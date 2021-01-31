@@ -10,6 +10,7 @@ import Utils from './utils';
 import Zone from './zone';
 import Prefs from './prefs';
 import Server from './server';
+import pkgjson from '../package';
 
 export * from './named-exports';
 
@@ -38,4 +39,5 @@ export default {
     Zone,
     Prefs,
     Server,
+    version: pkgjson.version,
 };
