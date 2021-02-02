@@ -230,7 +230,7 @@ class Zones {
     }
 
     hasZoneComponent(zone, id) {
-        return !!getZoneComponent(zone, id);
+        return !!this.getZoneComponent(zone, id);
     }
 
     addControl(type, zone, argument, order = Enums) {
