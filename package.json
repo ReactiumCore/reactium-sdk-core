@@ -1,6 +1,6 @@
 {
   "name": "@atomic-reactor/reactium-sdk-core",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "main": "lib/index.js",
   "repository": {
     "type": "git",
@@ -22,10 +22,10 @@
     "babel-jest": "^26.2.2",
     "chai": "^4.2.0",
     "classnames": "^2.2.6",
+    "dayjs": "^1.10.4",
     "jest": "^26.2.2",
     "jest-cli": "^26.2.2",
     "memory-cache": "^0.2.0",
-    "moment": "^2.24.0",
     "object-path": "^0.11.5",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
@@ -38,9 +38,9 @@
   "peerDependencies": {
     "action-sequence": "*",
     "classnames": "*",
+    "dayjs": "*",
     "react-redux": "*",
     "memory-cache": "*",
-    "moment": "*",
     "object-path": "*",
     "react": "*",
     "redux": "*",

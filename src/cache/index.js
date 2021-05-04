@@ -7,7 +7,6 @@
  */
 import memory from 'memory-cache';
 import op from 'object-path';
-import moment from 'moment';
 import _ from 'underscore';
 import uuid from 'uuid/v4';
 
@@ -326,6 +325,7 @@ Cache.prototype.del = function (key, ...args) {
  * // returns: { foo: 'bar', test: 123 }
  */
 Cache.prototype.merge = (values, options) => {
+    const dayjs = require('dayjs');
     options = options || { skipDuplicates: false };
 
     values = Object.keys(values).reduce((obj, key) => {
@@ -334,7 +334,7 @@ Cache.prototype.merge = (values, options) => {
         const expire = op.get(value, 'expire');
 
         if (typeof expire === 'number') {
-            value.expire = moment(Date.now())
+            value.expire = dayjs(Date.now())
                 .add(expire, 'milliseconds')
                 .valueOf();
         }
