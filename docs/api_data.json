@@ -619,6 +619,47 @@
   },
   {
     "type": "ReactHook",
+    "url": "useSyncState(initialState)",
+    "title": "useSyncState()",
+    "description": "<p>Intended to provide an object to get and set state synchrounously, while providing a EventTarget object that can dispatch a 'set' event when the state is updated.</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Mixed",
+            "optional": false,
+            "field": "initialState",
+            "description": "<p>The initial state.</p>"
+          }
+        ]
+      }
+    },
+    "name": "useSyncState",
+    "group": "ReactHook",
+    "examples": [
+      {
+        "title": "SimpleExample",
+        "content": "import React from 'react';\nimport { useSyncState } from 'reactium-core/sdk';\nexport const SimpleExample = () => {\n    const clickState = useSyncState({ clicks: 1 });\n    const clicks = clickState.get('clicks');\n    return (\n        <div>Clicked {clicks} times <button\n            onClick={() => clickState.set('clicks', clicks + 1)}>Click Me</button>\n        </div>\n    );\n };",
+        "type": "json"
+      },
+      {
+        "title": "EventTarget",
+        "content": "import React from 'react';\nimport { useSyncState, useRegisterHandle } from 'reactium-core/sdk';\nexport const Clicker = () => {\n    const clickState = useSyncState({ clicks: 1 });\n    const clicks = clickState.get('clicks');\n    useRegisterHandle('ClickState', () => clickState);\n\n    return (\n        <div>Clicked {clicks} times <button\n            onClick={() => clickState.set('clicks', clicks + 1)}>Click Me</button>\n        </div>\n    );\n };",
+        "type": "json"
+      },
+      {
+        "title": "Consumer",
+        "content": "import React, { useState, useEventEffect } from 'react';\nimport { useHandle } from 'reactium-core/sdk';\n// communicate state with other components\nexport const Listener = () => {\n    const [clicked, setClicked] = useState(false);\n    const handle = useHandle('ClickState')\n    const numClicks = handle.get('clicks');\n\n    const remoteClicked = e => {\n        if (numClicks < e.get('clicks')) {\n            setClicked(true);\n        }\n    };\n\n    useEventEffect(handle, { set: remoteClicked }, []);\n\n    return (\n        <div>Clicker {clicked ? 'unclicked' : 'clicked'}</div>\n    );\n };",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "src/named-exports/useSyncState.js",
+    "groupTitle": "ReactHook"
+  },
+  {
+    "type": "ReactHook",
     "url": "useZoneComponents(zone)",
     "title": "useZoneComponents()",
     "description": "<p>A React hook used in the <code>Zone</code> component to determine what components should currently be rendered. Useful to observe a zone in another component. If you want to observe to the zone components without necessarily causing a rerender in your component, use <code>Reactium.Zone.getZoneComponents()</code> (to get a list of components in the zone), alone or in combination with <code>Reactium.Zone.subscribe()</code>.</p>",
