@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import op from 'object-path';
+import _ from 'underscore';
 import { ComponentEvent } from './event-handle';
 
 class ReactiumSyncState extends EventTarget {
@@ -16,11 +17,53 @@ class ReactiumSyncState extends EventTarget {
         }
     };
 
-    set = (path, value, update = true) => {
-        if (typeof path == 'string' || Array.isArray(path)) {
-            op.set(this.stateObj.state, path, value);
+    _setArgs = (path, value) => {
+        // path looks like object path
+        if (
+            typeof path == 'string' ||
+            (Array.isArray(path) &&
+                typeof value != 'undefined' &&
+                value !== null)
+        ) {
+            return [path, value];
+        }
+
+        // path looks like the value
+        return [false, path];
+    };
+
+    _mergeValue = (previous, next) => {
+        // merge not possible or necessary
+        if (
+            typeof previous != typeof next ||
+            Array.isArray(next) ||
+            !previous
+        ) {
+            return next;
         } else {
-            this.stateObj.state = value;
+            // merge non null objects
+            if (_.isObject(previous) && _.isObject(next)) {
+                return {
+                    ...previous,
+                    ...next,
+                };
+            }
+        }
+
+        return next;
+    };
+
+    set = (pathArg, valueArg, update = true) => {
+        const [path, value] = this._setArgs(pathArg, valueArg);
+
+        if (path) {
+            op.set(
+                this.stateObj.state,
+                path,
+                this._mergeValue(op.get(this.stateObj.state, path), value),
+            );
+        } else {
+            this.stateObj.state = this._mergeValue(this.stateObj.state, value);
         }
 
         if (update) {
