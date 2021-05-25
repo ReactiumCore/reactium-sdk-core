@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import op from 'object-path';
 import _ from 'underscore';
 import { ComponentEvent } from './event-handle';
+import Hook from '../hook';
 
 class ReactiumSyncState extends EventTarget {
     constructor(initialState) {
@@ -32,25 +33,49 @@ class ReactiumSyncState extends EventTarget {
         return [false, path];
     };
 
-    _mergeValue = (previous, next) => {
+    _conditionallyMerge = (previous, next) => {
+        const noMergeConditions = [
+            (p, n) => !_.isObject(p) || !_.isObject(n),
+            (p, n) => typeof p != typeof n,
+            (p, n) => _.isElement(n),
+            (p, n) => _.isBoolean(n),
+            (p, n) => _.isArray(n),
+            (p, n) => _.isString(n),
+            (p, n) => _.isNumber(n),
+            (p, n) => _.isDate(n),
+            (p, n) => _.isError(n),
+            (p, n) => _.isRegExp(n),
+            (p, n) => _.isNull(n),
+            (p, n) => _.isSymbol(n),
+        ];
+
+        Hook.runSync(
+            'use-sync-state-merge-conditions',
+            noMergeConditions,
+            this,
+        );
+
         // merge not possible or necessary
         if (
-            typeof previous != typeof next ||
-            Array.isArray(next) ||
-            !previous
+            !_.isEmpty(
+                noMergeConditions.filter(condition =>
+                    condition(previous, next),
+                ),
+            )
         ) {
             return next;
-        } else {
-            // merge non null objects
-            if (_.isObject(previous) && _.isObject(next)) {
-                return {
-                    ...previous,
-                    ...next,
-                };
-            }
         }
 
-        return next;
+        return {
+            ...previous,
+            ...next,
+        };
+    };
+
+    extend = (prop, method) => {
+        if (typeof method == 'function') {
+            this[prop] = method.bind(this);
+        }
     };
 
     set = (pathArg, valueArg, update = true) => {
@@ -60,15 +85,21 @@ class ReactiumSyncState extends EventTarget {
             op.set(
                 this.stateObj.state,
                 path,
-                this._mergeValue(op.get(this.stateObj.state, path), value),
+                this._conditionallyMerge(
+                    op.get(this.stateObj.state, path),
+                    value,
+                ),
             );
         } else {
-            this.stateObj.state = this._mergeValue(this.stateObj.state, value);
+            this.stateObj.state = this._conditionallyMerge(
+                this.stateObj.state,
+                value,
+            );
         }
 
         if (update) {
             this.dispatchEvent(new ComponentEvent('set', { path, value }));
-            this.updater(new Date());
+            if (typeof this.updater == 'function') this.updater(new Date());
         }
 
         return this;
