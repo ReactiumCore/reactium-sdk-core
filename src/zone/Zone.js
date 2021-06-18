@@ -3,25 +3,24 @@
  * Imports
  * -----------------------------------------------------------------------------
  */
-import React, { useRef, useState, useEffect } from 'react';
-import ZoneSDK from './index';
+import React, { useEffect } from 'react';
 import { useHookComponent } from '../named-exports/component';
+import { useSyncState } from '../named-exports/useSyncState';
+import ZoneSDK from './index';
 import Component from '../component';
 import op from 'object-path';
 
-export const useZoneComponents = zone => {
-    const components = useRef(ZoneSDK.getZoneComponents(zone));
-    const [version, setVersion] = useState(Date.now());
+export const useZoneComponents = (zone, deref = true) => {
+    const components = useSyncState({ [zone]: ZoneSDK.getZoneComponents(zone) });
     useEffect(
         () =>
             ZoneSDK.subscribe(zone, zoneComponents => {
-                components.current = zoneComponents;
-                setVersion(Date.now());
+                components.set(zone, zoneComponents);
             }),
         [zone],
     );
 
-    return components.current;
+    return deref ? components.get(zone) : components;
 };
 
 const HookComponent = ({ hookName = '', ...props }) => {
@@ -31,9 +30,9 @@ const HookComponent = ({ hookName = '', ...props }) => {
 
 export const SimpleZone = props => {
     const { zone } = props;
-    const components = useZoneComponents(zone);
+    const components = useZoneComponents(zone, false);
 
-    return components.map(zoneComponent => {
+    return components.get(zone).map(zoneComponent => {
         const { id } = zoneComponent;
         const { children, ...zoneProps } = props;
 
@@ -56,12 +55,12 @@ export const SimpleZone = props => {
 
 const PassThroughZone = props => {
     const { zone, children, ...bindings } = props;
-    const components = useZoneComponents(zone);
+    const components = useZoneComponents(zone, false);
 
     return React.Children.map(children, Child => {
         return React.cloneElement(Child, {
             zone,
-            components: components.reduce(
+            components: components.get(zone).reduce(
                 (passThroughComponents, component) => {
                     let name = op.get(
                         component,
@@ -179,6 +178,8 @@ export default props => {
   use `Reactium.Zone.getZoneComponents()` (to get a list of components in the zone), alone or
   in combination with `Reactium.Zone.subscribe()`.
   * @apiParam {String} zone the zone id.
+  * @apiParam {Boolean} dereference=true If true, returns the current value of the components in the zone, separate from the reference. Otherwise,
+  returns the ReactiumSyncState object. This can be useful if you wish to use the components value with a non-memoized value.
   * @apiName useZoneComponents
   * @apiGroup ReactHook
   * @apiExample Example
@@ -194,4 +195,19 @@ export default props => {
          </div>
      );
  };
+ * @apiExample NoDereference
+import React from 'react';
+import { useZoneComponents } from 'reactium-core/sdk';
+
+// Use this method when the zone components are not refreshing smoothly on
+// rendering.
+export props => {
+    const zoneComponents = useZoneComponents('my-zone', false);
+
+    return (
+        <div>
+            Components in Zone: {zoneComponents.get().length}
+        </div>
+    );
+};
   */
