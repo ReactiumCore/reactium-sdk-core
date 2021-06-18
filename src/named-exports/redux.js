@@ -1,8 +1,8 @@
 import { useContext, useState, useEffect, useRef } from 'react';
 import { connect, ReactReduxContext } from 'react-redux';
 import op from 'object-path';
+import { useSyncState } from './useSyncState';
 const shallowEquals = require('shallow-equals');
-import uuid from 'uuid/v4';
 
 const noop = () => {};
 
@@ -188,13 +188,12 @@ export const useSelect = params => {
         returnMode = op.get(params, 'returnMode', 'state');
     }
 
-    const [, setVersion] = useState(new Date);
-    const { getState, subscribe } = useStore();
-    const stateRef = useRef(select(getState()));
-
+    const store = useStore();
+    const syncState = useSyncState(select(store.getState()));
+    const deprecatedRef = useRef(syncState.get());
     const setState = () => {
-        const newState = select(getState());
-        const prevState = stateRef.current;
+        const newState = select(store.getState());
+        const prevState = syncState.get();
 
         if (
             shouldUpdate({
@@ -202,26 +201,31 @@ export const useSelect = params => {
                 prevState,
             })
         ) {
-            stateRef.current = newState;
-            setVersion(new Date);
+            syncState.set(newState);
         }
     };
 
     useEffect(() => {
         setState();
-        return subscribe(setState);
+        return store.subscribe(setState);
     }, []);
 
     const getter = (key, defaultValue) =>
-        op.get(stateRef.current, key, defaultValue);
+        op.get(syncState.current, key, defaultValue);
 
     switch (returnMode) {
         case 'ref':
-            return stateRef;
+            console.log(
+                'useSelect() returnMode "ref" is deprecated, use "syncState" instead.',
+            );
+            deprecatedRef.current = syncState.get();
+            return deprecatedRef;
         case 'get':
-            return getter;
+            return syncState.get;
+        case 'syncState':
+            return syncState;
         default:
-            return stateRef.current;
+            return syncState.get();
     }
 };
 
@@ -263,11 +267,11 @@ export const useReduxState = (...params) => {
         throw 'shouldUpdate parameter must be a function';
 
     const state = useSelect({ select, shouldUpdate });
-    const { dispatch } = useStore();
+    const store = useStore();
     return [
         state,
         update =>
-            dispatch({
+            store.dispatch({
                 type: 'DOMAIN_UPDATE',
                 domain,
                 update,
