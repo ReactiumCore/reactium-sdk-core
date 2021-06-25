@@ -1,8 +1,16 @@
 import { useContext, useState, useEffect, useRef } from 'react';
-import { connect, ReactReduxContext } from 'react-redux';
 import op from 'object-path';
 import { useSyncState } from './useSyncState';
 const shallowEquals = require('shallow-equals');
+
+let connect, ReactReduxContext;
+try {
+    const rr = require('react-redux');
+    connect = rr.connect;
+    ReactReduxContext = rr.ReactReduxContext;
+} catch (error) {
+    console.error(error);
+}
 
 const noop = () => {};
 
