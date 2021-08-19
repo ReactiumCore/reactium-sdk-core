@@ -19,12 +19,10 @@ class ReactiumSyncState extends EventTarget {
     };
 
     _setArgs = (path, value) => {
-        // path looks like object path
+        // path looks like object path or is explicitly false
         if (
-            typeof path == 'string' ||
-            (Array.isArray(path) &&
-                typeof value != 'undefined' &&
-                value !== null)
+            (path === false || typeof path == 'string' || Array.isArray(path)) &&
+            typeof value != 'undefined'
         ) {
             return [path, value];
         }
@@ -58,7 +56,7 @@ class ReactiumSyncState extends EventTarget {
         // merge not possible or necessary
         if (
             !_.isEmpty(
-                noMergeConditions.filter(condition =>
+                noMergeConditions.filter((condition) =>
                     condition(previous, next),
                 ),
             )
@@ -161,7 +159,7 @@ class ReactiumSyncState extends EventTarget {
     );
  };
  */
-export const useSyncState = initialState => {
+export const useSyncState = (initialState) => {
     const stateRef = useRef(new ReactiumSyncState(initialState));
     const [, updater] = useState(new Date());
     stateRef.current.updater = updater;
