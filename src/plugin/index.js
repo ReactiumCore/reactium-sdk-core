@@ -82,6 +82,16 @@ Plugin.isActive = ID => {
 };
 
 /**
+ * TODO: Refactor this stuff out. It's used in the most awkward of ways only in the admin, and it is redux behavior. It's just all wrong.
+ * 
+ * @api {Function} Plugin.list() Plugin.list()
+ * @apiGroup Reactium.Plugin
+ * @apiName Plugin.list
+ * @apiDescription Return the list of registered plugins.
+ */
+Plugin.list = () => op.get(Plugin.redux.store.getState(), 'PluginManager.plugins', []);
+
+/**
  * @api {Function} Plugin.unregister(ID) Plugin.unregister()
  * @apiName Plugin.unregister
  * @apiDescription Unregister a Reactium plugin by unique id. This can only be called prior to the `plugin-dependencies` hook, or `Reactium.Plugin.ready === true`.
