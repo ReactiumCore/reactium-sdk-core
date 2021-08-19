@@ -1361,17 +1361,6 @@
   },
   {
     "type": "Function",
-    "url": "Plugin.list()",
-    "title": "Plugin.list()",
-    "group": "Reactium.Plugin",
-    "name": "Plugin.list",
-    "description": "<p>Return the list of registered plugins.</p>",
-    "version": "0.0.0",
-    "filename": "src/plugin/index.js",
-    "groupTitle": "Reactium.Plugin"
-  },
-  {
-    "type": "Function",
     "url": "Plugin.register(ID,order)",
     "title": "Plugin.register()",
     "name": "Plugin.register",
