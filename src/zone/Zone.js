@@ -20,7 +20,7 @@ export const useZoneComponents = (zone, deref = true) => {
         [zone],
     );
 
-    return deref ? components.get(zone) : components;
+    return deref ? components.get(zone, []) : components;
 };
 
 const HookComponent = ({ hookName = '', ...props }) => {
@@ -32,7 +32,7 @@ export const SimpleZone = props => {
     const { zone } = props;
     const components = useZoneComponents(zone, false);
 
-    return components.get(zone).map(zoneComponent => {
+    return components.get(zone, []).map(zoneComponent => {
         const { id } = zoneComponent;
         const { children, ...zoneProps } = props;
 
