@@ -11,28 +11,29 @@ import Component from '../component';
 import op from 'object-path';
 
 export const useZoneComponents = (zone, deref = true) => {
-    const components = useSyncState({ [zone]: ZoneSDK.getZoneComponents(zone) });
-    useEffect(
-        () =>
-            ZoneSDK.subscribe(zone, zoneComponents => {
-                components.set(zone, zoneComponents);
-            }),
-        [zone],
-    );
+    const components = useSyncState({
+        [zone]: ZoneSDK.getZoneComponents(zone),
+    });
+    useEffect(() => {
+        components.set(zone, ZoneSDK.getZoneComponents(zone));
+        return ZoneSDK.subscribe(zone, (zoneComponents) => {
+            components.set(zone, zoneComponents);
+        });
+    }, [zone]);
 
     return deref ? components.get(zone, []) : components;
 };
 
 const HookComponent = ({ hookName = '', ...props }) => {
     const DynamicComponent = useHookComponent(hookName);
-    return <DynamicComponent { ...props } />;
+    return <DynamicComponent {...props} />;
 };
 
-export const SimpleZone = props => {
+export const SimpleZone = (props) => {
     const { zone } = props;
     const components = useZoneComponents(zone, false);
 
-    return components.get(zone, []).map(zoneComponent => {
+    return components.get(zone, []).map((zoneComponent) => {
         const { id } = zoneComponent;
         const { children, ...zoneProps } = props;
 
@@ -53,15 +54,16 @@ export const SimpleZone = props => {
     });
 };
 
-const PassThroughZone = props => {
+const PassThroughZone = (props) => {
     const { zone, children, ...bindings } = props;
     const components = useZoneComponents(zone, false);
 
-    return React.Children.map(children, Child => {
+    return React.Children.map(children, (Child) => {
         return React.cloneElement(Child, {
             zone,
-            components: components.get(zone).reduce(
-                (passThroughComponents, component) => {
+            components: components
+                .get(zone)
+                .reduce((passThroughComponents, component) => {
                     let name = op.get(
                         component,
                         'name',
@@ -76,9 +78,7 @@ const PassThroughZone = props => {
                         }
                     }
                     return passThroughComponents;
-                },
-                {},
-            ),
+                }, {}),
             bindings,
         });
     });
@@ -89,7 +89,7 @@ const PassThroughZone = props => {
  * React Component: Zone
  * -----------------------------------------------------------------------------
  */
-const Zone = props => {
+const Zone = (props) => {
     const { children, passThrough = false } = props;
 
     return (
