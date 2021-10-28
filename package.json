@@ -1,15 +1,12 @@
 {
   "name": "@atomic-reactor/reactium-sdk-core",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/Atomic-Reactor/reactium-sdk-core.git"
   },
-  "dependencies": {
-    "enzyme": "^3.11.0",
-    "enzyme-adapter-react-16": "^1.15.6"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@babel/cli": "^7.10.5",
     "@babel/core": "^7.11.0",
@@ -23,6 +20,8 @@
     "chai": "^4.2.0",
     "classnames": "^2.2.6",
     "dayjs": "^1.10.4",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.6",
     "jest": "^26.2.2",
     "jest-cli": "^26.2.2",
     "memory-cache": "^0.2.0",
