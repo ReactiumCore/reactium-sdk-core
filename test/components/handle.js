@@ -5,9 +5,13 @@ import CommonSDK, { useRegisterHandle, useHandle } from '../../lib';
 export const someHandleState = 'some state';
 export const HandleRegisterer = () => {
     const [handleState] = useState(someHandleState);
-    useRegisterHandle('HandleComponent', () => ({
-        handleState
-    }), []);
+    useRegisterHandle(
+        'HandleComponent',
+        () => ({
+            handleState,
+        }),
+        [],
+    );
 
     return handleState;
 };
@@ -15,4 +19,13 @@ export const HandleRegisterer = () => {
 export const HandleConsumer = () => {
     const { handleState } = useHandle('HandleComponent');
     return handleState;
-}
+};
+
+export const HandleTester = () => {
+    return (
+        <>
+            <HandleRegisterer />
+            <HandleConsumer />
+        </>
+    );
+};

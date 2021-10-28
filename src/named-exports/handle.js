@@ -1,7 +1,6 @@
 import Handle from '../handle';
 import op from 'object-path';
 import { useRef, useState, useEffect } from 'react';
-import uuid from 'uuid/v4';
 
 /**
 * @api {ReactHook} useRegisterHandle(id,cb,deps) useRegisterHandle()
@@ -25,7 +24,7 @@ export const useRegisterHandle = (ID, cb, deps = []) => {
         ref.current = cb();
         Handle.register(ID, ref);
         return () => Handle.unregister(ID);
-    }, deps);
+    }, [ID].concat(deps));
 };
 
 /**
@@ -77,20 +76,21 @@ const CounterControl = () => {
 export default CounterControl;
  */
 export const useHandle = (ID, defaultValue = {}) => {
-    const ref = useRef(op.get(Handle.get(ID), 'current', defaultValue));
-    const [, updateVersion] = useState(uuid());
-    const setHandle = newRef => {
-        const handle = op.get(newRef, 'current', defaultValue);
+    const getHandle = () => op.get(Handle.get(ID), 'current', defaultValue);
+    const ref = useRef(getHandle());
+    const [, update] = useState(new Date);
 
-        if (op.has(newRef, 'current') && handle !== ref.current) {
+    const setHandle = handle => {
+        if (handle && handle !== ref.current) {
             ref.current = handle;
-            updateVersion(uuid());
+            update(new Date);
         }
     };
 
     useEffect(() => {
+        setHandle(getHandle())
         return Handle.subscribe(() => {
-            setHandle(Handle.get(ID));
+            setHandle(getHandle());
         });
     }, [ID]);
 

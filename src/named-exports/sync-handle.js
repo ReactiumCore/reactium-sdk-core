@@ -60,13 +60,15 @@ const CounterControl = () => {
 export default CounterControl;
  */
 export const useRegisterSyncHandle = (ID, ...syncStateArgs) => {
-    const state = useSyncState(...syncStateArgs);
+    const ref = useRef(useSyncState(...syncStateArgs));
 
-    Handle.register(ID, state, false);
-
+    Handle.register(ID, ref);
     useEffect(() => {
+        Handle.register(ID, ref);
         return () => Handle.unregister(ID);
-    }, []);
+    }, [ID]);
+
+    return ref.current;
 };
 
 /**
@@ -78,9 +80,15 @@ export const useRegisterSyncHandle = (ID, ...syncStateArgs) => {
 * @apiName useSelectHandle
 * @apiGroup ReactHook
  */
+const noop = () => {};
 export const useSelectHandle = (ID, ...selectorArgs) => {
     const [ ,update ] = useState(new Date);
-    const handle = useHandle(ID);
+    const handle = useHandle(ID, {
+        get: (...getArgs) => op.get({}, ...getArgs),
+        addEventListener: noop,
+        removeEventListener: noop,
+    });
+
     const selectedRef = useRef();
 
     const selector = (selectorArgs, state) => {
@@ -90,7 +98,7 @@ export const useSelectHandle = (ID, ...selectorArgs) => {
 
     selectedRef.current = selector(selectorArgs, handle);
 
-    useEventEffect({
+    useEventEffect(handle, {
         set: state => {
             const newSelected = selector(selectorArgs, state);
             if (selectedRef.current !== newSelected) {
@@ -98,7 +106,7 @@ export const useSelectHandle = (ID, ...selectorArgs) => {
                 update(new Date);
             }
         },
-    }, []);
+    }, [ID, handle]);
 
     return { handle, selected: selectedRef.current };
 };
