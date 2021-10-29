@@ -36,7 +36,7 @@ isElectronWindow();
 // Returns: true if executed in electron.
 // Returns: false if executed in node or browser.
  */
-export const isElectron = (iWindow) => {
+export const isElectronWindow = (iWindow) => {
     iWindow = iWindow || conditionalWindow();
 
     return (
@@ -386,7 +386,7 @@ export const Utils = {
     conditionalWindow,
     conditionalDocument,
     isWindow,
-    isElectron,
+    isElectronWindow,
     isServerWindow,
     isBrowserWindow,
     BREAKPOINTS_DEFAULT,
