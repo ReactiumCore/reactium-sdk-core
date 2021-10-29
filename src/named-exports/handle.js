@@ -1,4 +1,4 @@
-import Handle from '../handle';
+import { Handle } from '../sdks';
 import op from 'object-path';
 import { useRef, useState, useEffect } from 'react';
 

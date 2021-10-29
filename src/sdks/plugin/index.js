@@ -83,7 +83,7 @@ Plugin.isActive = ID => {
 
 /**
  * TODO: Refactor this stuff out. It's used in the most awkward of ways only in the admin, and it is redux behavior. It's just all wrong.
- * 
+ *
  * @api {Function} Plugin.list() Plugin.list()
  * @apiGroup Reactium.Plugin
  * @apiName Plugin.list
@@ -123,7 +123,7 @@ Plugin.unregister = ID => {
     }
 };
 
-export default Plugin;
+export { Plugin as default, Plugin };
 
 Hook.register('plugin-init', Plugin.callbacks, Enums.priority.highest);
 

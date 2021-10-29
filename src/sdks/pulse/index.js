@@ -462,7 +462,9 @@ if (task.status === Pulse.ENUMS.STATUS.STOPPED) {
     }
 }
 
-export default new Pulse();
+const pulse = new Pulse();
+
+export { pulse as default, pulse as Pulse };
 
 /**
  * @api {Object} Reactium.Pulse Pulse

@@ -77,8 +77,10 @@ const set = (key, value) => {
     }
 };
 
-export default {
+const Prefs = {
     clear,
     get,
     set,
 };
+
+export { Prefs as default, Prefs };

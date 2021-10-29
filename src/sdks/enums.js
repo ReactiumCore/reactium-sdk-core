@@ -1,4 +1,4 @@
-export default {
+const Enums = {
     cache: {
         settings: 1000 * 90,
     },
@@ -14,3 +14,5 @@ export default {
             `${callName} called before ready. Wait for Plugin.register() promise to be resolved.`,
     },
 };
+
+export { Enums as default, Enums };

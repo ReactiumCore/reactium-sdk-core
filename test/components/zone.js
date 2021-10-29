@@ -1,5 +1,5 @@
 import React from 'react';
-import CommonSDK, { useHookComponent } from '../../lib';
+import { useHookComponent } from '../../lib';
 
 export const A = () => <>A</>;
 export const B = () => <>B</>;

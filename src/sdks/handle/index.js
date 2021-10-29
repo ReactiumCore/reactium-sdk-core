@@ -203,4 +203,5 @@ export default () => {
     }
 }
 
-export default new Handle();
+const ReactiumHandle = new Handle();
+export { ReactiumHandle as default, ReactiumHandle as Handle };

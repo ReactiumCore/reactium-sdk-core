@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import op from 'object-path';
 
 class ComponentEvent extends CustomEvent {

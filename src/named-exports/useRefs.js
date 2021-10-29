@@ -1,5 +1,5 @@
 import op from 'object-path';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { useEventHandle, ComponentEvent } from './event-handle';
 import React from 'react';
 

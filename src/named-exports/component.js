@@ -1,8 +1,6 @@
-import Component from '../component';
-import { useAsyncEffect } from './async-effect';
-import { useState, useRef, forwardRef } from 'react';
+import { Component } from '../sdks';
+import { useRef, forwardRef } from 'react';
 import op from 'object-path';
-import uuid from 'uuid/v4';
 
 /**
  * @api {ReactHook} useHookComponent(hookName,defaultComponent,...params) useHookComponent()

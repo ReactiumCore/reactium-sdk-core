@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import op from 'object-path';
 import _ from 'underscore';
 const shallowEquals = require('shallow-equals');

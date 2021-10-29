@@ -1,5 +1,4 @@
-import op from 'object-path';
-import React, { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 
 class AsyncUpdate {
     constructor() {

@@ -1,5 +1,3 @@
-import uuid from 'uuid/v4';
-
 const ENUMS = {
     ERROR: {
         ID: 'Pulse.register() - ID is a required parameter',

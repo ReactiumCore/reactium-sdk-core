@@ -1,6 +1,5 @@
-import React, { forwardRef } from 'react';
-import Hook from '../hook';
-import Enums from '../enums';
+import { Hook } from '../hook';
+import { Enums } from '../enums';
 import op from 'object-path';
 import _ from 'underscore';
 import uuid from 'uuid/v4';
@@ -371,7 +370,9 @@ class Zones {
     };
 }
 
-export default new Zones();
+const ZoneRegistry = new Zones();
+
+export { ZoneRegistry as default, ZoneRegistry };
 
 /**
  * @api {Function} Zone.addMapper(zone,mapper,order) Zone.addMapper()

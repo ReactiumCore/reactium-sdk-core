@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import op from 'object-path';
 import _ from 'underscore';
 import { ComponentEvent } from './event-handle';
-import Hook from '../hook';
+import { Hook } from '../sdks';
 
 class ReactiumSyncState extends EventTarget {
     constructor(initialState) {

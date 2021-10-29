@@ -43,7 +43,7 @@ import uuid from 'uuid/v4';
  * @apiParam {Method} unsubscribeAll `reg.unsubscribeAll()` unsubscribe all subscribers to changes made on the registry
  */
 
-export default class Registry {
+class Registry {
     constructor(name, idField, mode = Registry.MODES.HISTORY) {
         this.__name = name || 'Registry';
         this.__idField = idField || 'id';
@@ -273,3 +273,5 @@ Registry.MODES = {
     HISTORY: 'HISTORY',
     CLEAN: 'CLEAN',
 };
+
+export { Registry as default, Registry };

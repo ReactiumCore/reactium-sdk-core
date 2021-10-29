@@ -4,13 +4,13 @@
  * -----------------------------------------------------------------------------
  */
 import React, { useEffect } from 'react';
-import { useHookComponent } from '../named-exports/component';
-import { useSyncState } from '../named-exports/useSyncState';
-import ZoneSDK from './index';
-import Component from '../component';
+import { useHookComponent } from './component';
+import { useSyncState } from './useSyncState';
+import ZoneSDK from '../sdks/zone';
+import Component from '../sdks/component';
 import op from 'object-path';
 
-export const useZoneComponents = (zone, deref = true) => {
+const useZoneComponents = (zone, deref = true) => {
     const components = useSyncState({
         [zone]: ZoneSDK.getZoneComponents(zone),
     });
@@ -29,7 +29,7 @@ const HookComponent = ({ hookName = '', ...props }) => {
     return <DynamicComponent {...props} />;
 };
 
-export const SimpleZone = (props) => {
+const SimpleZone = (props) => {
     const { zone } = props;
     const components = useZoneComponents(zone, false);
 
@@ -102,7 +102,13 @@ const Zone = (props) => {
 
 Component.register('Zone', Zone);
 
-export default Zone;
+export {
+    Zone as default,
+    Zone,
+    SimpleZone,
+    PassThroughZone,
+    HookComponent,
+};
 
 /**
  * @api {RegisteredComponent} Zone Zone
