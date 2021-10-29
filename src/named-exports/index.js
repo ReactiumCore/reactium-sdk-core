@@ -11,4 +11,4 @@ export * from './useStatus';
 export * from './useSyncState';
 export * from './useRefs';
 export * from './Zone';
-export { default as Zone } from '../Zone';
+export { default as Zone } from './Zone';
