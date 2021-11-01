@@ -99,8 +99,8 @@ export const useSelectHandle = (ID, ...selectorArgs) => {
     selectedRef.current = selector(selectorArgs, handle);
 
     useEventEffect(handle, {
-        set: state => {
-            const newSelected = selector(selectorArgs, state);
+        set: e => {
+            const newSelected = selector(selectorArgs, e.currentTarget);
             if (selectedRef.current !== newSelected) {
                 selectedRef.current = newSelected;
                 update(new Date);
