@@ -1,4 +1,5 @@
-import { useRegisterSyncHandle, useCallback, useEffect } from 'react';
+import {  useCallback, useEffect } from 'react';
+import { useRegisterSyncHandle } from './sync-handle';
 import { isBrowserWindow } from '../sdks/utils';
 
 /**
@@ -8,7 +9,7 @@ import { isBrowserWindow } from '../sdks/utils';
 * See useSelectHandle() for information on using registered handles.
 * @apiName useScrollToggle
 * @apiGroup ReactHook
-* @apiVersion 1.2.6
+* @apiVersion 1.2.7
 * @apiExample NPM Usage
 import { useScrollToggle } from '@atomic-reactor/reactium-sdk-core';
 * @apiExample Reactium Usage
@@ -37,14 +38,14 @@ import {
     // Close modal and disable scroll lock on body
     handle.extend('close', () => {
         handle.set('open', false);
-        bodyScroll.disable();
+        bodyScroll.enable();
     });
 
     // Open modal, showing component, and stop scroll on body
     handle.extend('open', Component => {
         handle.set('Contents', { Component });
         handle.set('open', true);
-        bodyScroll.enable();
+        bodyScroll.disable();
     });
 
     const isContainer = useIsContainer();
@@ -94,7 +95,7 @@ const LockToggle = () => {
     return (
         <button onClick={BodyScroll.toggle}>
         {
-            BodyScroll.get('enabled') ? 'Unlock Body' : 'Lock Body'
+            BodyScroll.get('enabled') ? 'Lock Scrolling' : 'Unlock Scrolling'
         }
         </button>
     );
@@ -171,7 +172,7 @@ const useScrollToggle = () => {
     });
 
     handle.extend('toggle', () => {
-        if (handle.get('enabled', false)) {
+        if (handle.get('enabled', true)) {
             handle.disable();
             return;
         }

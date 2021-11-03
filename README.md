@@ -58,6 +58,7 @@ This SDK comes with a number of React hooks:
 * **useSyncState**: A drop in replacement for useState that avoids async state update getting out of sync with your render. Also an EventTarget for event streaming state updates.
 * **useRefs**: Manage multiple refs easily.
 * **useEventRefs**: Like useRefs, but also an EventTarget for event streaming reference changes.
+* **useScrollToggle**: Facilitates enabling or disabling body scrolling in the browser.
 
 ### Browser / App Utilities
 * **Registry**: A generic subscribable registry class.
@@ -191,6 +192,7 @@ As a reference, here is a full list of the library esmodule exports. (Just to ma
     useAsyncEffect: [Getter],
     useStatus: [Getter],
     useSyncState: [Getter],
+    useScrollToggle: [Getter],
     createRefsProxyFactory: [Getter],
     useRefs: [Getter],
     useEventRefs: [Getter],
