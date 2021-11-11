@@ -104,6 +104,8 @@ class ReactiumSyncState extends EventTarget {
     };
 }
 
+export { ReactiumSyncState };
+
 /**
  * @api {ReactHook} useSyncState(initialState) useSyncState()
  * @apiDescription Intended to provide an object to get and set state synchrounously, while providing a EventTarget object that can dispatch a 'set' event when

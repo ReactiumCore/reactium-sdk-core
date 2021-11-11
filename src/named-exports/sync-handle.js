@@ -1,7 +1,7 @@
 import { Handle } from '../sdks';
 import op from 'object-path';
 import { useEffect, useRef, useState } from 'react';
-import  { useSyncState } from './useSyncState';
+import  { useSyncState, ReactiumSyncState } from './useSyncState';
 import { useHandle } from './handle';
 import { useEventEffect } from './event-handle';
 
@@ -110,3 +110,18 @@ export const useSelectHandle = (ID, ...selectorArgs) => {
 
     return { handle, selected: selectedRef.current };
 };
+
+/**
+* @api {ReactHook} useSyncHandle(id,cb,deps) useSyncHandle()
+* @apiDescription React hook to subscribe to updates for a registered sync handle.
+* @apiParam {Mixed} id Array of properties, or `.` separated object path. e.g. ['path','to','handle'] or 'path.to.handle'. Identifies the full path to an imperative handle.
+* @apiName useSyncHandle
+* @apiGroup ReactHook
+ */
+export const useSyncHandle = (ID) => {
+    const [ ,update ] = useState(new Date);
+    const handle = useHandle(ID, new ReactiumSyncState({}));
+    handle.updater = update;
+
+    return handle;
+}
