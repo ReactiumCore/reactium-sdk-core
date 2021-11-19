@@ -1,7 +1,7 @@
 import { Handle } from '../sdks';
 import op from 'object-path';
 import { useEffect, useRef, useState } from 'react';
-import { useSyncState, ReactiumSyncState } from './useSyncState';
+import  { useSyncState, ReactiumSyncState } from './useSyncState';
 import { useHandle } from './handle';
 import { useEventEffect } from './event-handle';
 
@@ -72,17 +72,17 @@ export const useRegisterSyncHandle = (ID, ...syncStateArgs) => {
 };
 
 /**
- * @api {ReactHook} useSelectHandle(id,cb,deps) useSelectHandle()
- * @apiDescription React hook to subscribe to updates to state on an imperative handle created by useRegisterSyncHandle. See useRegisterSyncHandle for full example.
- * @apiParam {Mixed} id Array of properties, or `.` separated object path. e.g. ['path','to','handle'] or 'path.to.handle'. Identifies the full path to an imperative handle.
- * @apiParam {String|Array|Function} selector object path string or array, or selector function passed the sync state object (see useSyncState); returns seleted state
- * @apiParam {Mixed} [default] default selected value (if selector is String or Array)
- * @apiName useSelectHandle
- * @apiGroup ReactHook
+* @api {ReactHook} useSelectHandle(id,cb,deps) useSelectHandle()
+* @apiDescription React hook to subscribe to updates to state on an imperative handle created by useRegisterSyncHandle. See useRegisterSyncHandle for full example.
+* @apiParam {Mixed} id Array of properties, or `.` separated object path. e.g. ['path','to','handle'] or 'path.to.handle'. Identifies the full path to an imperative handle.
+* @apiParam {String|Array|Function} selector object path string or array, or selector function passed the sync state object (see useSyncState); returns seleted state
+* @apiParam {Mixed} [default] default selected value (if selector is String or Array)
+* @apiName useSelectHandle
+* @apiGroup ReactHook
  */
 const noop = () => {};
 export const useSelectHandle = (ID, ...selectorArgs) => {
-    const [, update] = useState(new Date());
+    const [ ,update ] = useState(new Date);
     const handle = useHandle(ID, {
         get: (...getArgs) => op.get({}, ...getArgs),
         addEventListener: noop,
@@ -93,42 +93,39 @@ export const useSelectHandle = (ID, ...selectorArgs) => {
 
     const selector = (selectorArgs, state) => {
         const cb = op.get(selectorArgs, [0]);
-        return typeof cb === 'function'
-            ? cb(state)
-            : state.get(...selectorArgs);
-    };
+        return typeof cb === 'function' ? cb(state) : state.get(...selectorArgs);
+    }
 
     selectedRef.current = selector(selectorArgs, handle);
 
-    useEventEffect(
-        handle,
-        {
-            set: (e) => {
-                const newSelected = selector(selectorArgs, e.currentTarget);
-                if (selectedRef.current !== newSelected) {
-                    selectedRef.current = newSelected;
-                    update(new Date());
-                }
-            },
+    useEventEffect(handle, {
+        set: e => {
+            const newSelected = selector(selectorArgs, e.currentTarget);
+            if (selectedRef.current !== newSelected) {
+                selectedRef.current = newSelected;
+                update(new Date);
+            }
         },
-        [ID, handle],
-    );
+    }, [ID, handle]);
 
     return { handle, selected: selectedRef.current };
 };
 
 /**
- * @api {ReactHook} useSyncHandle(id) useSyncHandle()
- * @apiDescription React hook to subscribe to updates for a registered sync handle.
- * @apiParam {Mixed} id Array of properties, or `.` separated object path. e.g. ['path','to','handle'] or 'path.to.handle'. Identifies the full path to an imperative handle.
- * @apiName useSyncHandle
- * @apiGroup ReactHook
+* @api {ReactHook} useSyncHandle(id) useSyncHandle()
+* @apiDescription React hook to subscribe to updates for a registered sync handle.
+* @apiParam {Mixed} id Array of properties, or `.` separated object path. e.g. ['path','to','handle'] or 'path.to.handle'. Identifies the full path to an imperative handle.
+* @apiName useSyncHandle
+* @apiGroup ReactHook
  */
-export const useSyncHandle = (ID) => {
-    const [, update] = useState(new Date());
+const useSyncHandle = (ID) => {
+    const [ ,update ] = useState(new Date);
+    const updater = () => update(new Date);
     const handle = useHandle(ID, new ReactiumSyncState({}));
-    handle.addEventListener('set', update);
-    useEffect(() => () => handle.removeEventListener('set', update), []);
+    useEffect(() => {
+        handle.addEventListener('set', updater);
+        return () => handle.removeEventListener('set', updater);
+    }, [ID, handle]);
 
     return handle;
-};
+}
