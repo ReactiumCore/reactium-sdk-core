@@ -643,9 +643,9 @@ define({ "api": [
   },
   {
     "type": "ReactHook",
-    "url": "useSyncState(initialState)",
+    "url": "useSyncState(initialState,updateEvent)",
     "title": "useSyncState()",
-    "description": "<p>Intended to provide an object to get and set state synchrounously, while providing a EventTarget object that can dispatch a 'set' event when the state is updated.</p>",
+    "description": "<p>Intended to provide an object to get and set state synchrounously, while providing a EventTarget object that can dispatch a 'set' event when the state is updated. Dispatches 'before-set' before changing the state, and 'change' event if any shallow changes are detected.</p>",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -655,6 +655,14 @@ define({ "api": [
             "optional": false,
             "field": "initialState",
             "description": "<p>The initial state.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "updateEvent",
+            "defaultValue": "set",
+            "description": "<p>Trigger update of the consuming component when EventTarget event of this type is dispatched. Defaults tot 'set'.</p>"
           }
         ]
       }
