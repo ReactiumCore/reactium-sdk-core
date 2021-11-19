@@ -619,7 +619,7 @@
   },
   {
     "type": "ReactHook",
-    "url": "useSyncHandle(id,cb,deps)",
+    "url": "useSyncHandle(id)",
     "title": "useSyncHandle()",
     "description": "<p>React hook to subscribe to updates for a registered sync handle.</p>",
     "parameter": {
