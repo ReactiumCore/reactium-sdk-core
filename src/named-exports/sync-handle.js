@@ -118,7 +118,7 @@ export const useSelectHandle = (ID, ...selectorArgs) => {
 * @apiName useSyncHandle
 * @apiGroup ReactHook
  */
-const useSyncHandle = (ID) => {
+export const useSyncHandle = (ID) => {
     const [ ,update ] = useState(new Date);
     const updater = () => update(new Date);
     const handle = useHandle(ID, new ReactiumSyncState({}));
