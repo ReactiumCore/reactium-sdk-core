@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import op from 'object-path';
 import _ from 'underscore';
-import { ComponentEvent } from './event-handle';
+import { ComponentEvent, useEventEffect } from './event-handle';
 import { Hook } from '../sdks';
 
 class ReactiumSyncState extends EventTarget {
@@ -78,17 +78,21 @@ class ReactiumSyncState extends EventTarget {
 
     set = (pathArg, valueArg, update = true) => {
         const [path, value] = this._setArgs(pathArg, valueArg);
-
+        let changed = false;
         if (path) {
+            const currentValue = op.get(this.stateObj.state, path);
+            const nextValue = this._conditionallyMerge(
+                op.get(this.stateObj.state, path),
+                value,
+            );
+            changed = !_.isEqual(currentValue, nextValue)
             op.set(
                 this.stateObj.state,
                 path,
-                this._conditionallyMerge(
-                    op.get(this.stateObj.state, path),
-                    value,
-                ),
+                nextValue,
             );
         } else {
+            changed = !_.isEqual(this.stateObj.state, value)
             this.stateObj.state = this._conditionallyMerge(
                 this.stateObj.state,
                 value,
@@ -97,7 +101,7 @@ class ReactiumSyncState extends EventTarget {
 
         if (update) {
             this.dispatchEvent(new ComponentEvent('set', { path, value }));
-            if (typeof this.updater == 'function') this.updater(new Date());
+            if (changed) this.dispatchEvent(new ComponentEvent('change', { path, value }));
         }
 
         return this;
@@ -163,7 +167,9 @@ export { ReactiumSyncState };
  */
 export const useSyncState = (initialState) => {
     const stateRef = useRef(new ReactiumSyncState(initialState));
-    const [, updater] = useState(new Date());
-    stateRef.current.updater = updater;
+    const [, update] = useState(new Date());
+    const set = () => update(new Date());
+    useEventEffect(stateRef.current, { set });
+
     return stateRef.current;
 };
