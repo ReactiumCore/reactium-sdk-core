@@ -1,14 +1,20 @@
 {
   "name": "@atomic-reactor/reactium-sdk-core",
-  "version": "1.1.2",
+  "version": "1.2.13",
   "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/Atomic-Reactor/reactium-sdk-core.git"
   },
   "dependencies": {
-    "enzyme": "^3.11.0",
-    "enzyme-adapter-react-16": "^1.15.2"
+    "action-sequence": "^1.1.2",
+    "classnames": "^2.3.1",
+    "dayjs": "^1.10.7",
+    "memory-cache": "^0.2.0",
+    "object-path": "^0.11.8",
+    "shallow-equals": "^1.0.0",
+    "underscore": "^1.13.1",
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.5",
@@ -17,33 +23,18 @@
     "@babel/plugin-proposal-export-default-from": "^7.10.4",
     "@babel/preset-env": "^7.11.0",
     "@babel/preset-react": "^7.10.4",
-    "action-sequence": "^1.1.1",
     "apidoc": "^0.24.0",
     "babel-jest": "^26.2.2",
     "chai": "^4.2.0",
-    "classnames": "^2.2.6",
-    "dayjs": "^1.10.4",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.6",
     "jest": "^26.2.2",
     "jest-cli": "^26.2.2",
-    "memory-cache": "^0.2.0",
-    "object-path": "^0.11.5",
     "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "shallow-equals": "^1.0.0",
-    "underscore": "^1.9.1",
-    "uuid": "^3.3.3"
+    "react-dom": "^16.12.0"
   },
   "peerDependencies": {
-    "action-sequence": "*",
-    "classnames": "*",
-    "dayjs": "*",
-    "memory-cache": "*",
-    "object-path": "*",
-    "react": "*",
-    "react-dom": "*",
-    "shallow-equals": "*",
-    "underscore": "*",
-    "uuid": "*"
+    "react": "*"
   },
   "scripts": {
     "build": "babel src --out-dir lib",

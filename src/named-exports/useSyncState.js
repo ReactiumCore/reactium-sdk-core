@@ -1,8 +1,8 @@
 import { useState, useRef } from 'react';
 import op from 'object-path';
 import _ from 'underscore';
-import { ComponentEvent } from './event-handle';
-import Hook from '../hook';
+import { ComponentEvent, useEventEffect } from './event-handle';
+import { Hook } from '../sdks';
 
 class ReactiumSyncState extends EventTarget {
     constructor(initialState) {
@@ -79,16 +79,23 @@ class ReactiumSyncState extends EventTarget {
     set = (pathArg, valueArg, update = true) => {
         const [path, value] = this._setArgs(pathArg, valueArg);
 
+        if (update) this.dispatchEvent(new ComponentEvent('before-set', { path, value }));
+
+        let changed = false;
         if (path) {
+            const currentValue = op.get(this.stateObj.state, path);
+            const nextValue = this._conditionallyMerge(
+                op.get(this.stateObj.state, path),
+                value,
+            );
+            changed = !_.isEqual(currentValue, nextValue)
             op.set(
                 this.stateObj.state,
                 path,
-                this._conditionallyMerge(
-                    op.get(this.stateObj.state, path),
-                    value,
-                ),
+                nextValue,
             );
         } else {
+            changed = !_.isEqual(this.stateObj.state, value)
             this.stateObj.state = this._conditionallyMerge(
                 this.stateObj.state,
                 value,
@@ -97,18 +104,21 @@ class ReactiumSyncState extends EventTarget {
 
         if (update) {
             this.dispatchEvent(new ComponentEvent('set', { path, value }));
-            if (typeof this.updater == 'function') this.updater(new Date());
+            if (changed) this.dispatchEvent(new ComponentEvent('change', { path, value }));
         }
 
         return this;
     };
 }
 
+export { ReactiumSyncState };
+
 /**
- * @api {ReactHook} useSyncState(initialState) useSyncState()
+ * @api {ReactHook} useSyncState(initialState,updateEvent) useSyncState()
  * @apiDescription Intended to provide an object to get and set state synchrounously, while providing a EventTarget object that can dispatch a 'set' event when
- * the state is updated.
+ * the state is updated. Dispatches 'before-set' before changing the state, and 'change' event if any shallow changes are detected.
  * @apiParam {Mixed} initialState The initial state.
+ * @apiParam {String} [updateEvent=set] Trigger update of the consuming component when EventTarget event of this type is dispatched. Defaults tot 'set'.
  * @apiName useSyncState
  * @apiGroup ReactHook
  * @apiExample SimpleExample
@@ -159,9 +169,11 @@ class ReactiumSyncState extends EventTarget {
     );
  };
  */
-export const useSyncState = (initialState) => {
+export const useSyncState = (initialState, updateEvent = 'set') => {
     const stateRef = useRef(new ReactiumSyncState(initialState));
-    const [, updater] = useState(new Date());
-    stateRef.current.updater = updater;
+    const [, update] = useState(new Date());
+    const updater = () => update(new Date());
+    useEventEffect(stateRef.current, { [updateEvent]: updater });
+
     return stateRef.current;
 };

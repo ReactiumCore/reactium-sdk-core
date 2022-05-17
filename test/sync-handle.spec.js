@@ -1,10 +1,11 @@
 import { mount } from './enzyme';
 import React from 'react';
-import { HandleTester, someHandleState } from './components';
+import ReactDOM from 'react-dom';
 import ReactTestUtils from 'react-dom/test-utils';
+import { SyncHandleRegisterer, SyncHandleConsumer, SyncHandleTester, someHandleState } from './components';
 
-test('useHandle', async () => {
-    const tester = mount(<HandleTester />);
+test('useSyncHandle', async () => {
+    const tester = mount(<SyncHandleTester />);
 
     await ReactTestUtils.act(async () => {
         await new Promise(resolve => setTimeout(resolve, 250));

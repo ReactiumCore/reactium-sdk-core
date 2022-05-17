@@ -62,4 +62,5 @@ class Component extends Registry {
     }
 }
 
-export default new Component('Component', 'id', Registry.MODES.CLEAN);
+const ReactiumComponent = new Component('Component', 'id', Registry.MODES.CLEAN);
+export { ReactiumComponent as default, ReactiumComponent as Component };

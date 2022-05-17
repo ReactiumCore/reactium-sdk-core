@@ -145,4 +145,4 @@ Hook.runSync = (name, ...params) => {
     return context;
 };
 
-export default Hook;
+export { Hook as default, Hook };

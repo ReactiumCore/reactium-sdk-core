@@ -1,5 +1,4 @@
 import _ from 'underscore';
-import op from 'object-path';
 
 const splitter = (parts, key, value) => {
     const search = `%${key}%`;
@@ -65,4 +64,4 @@ class SplitParts {
 }
 SplitParts.splitter = splitter;
 
-export default SplitParts;
+export { SplitParts as default, SplitParts };

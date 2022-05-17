@@ -1,5 +1,5 @@
 import op from 'object-path';
-import { useAsyncEffect } from '.';
+import { useAsyncEffect } from './async-effect';
 import { useRef, useState } from 'react';
 
 /**

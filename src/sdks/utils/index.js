@@ -3,10 +3,8 @@ import SplitParts from './splitter';
 import cn from 'classnames';
 import Registry from './registry';
 
-const Utils = {
-    conditionalWindow: () => typeof window !== 'undefined' ? window : undefined,
-    conditionalDocument: () => typeof document !== 'undefined' ? document : undefined,
-};
+export const conditionalWindow = () => typeof window !== 'undefined' ? window : undefined;
+export const conditionalDocument = () => typeof document !== 'undefined' ? document : undefined;
 
 /**
  * @api {Function} Reactium.Utils.isWindow(iframeWindow) Utils.isWindow()
@@ -20,8 +18,8 @@ Reactium.Utils.isWindow();
 // Returns: true if executed in a browser.
 // Returns: false if executed in node (server side rendering).
  */
-Utils.isWindow = iWindow => {
-    iWindow = iWindow || Utils.conditionalWindow();
+export const isWindow = iWindow => {
+    iWindow = iWindow || conditionalWindow();
     return typeof iWindow !== 'undefined';
 };
 
@@ -38,8 +36,8 @@ isElectronWindow();
 // Returns: true if executed in electron.
 // Returns: false if executed in node or browser.
  */
-Utils.isElectron = (iWindow) => {
-    iWindow = iWindow || Utils.conditionalWindow();
+export const isElectronWindow = (iWindow) => {
+    iWindow = iWindow || conditionalWindow();
 
     return (
         typeof iWindow !== 'undefined' &&
@@ -62,9 +60,9 @@ isServerWindow();
 // Returns: true if executed in server SSR context.
 // Returns: false if executed in browser or electron.
  */
-Utils.isServerWindow = iWindow => {
-    iWindow = iWindow || Utils.conditionalWindow();
-    return Utils.isWindow(iWindow) && iWindow.isJSDOM;
+export const isServerWindow = iWindow => {
+    iWindow = iWindow || conditionalWindow();
+    return isWindow(iWindow) && iWindow.isJSDOM;
 };
 
 /**
@@ -81,13 +79,12 @@ isBrowserWindow();
 // Returns: true if executed in browser or electron.
 // Returns: false if executed on server.
  */
-Utils.isBrowserWindow = iWindow => {
-    iWindow = iWindow || Utils.conditionalWindow();
-    return Utils.isWindow(iWindow) && !iWindow.isJSDOM;
+export const isBrowserWindow = iWindow => {
+    iWindow = iWindow || conditionalWindow();
+    return isWindow(iWindow) && !iWindow.isJSDOM;
 };
 
-
-Utils.BREAKPOINTS_DEFAULT = {
+export const BREAKPOINTS_DEFAULT = {
     xs: 640,
     sm: 990,
     md: 1280,
@@ -110,9 +107,9 @@ Utils.BREAKPOINTS_DEFAULT = {
 | lg | 1281 - 1440 |
 | xl | 1600+ |
  */
-Utils.breakpoints = (iWindow, iDocument) => {
-    iWindow = iWindow || Utils.conditionalWindow();
-    iDocument = iDocument || Utils.conditionalDocument();
+export const breakpoints = (iWindow, iDocument) => {
+    iWindow = iWindow || conditionalWindow();
+    iDocument = iDocument || conditionalDocument();
 
     try {
         const after = iDocument.querySelector('body');
@@ -121,7 +118,7 @@ Utils.breakpoints = (iWindow, iDocument) => {
             .getPropertyValue('content');
         return JSON.parse(JSON.parse(content));
     } catch (error) {
-        return Utils.BREAKPOINTS_DEFAULT;
+        return BREAKPOINTS_DEFAULT;
     }
 };
 
@@ -138,17 +135,17 @@ Reactium.Utils.breakpoint();
 Reactium.Utils.breakpoint(1024);
 // Returns: sm
  */
-Utils.breakpoint = (width, iWindow, iDocument) => {
-    iWindow = iWindow || Utils.conditionalWindow();
-    iDocument = iDocument || Utils.conditionalDocument();
+export const breakpoint = (width, iWindow, iDocument) => {
+    iWindow = iWindow || conditionalWindow();
+    iDocument = iDocument || conditionalDocument();
 
-    width = width ? width : Utils.isWindow(iWindow) ? window.innerWidth : null;
+    width = width ? width : isWindow(iWindow) ? window.innerWidth : null;
 
     if (!width) {
         return 'sm';
     }
 
-    const breaks = Utils.breakpoints(iWindow, iDocument);
+    const breaks = breakpoints(iWindow, iDocument);
     const keys = Object.keys(breaks);
     const vals = Object.values(breaks);
 
@@ -178,7 +175,7 @@ Reactium.Utils.abbreviatedNumber(5000);
 Reactium.Utils.abbreviatedNumber(500000);
 // Returns .5m
  */
-Utils.abbreviatedNumber = value => {
+export const abbreviatedNumber = value => {
     if (!value || value === 0) {
         return;
     }
@@ -289,7 +286,8 @@ Utils.abbreviatedNumber = value => {
      );
  };
  */
-Utils.splitParts = original => new SplitParts(original);
+export const splitParts = original => new SplitParts(original);
+export { SplitParts };
 
 /**
  * @api {Utils.cxFactory} Utils.cxFactory Utils.cxFactory
@@ -325,7 +323,7 @@ MyComponent.defaultProps = {
     foo: 'bar',
 };
  */
-Utils.cxFactory = namespace => (...params) =>
+export const cxFactory = namespace => (...params) =>
         cn(...params)
             .split(' ')
             .map(cls => _.compact([namespace, cls]).join('-'))
@@ -380,8 +378,25 @@ anotherPlugin();
 import SDK from '@atomic-reactor/reactium-sdk-core';
 export default SDK.Utils.registryFactory('MyRegistry');
  */
-Utils.registryFactory = (name, idField, mode) => new Registry(name, idField, mode);
+export const registryFactory = (name, idField, mode) => new Registry(name, idField, mode);
 
-Utils.Registry = Registry;
+export { Registry };
+
+export const Utils = {
+    conditionalWindow,
+    conditionalDocument,
+    isWindow,
+    isElectronWindow,
+    isServerWindow,
+    isBrowserWindow,
+    BREAKPOINTS_DEFAULT,
+    breakpoints,
+    breakpoint,
+    abbreviatedNumber,
+    splitParts,
+    cxFactory,
+    registryFactory,
+    Registry,
+};
 
 export default Utils;

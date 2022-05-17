@@ -351,4 +351,6 @@ Cache.prototype.merge = (values, options) => {
     return memory.importJson(JSON.stringify(values));
 };
 
-export default new Cache();
+const ReactiumCache = new Cache();
+
+export { ReactiumCache as default, ReactiumCache as Cache };
