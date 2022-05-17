@@ -12,10 +12,12 @@ class Event {
     }
 
     preventDefault() {
-        if (cancelable) this.defaultPrevented = true;
+        if (this.cancelable) this.defaultPrevented = true;
     }
 
-    stopPropagation() {}
+    stopPropagation() {
+        this.cancelBubble = true;
+    }
 
     stopImmediatePropagation() {}
 }
