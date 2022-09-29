@@ -619,7 +619,7 @@
   },
   {
     "type": "ReactHook",
-    "url": "useSyncHandle(id)",
+    "url": "useSyncHandle(id,updateEvent)",
     "title": "useSyncHandle()",
     "description": "<p>React hook to subscribe to updates for a registered sync handle.</p>",
     "parameter": {
@@ -631,6 +631,14 @@
             "optional": false,
             "field": "id",
             "description": "<p>Array of properties, or <code>.</code> separated object path. e.g. ['path','to','handle'] or 'path.to.handle'. Identifies the full path to an imperative handle.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "updateEvent",
+            "defaultValue": "set",
+            "description": "<p>Trigger update of the consuming component when EventTarget event of this type is dispatched. Defaults tot 'set'.</p>"
           }
         ]
       }

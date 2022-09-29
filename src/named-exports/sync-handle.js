@@ -112,20 +112,18 @@ export const useSelectHandle = (ID, ...selectorArgs) => {
 };
 
 /**
-* @api {ReactHook} useSyncHandle(id) useSyncHandle()
+* @api {ReactHook} useSyncHandle(id,updateEvent) useSyncHandle()
 * @apiDescription React hook to subscribe to updates for a registered sync handle.
 * @apiParam {Mixed} id Array of properties, or `.` separated object path. e.g. ['path','to','handle'] or 'path.to.handle'. Identifies the full path to an imperative handle.
+* @apiParam {String} [updateEvent=set] Trigger update of the consuming component when EventTarget event of this type is dispatched. Defaults tot 'set'.
 * @apiName useSyncHandle
 * @apiGroup ReactHook
  */
-export const useSyncHandle = (ID) => {
-    const [ ,update ] = useState(new Date);
-    const updater = () => update(new Date);
+export const useSyncHandle = (ID, updateEvent = 'set') => {
     const handle = useHandle(ID, new ReactiumSyncState({}));
-    useEffect(() => {
-        handle.addEventListener('set', updater);
-        return () => handle.removeEventListener('set', updater);
-    }, [ID, handle]);
+    const [ ,update ] = useState(new Date);
+    const updater = () => update(new Date);    
+    useEventEffect(handle, { [updateEvent]: updater });
 
     return handle;
 }
