@@ -216,75 +216,62 @@ export const abbreviatedNumber = value => {
 };
 
 /**
- * @api {Function} Utils.splitParts(parts) Utils.splitParts()
- * @apiDescription Breaks formatted string (or array of strings), into flat
- * array of parts/nodes, inserting an object in array in the place of `%key%`.
- * Useful for tokenizing a translation string, and getting an array that can
- * easily be mapped into React components.
- * Returns an object with `replace` and `value` methods.
-
- * Call `replace(key,value)` method (chaining) as many times as necessary to replace all tokens.
- * Call `value()` method to get the final array of Part objects.
- * Call `reset()` to reset the SlipParts object to the original string without replacements for reuse.
- * @apiParam {Mixed} parts String containing tokens like `%key%` to be replaced.
- * @apiParam (replace) {String} key when calling `replace(key,value)`, the token `%${key}%`
- * will be replaced with an Part object key->value pair.
- * @apiParam (replace) {Mixed} value the value to use in the key->pair replacement
- * @apiParam (Part) {String} key the key in the keypair
- * @apiParam (Part) {Mixed} value the value in the keypair
- * @apiName Utils.splitParts
- * @apiGroup Reactium.Utils
- * @apiExample Usage
- import React from 'react';
- import Reactium, { __ } from 'reactium-core/sdk';
- import moment from 'moment';
- import md5 from 'md5';
-
- const Gravatar = props => {
-     const { email } = props;
-     return (
-         <img
-             className='gravatar'
-             src={`https://www.gravatar.com/avatar/${md5(
-                 email.toLowerCase(),
-             )}?size=50`}
-             alt={email}
-         />
-     );
- };
-
- export default props => {
-     const description = __('%username% updated post %slug% at %time%');
-     const parts = Reactium.Utils.splitParts(description)[
-         ('email', 'slug', 'time')
-     ].forEach(key => parts.replace(key, props[key]));
-
-     return (
-         <span className='by-line'>
-             {parts.value().map(part => {
-                 // arbitrary React component possible
-                 const { key, value } = part;
-
-                 switch (key) {
-                     case 'email': {
-                         return <Gravatar key={key} email={value} />;
-                     }
-                     case 'time': {
-                         return (
-                             <span key={key} className='time'>
-                                 {moment(value).fromNow()}
-                             </span>
-                         );
-                     }
-                     default: {
-                         // plain string part
-                         return <span key={key}>{value}</span>;
-                     }
-                 }
-             })}
-         </span>
-     );
- };
+ * @api {function} Utils.splitParts splitParts
+ * @apiDescription splitParts is a utility function that allows you to easily interpolate React components into a string. It works by tokenizing the string, allowing you to identify specific parts that you want to replace with a React component. You can then use the replace method to specify the values for these tokens, and the value method to get an array of the parts, which you can map over and return the appropriate React components for each part. This can be useful for situations where you want to dynamically render a string that includes both plain text and React components.
+ * @apiParam {String} strVal The input string to tokenize
+ * @apiExample
+ *
+ * import React from 'react';
+ * import Reactium, { __ } from 'reactium-core/sdk';
+ * import moment from 'moment';
+ * import md5 from 'md5';
+ *
+ * const Gravatar = props => {
+ *     const { email } = props;
+ *     return (
+ *         <img
+ *             className='gravatar'
+ *             src={`https://www.gravatar.com/avatar/${md5(
+ *                 email.toLowerCase(),
+ *             )}?size=50`}
+ *             alt={email}
+ *         />
+ *     );
+ * };
+ *
+ * export default props => {
+ *     const description = __('%email% updated post %slug% at %time%');
+ *     const parts = Reactium.Utils.splitParts(description);
+ *     Object.entries(props).forEach(([key, value]) => {
+ *         parts.replace(key, value);
+ *     });
+ *
+ *     return (
+ *         <span className='by-line'>
+ *             {parts.value().map(part => {
+ *                 // arbitrary React component possible
+ *                 const { key, value } = part;
+ *
+ *                 switch (key) {
+ *                     case 'email': {
+ *                         return <Gravatar key={key} email={value} />;
+ *                     }
+ *                     case 'time': {
+ *                         return (
+ *                             <span key={key} className='time'>
+ *                                 {moment(value).fromNow()}
+ *                             </span>
+ *                         );
+ *                     }
+ *                     default: {
+ *                         // plain string part
+ *                         return <span key={key}>{value}</span>;
+ *                     }
+ *                 }
+ *             })}
+ *         </span>
+ *     );
+ * };
  */
 export const splitParts = original => new SplitParts(original);
 export { SplitParts };

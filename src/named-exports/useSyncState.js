@@ -115,59 +115,132 @@ export { ReactiumSyncState };
 
 /**
  * @api {ReactHook} useSyncState(initialState,updateEvent) useSyncState()
- * @apiDescription Intended to provide an object to get and set state synchrounously, while providing a EventTarget object that can dispatch a 'set' event when
- * the state is updated. Dispatches 'before-set' before changing the state, and 'change' event if any shallow changes are detected.
- * @apiParam {Mixed} initialState The initial state.
- * @apiParam {String} [updateEvent=set] Trigger update of the consuming component when EventTarget event of this type is dispatched. Defaults tot 'set'.
  * @apiName useSyncState
  * @apiGroup ReactHook
- * @apiExample SimpleExample
- * import React from 'react';
- * import { useSyncState } from 'reactium-core/sdk';
- * export const SimpleExample = () => {
-    const clickState = useSyncState({ clicks: 1 });
-    const clicks = clickState.get('clicks');
-    return (
-        <div>Clicked {clicks} times <button
-            onClick={() => clickState.set('clicks', clicks + 1)}>Click Me</button>
-        </div>
-    );
- };
- * @apiExample EventTarget
- * import React from 'react';
- * import { useSyncState, useRegisterHandle } from 'reactium-core/sdk';
- * export const Clicker = () => {
-    const clickState = useSyncState({ clicks: 1 });
-    const clicks = clickState.get('clicks');
-    useRegisterHandle('ClickState', () => clickState);
+ * @apiDescription Intended to provide an object to get and set state synchrounously, while providing a `EventTarget` object that can dispatch a `set` event whenever the state is changed. The hook will also dispatch a `change` event whenever the synced state changes. The hook can also listen for a specified event on the `EventTarget` object, and update the synced state with the `event.detail` property when the event is dispatched.
+ * 
+ * The hook uses the `ReactiumSyncState` class to implement the synced state and `EventTarget` behavior. The class uses the [`object-path`](https://github.com/mariocasciaro/object-path) module to manipulate the state object, and provides the following methods:
+ * - `get(path, defaultValue)`: Gets the value at the specified path in the synced state, or the entire synced state if no path is provided. If the value at the specified path is `undefined`, returns the provided default value instead.
+ * - `set(path, value)`: Sets the value at the specified path in the synced state, or replaces the entire synced state if no path is provided. The `path` parameter can be a string or array, representing a path in the object, or `undefined` to replace the entire object. Dispatches a `set` event. If the new value is different from the previous value, also dispatches a `change` event.
+ * - `set(path, value, update)`: Sets the value at the specified path in the synced state, or replaces the entire synced state if no path is provided. If `update` is `true`, dispatches a `set` event. If the new value is different from the previous value and `update` is `true`, also dispatches a `change` event. The `path` parameter can be a string or array, representing a path in the object, or `undefined` to replace the entire object.
+ * - `extend(prop, method)`: Extends the `ReactiumSyncState` instance with the provided method, bound to the instance.
+ *
+ * @apiParam {Object} initialState The initial state of the synced state.
+ * @apiParam {string} [updateEvent=set] The event name to listen for on the `EventTarget` object. When the event is dispatched, the hook will update the synced state with the `event.detail` property, and trigger a rerender of the React component.
+ * @apiExample Simple
+import React from 'react';
+import { useSyncState } from 'reactium-sdk-core';
+
+const ExampleComponent = () => {
+    const [syncState, setSyncState] = useSyncState({ count: 0 });
 
     return (
-        <div>Clicked {clicks} times <button
-            onClick={() => clickState.set('clicks', clicks + 1)}>Click Me</button>
-        </div>
+        <>
+            <div>Count: {syncState.get('count')}</div>
+            <button onClick={() => setSyncState({ count: syncState.get('count') + 1 })}>
+                Increment
+            </button>
+        </>
     );
- };
- * @apiExample Consumer
- * import React, { useState, useEventEffect } from 'react';
- * import { useHandle } from 'reactium-core/sdk';
- * // communicate state with other components
- * export const Listener = () => {
-    const [clicked, setClicked] = useState(false);
-    const handle = useHandle('ClickState')
-    const numClicks = handle.get('clicks');
+};
+ * @apiExample get and set
+import { useSyncState } from 'reactium-sdk-core';
 
-    const remoteClicked = e => {
-        if (numClicks < e.get('clicks')) {
-            setClicked(true);
-        }
-    };
+function MyComponent() {
+  const syncState = useSyncState({ foo: 'bar' });
 
-    useEventEffect(handle, { set: remoteClicked }, []);
+  const handleClick = () => {
+    // Get the entire synced state
+    console.log(syncState.get()); // { foo: 'bar' }
 
-    return (
-        <div>Clicker {clicked ? 'unclicked' : 'clicked'}</div>
-    );
- };
+    // Get a property of the synced state
+    console.log(syncState.get('foo')); // 'bar'
+
+    // Update a property of the synced state
+    syncState.set('foo', 'baz');
+    console.log(syncState.get('foo')); // 'baz'
+
+    // Replace the entire synced state
+    syncState.set({ foo: 'bar', baz: 'qux' });
+    console.log(syncState.get()); // { foo: 'bar', baz: 'qux' }
+  };
+
+  return <button onClick={handleClick}>Update State</button>;
+}
+
+ * @apiExample Form Usage
+import { useSyncState } from 'reactium-sdk-core';
+
+function MyForm() {
+  const syncState = useSyncState({
+    user: {
+      name: 'John Doe',
+      age: 30,
+      address: {
+        street: '123 Main St',
+        city: 'New York',
+        state: 'NY',
+      },
+    },
+  });
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    syncState.set(name, value);
+  };
+
+  return (
+    <form>
+      <label htmlFor="name">Name:</label>
+      <input
+        type="text"
+        id="name"
+        name="user.name"
+        value={syncState.get('user.name')}
+        onChange={handleChange}
+      />
+      <br />
+      <label htmlFor="age">Age:</label>
+      <input
+        type="number"
+        id="age"
+        name="user.age"
+        value={syncState.get('user.age')}
+        onChange={handleChange}
+      />
+      <br />
+      <label htmlFor="street">Street:</label>
+      <input
+        type="text"
+        id="street"
+        name="user.address.street"
+        value={syncState.get('user.address.street')}
+        onChange={handleChange}
+      />
+      <br />
+      <label htmlFor="city">City:</label>
+      <input
+        type="text"
+        id="city"
+        name="user.address.city"
+        value={syncState.get('user.address.city')}
+        onChange={handleChange}
+      />
+      <br />
+      <label htmlFor="state">State:</label>
+      <input
+        type="text"
+        id="state"
+        name="user.address.state"
+        value={syncState.get('user.address.state')}
+        onChange={handleChange}
+      />
+      <br />
+    </form>
+  );
+}
+
+ * @apiSuccess {ReactiumSyncState} syncState The `ReactiumSyncState` instance returned by the hook.
  */
 export const useSyncState = (initialState, updateEvent = 'set') => {
     const stateRef = useRef(new ReactiumSyncState(initialState));
