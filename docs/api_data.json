@@ -1,36 +1,5 @@
 [
   {
-    "type": "function",
-    "url": "Utils.splitParts",
-    "title": "splitParts",
-    "description": "<p>splitParts is a utility function that allows you to easily interpolate React components into a string. It works by tokenizing the string, allowing you to identify specific parts that you want to replace with a React component. You can then use the replace method to specify the values for these tokens, and the value method to get an array of the parts, which you can map over and return the appropriate React components for each part. This can be useful for situations where you want to dynamically render a string that includes both plain text and React components.</p>",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "strVal",
-            "description": "<p>The input string to tokenize</p>"
-          }
-        ]
-      }
-    },
-    "examples": [
-      {
-        "title": "import React from 'react';",
-        "content": "\nimport React from 'react';\nimport Reactium, { __ } from 'reactium-core/sdk';\nimport moment from 'moment';\nimport md5 from 'md5';\n\nconst Gravatar = props => {\n    const { email } = props;\n    return (\n        <img\n            className='gravatar'\n            src={`https://www.gravatar.com/avatar/${md5(\n                email.toLowerCase(),\n            )}?size=50`}\n            alt={email}\n        />\n    );\n};\n\nexport default props => {\n    const description = __('%email% updated post %slug% at %time%');\n    const parts = Reactium.Utils.splitParts(description);\n    Object.entries(props).forEach(([key, value]) => {\n        parts.replace(key, value);\n    });\n\n    return (\n        <span className='by-line'>\n            {parts.value().map(part => {\n                // arbitrary React component possible\n                const { key, value } = part;\n\n                switch (key) {\n                    case 'email': {\n                        return <Gravatar key={key} email={value} />;\n                    }\n                    case 'time': {\n                        return (\n                            <span key={key} className='time'>\n                                {moment(value).fromNow()}\n                            </span>\n                        );\n                    }\n                    default: {\n                        // plain string part\n                        return <span key={key}>{value}</span>;\n                    }\n                }\n            })}\n        </span>\n    );\n};",
-        "type": "json"
-      }
-    ],
-    "version": "0.0.0",
-    "filename": "src/sdks/utils/index.js",
-    "group": "/home/john/dev/atomic-reactor/reactium-sdk-core/src/sdks/utils/index.js",
-    "groupTitle": "/home/john/dev/atomic-reactor/reactium-sdk-core/src/sdks/utils/index.js",
-    "name": "FunctionUtilsSplitparts"
-  },
-  {
     "type": "ReactHook",
     "url": "useAsyncEffect(cb,dependencies)",
     "title": "useAsyncEffect()",
@@ -2452,6 +2421,37 @@
       {
         "title": "Basic Core Usage",
         "content": "import SDK from '@atomic-reactor/reactium-sdk-core';\nexport default SDK.Utils.registryFactory('MyRegistry');",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "src/sdks/utils/index.js",
+    "groupTitle": "Reactium.Utils"
+  },
+  {
+    "type": "function",
+    "url": "Utils.splitParts",
+    "title": "splitParts",
+    "name": "Utils.splitParts",
+    "group": "Reactium.Utils",
+    "description": "<p>splitParts is a utility function that allows you to easily interpolate React components into a string. It works by tokenizing the string, allowing you to identify specific parts that you want to replace with a React component. You can then use the replace method to specify the values for these tokens, and the value method to get an array of the parts, which you can map over and return the appropriate React components for each part. This can be useful for situations where you want to dynamically render a string that includes both plain text and React components.</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "strVal",
+            "description": "<p>The input string to tokenize</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "import React from 'react';",
+        "content": "\nimport React from 'react';\nimport Reactium, { __ } from 'reactium-core/sdk';\nimport moment from 'moment';\nimport md5 from 'md5';\n\nconst Gravatar = props => {\n    const { email } = props;\n    return (\n        <img\n            className='gravatar'\n            src={`https://www.gravatar.com/avatar/${md5(\n                email.toLowerCase(),\n            )}?size=50`}\n            alt={email}\n        />\n    );\n};\n\nexport default props => {\n    const description = __('%email% updated post %slug% at %time%');\n    const parts = Reactium.Utils.splitParts(description);\n    Object.entries(props).forEach(([key, value]) => {\n        parts.replace(key, value);\n    });\n\n    return (\n        <span className='by-line'>\n            {parts.value().map(part => {\n                // arbitrary React component possible\n                const { key, value } = part;\n\n                switch (key) {\n                    case 'email': {\n                        return <Gravatar key={key} email={value} />;\n                    }\n                    case 'time': {\n                        return (\n                            <span key={key} className='time'>\n                                {moment(value).fromNow()}\n                            </span>\n                        );\n                    }\n                    default: {\n                        // plain string part\n                        return <span key={key}>{value}</span>;\n                    }\n                }\n            })}\n        </span>\n    );\n};",
         "type": "json"
       }
     ],

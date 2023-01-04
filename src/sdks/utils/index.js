@@ -217,6 +217,8 @@ export const abbreviatedNumber = value => {
 
 /**
  * @api {function} Utils.splitParts splitParts
+ * @apiName Utils.splitParts
+ * @apiGroup Reactium.Utils
  * @apiDescription splitParts is a utility function that allows you to easily interpolate React components into a string. It works by tokenizing the string, allowing you to identify specific parts that you want to replace with a React component. You can then use the replace method to specify the values for these tokens, and the value method to get an array of the parts, which you can map over and return the appropriate React components for each part. This can be useful for situations where you want to dynamically render a string that includes both plain text and React components.
  * @apiParam {String} strVal The input string to tokenize
  * @apiExample
