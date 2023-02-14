@@ -129,7 +129,7 @@ export { ReactiumSyncState };
  * @apiParam {string} [updateEvent=set] The event name to listen for on the `EventTarget` object. When the event is dispatched, the hook will update the synced state with the `event.detail` property, and trigger a rerender of the React component.
  * @apiExample Simple
 import React from 'react';
-import { useSyncState } from 'reactium-sdk-core';
+import { useSyncState } from '@atomic-reactor/reactium-sdk-core';
 
 const ExampleComponent = () => {
     const [syncState, setSyncState] = useSyncState({ count: 0 });
@@ -144,7 +144,7 @@ const ExampleComponent = () => {
     );
 };
  * @apiExample get and set
-import { useSyncState } from 'reactium-sdk-core';
+import { useSyncState } from '@atomic-reactor/reactium-sdk-core';
 
 function MyComponent() {
   const syncState = useSyncState({ foo: 'bar' });
@@ -169,7 +169,7 @@ function MyComponent() {
 }
 
  * @apiExample Form Usage
-import { useSyncState } from 'reactium-sdk-core';
+import { useSyncState } from '@atomic-reactor/reactium-sdk-core';
 
 function MyForm() {
   const syncState = useSyncState({
