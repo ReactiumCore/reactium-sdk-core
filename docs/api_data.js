@@ -1279,7 +1279,7 @@ define({ "api": [
   },
   {
     "type": "Function",
-    "url": "Hook.register(name,callback,order,id)",
+    "url": "Hook.register(name,callback,order,id,domain)",
     "title": "Hook.register()",
     "name": "Hook.register",
     "description": "<p>Register a hook callback.</p>",
@@ -1314,6 +1314,13 @@ define({ "api": [
             "optional": true,
             "field": "id",
             "description": "<p>the unique id. If not provided, a uuid will be generated</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "domain",
+            "description": "<p>domain the hook belongs to. Useful for deregistering a whole set of hook callbacks from one domain.</p>"
           }
         ]
       }
@@ -1332,7 +1339,7 @@ define({ "api": [
   },
   {
     "type": "Function",
-    "url": "Hook.registerSync(name,callback,order,id)",
+    "url": "Hook.registerSync(name,callback,order,id,domain)",
     "title": "Hook.registerSync()",
     "name": "Hook.registerSync",
     "description": "<p>Register a sync hook callback.</p>",
@@ -1367,6 +1374,13 @@ define({ "api": [
             "optional": true,
             "field": "id",
             "description": "<p>the unique id. If not provided, a uuid will be generated</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "domain",
+            "description": "<p>domain the hook belongs to. Useful for deregistering a whole set of hook callbacks from one domain.</p>"
           }
         ]
       }
@@ -1486,6 +1500,37 @@ define({ "api": [
             "optional": false,
             "field": "id",
             "description": "<p>the unique id provided by Hook.register() or Hook.list()</p>"
+          }
+        ]
+      }
+    },
+    "group": "Reactium.Hook",
+    "version": "0.0.0",
+    "filename": "src/sdks/hook/index.js",
+    "groupTitle": "Reactium.Hook"
+  },
+  {
+    "type": "Function",
+    "url": "Hook.unregisterDomain(name,domain)",
+    "title": "Hook.unregisterDomain()",
+    "name": "Hook.unregisterDomain",
+    "description": "<p>Unregister all of a specific hook's callbacks from one domain.</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>the hook name</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "domain",
+            "description": "<p>the domain used when the callback was registered</p>"
           }
         ]
       }

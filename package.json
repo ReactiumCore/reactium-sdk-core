@@ -1,6 +1,6 @@
 {
   "name": "@atomic-reactor/reactium-sdk-core",
-  "version": "1.2.19",
+  "version": "1.2.20",
   "main": "lib/index.js",
   "repository": {
     "type": "git",
@@ -26,6 +26,7 @@
     "apidoc": "^0.24.0",
     "babel-jest": "^26.2.2",
     "chai": "^4.3.7",
+    "chai-spies": "^1.0.0",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.6",
     "jest": "^26.2.2",

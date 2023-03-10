@@ -12,6 +12,7 @@ const noop = {
 const Hook = {
     action: {},
     actionIds: {},
+    domains: {},
 };
 
 /**
@@ -32,7 +33,7 @@ Hook.flush = (name, type = 'async') =>
  * @apiParam {String} id the unique id provided by Hook.register() or Hook.list()
  * @apiGroup Reactium.Hook
  */
-Hook.unregister = id => {
+Hook.unregister = (id) => {
     const path = op.get(Hook.actionIds, [id]);
     if (path) {
         op.del(Hook.action, path);
@@ -40,22 +41,52 @@ Hook.unregister = id => {
     }
 };
 
-Hook._register = (type = 'async') => (
-    name,
-    callback,
-    order = Enums.priority.neutral,
-    id,
-) => {
-    id = id || uuid();
-    const path = `${type}.${name}.${id}`;
-    op.set(Hook.actionIds, [id], path);
-    op.set(Hook.action, `${type}.${name}.${id}`, { id, order, callback });
-
-    return id;
+/**
+ * @api {Function} Hook.unregisterDomain(name,domain) Hook.unregisterDomain()
+ * @apiName Hook.unregisterDomain
+ * @apiDescription Unregister all of a specific hook's callbacks from one domain.
+ * @apiParam {String} name the hook name
+ * @apiParam {String} domain the domain used when the callback was registered
+ * @apiGroup Reactium.Hook
+ */
+Hook.unregisterDomain = (name, domain) => {
+    const ids = op.get(Hook.domains, `${name}.${domain}`, []);
+    ids.forEach((id) => Hook.unregister(id));
+    op.del(Hook.domains, `${name}.${domain}`);
 };
 
+Hook._register =
+    (type = 'async') =>
+    (
+        name,
+        callback,
+        order = Enums.priority.neutral,
+        id,
+        domain = 'default',
+    ) => {
+        id = id || uuid();
+        const path = `${type}.${name}.${id}`;
+        op.set(Hook.actionIds, [id], path);
+        op.set(Hook.action, `${type}.${name}.${id}`, {
+            id,
+            order,
+            callback,
+            domain,
+        });
+        op.set(
+            Hook.domains,
+            `${name}.${domain}`,
+            _.chain([id, op.get(Hook.domains, `${name}.${domain}`, [])])
+                .compact()
+                .uniq()
+                .value(),
+        );
+
+        return id;
+    };
+
 /**
- * @api {Function} Hook.register(name,callback,order,id) Hook.register()
+ * @api {Function} Hook.register(name,callback,order,id,domain) Hook.register()
  * @apiName Hook.register
  * @apiDescription Register a hook callback.
  * @apiParam {String} name the hook name
@@ -63,6 +94,7 @@ Hook._register = (type = 'async') => (
  The hook callback will receive any parameters provided to Hook.run, followed by a context object (passed by reference to each callback).
  * @apiParam {Integer} [order=Enums.priority.neutral] order of which the callback will be called when this hook is run.
  * @apiParam {String} [id] the unique id. If not provided, a uuid will be generated
+ * @apiParam {String} [domain] domain the hook belongs to. Useful for deregistering a whole set of hook callbacks from one domain.
  * @apiGroup Reactium.Hook
  * @apiExample Example Usage
 import Reactium from 'reactium-core/sdk';
@@ -74,7 +106,7 @@ Reactium.Hook.register('plugin-init', async context => {
 Hook.register = Hook._register('async');
 
 /**
- * @api {Function} Hook.registerSync(name,callback,order,id) Hook.registerSync()
+ * @api {Function} Hook.registerSync(name,callback,order,id,domain) Hook.registerSync()
  * @apiName Hook.registerSync
  * @apiDescription Register a sync hook callback.
  * @apiParam {String} name the hook name
@@ -82,6 +114,7 @@ Hook.register = Hook._register('async');
  The hook callback will receive any parameters provided to Hook.run, followed by a context object (passed by reference to each callback).
  * @apiParam {Integer} [order=Enums.priority.neutral] order of which the callback will be called when this hook is run.
  * @apiParam {String} [id] the unique id. If not provided, a uuid will be generated
+ * @apiParam {String} [domain] domain the hook belongs to. Useful for deregistering a whole set of hook callbacks from one domain.
  * @apiGroup Reactium.Hook
  * @apiExample Example Usage
 import Reactium from 'reactium-core/sdk';
@@ -138,7 +171,7 @@ Hook.run = (name, ...params) => {
  */
 Hook.runSync = (name, ...params) => {
     const context = { hook: name, params };
-    Object.values(Hook._actions(name, 'sync', params)).forEach(callback =>
+    Object.values(Hook._actions(name, 'sync', params)).forEach((callback) =>
         callback({ context }),
     );
 
