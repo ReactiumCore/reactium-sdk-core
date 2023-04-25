@@ -3,12 +3,42 @@ import op from 'object-path';
 import _ from 'underscore';
 import { ComponentEvent, useEventEffect } from './event-handle';
 import { Hook } from '../sdks';
+import uuid from 'uuid/v4';
 
 class ReactiumSyncState extends EventTarget {
     constructor(initialState) {
         super();
         this.stateObj = { state: initialState };
+        this.listeners = {};
+        this._addEventListener = this.addEventListener.bind(this);
+        this.addEventListener = (type, listener, third, id = uuid()) => {
+            if (!this.listeners[type]) this.listeners[type] = {};
+            if (this.listeners[type][id]) {
+                this.removeEventListener(type, this.listeners[type][id]);
+                console.warn && console.warn(`Duplicate ${type} event with id ${id}`);
+            }
+    
+            this.listeners[type][id] = listener;
+            this._addEventListener(type, listener, third);
+            return () => this.removeEventListener(type, this.listeners[type][id]);
+        };    
     }
+
+    removeEventListenerById = (type, id) => {
+        if (op.has(this.listeners, [type, id])) {
+            this.removeEventListener(type, this.listeners[type][id]);
+            op.del(this.listeners, [type, id]);
+        }
+    };
+
+    removeAllEventListeners = (type) => {
+        if (op.has(this.listeners, [type])) {
+            Object.entries(this.listeners[type]).forEach(([id, listener]) => {
+                this.removeEventListener(type, listener);
+                op.del(this.listeners, [type, id]);
+            })
+        }
+    };
 
     get = (path, defaultValue) => {
         if (typeof path == 'string' || Array.isArray(path)) {
@@ -21,7 +51,9 @@ class ReactiumSyncState extends EventTarget {
     _setArgs = (path, value) => {
         // path looks like object path or is explicitly false
         if (
-            (path === false || typeof path == 'string' || Array.isArray(path)) &&
+            (path === false ||
+                typeof path == 'string' ||
+                Array.isArray(path)) &&
             typeof value != 'undefined'
         ) {
             return [path, value];
@@ -79,7 +111,10 @@ class ReactiumSyncState extends EventTarget {
     set = (pathArg, valueArg, update = true) => {
         const [path, value] = this._setArgs(pathArg, valueArg);
 
-        if (update) this.dispatchEvent(new ComponentEvent('before-set', { path, value }));
+        if (update)
+            this.dispatchEvent(
+                new ComponentEvent('before-set', { path, value }),
+            );
 
         let changed = false;
         if (path) {
@@ -88,14 +123,10 @@ class ReactiumSyncState extends EventTarget {
                 op.get(this.stateObj.state, path),
                 value,
             );
-            changed = !_.isEqual(currentValue, nextValue)
-            op.set(
-                this.stateObj.state,
-                path,
-                nextValue,
-            );
+            changed = !_.isEqual(currentValue, nextValue);
+            op.set(this.stateObj.state, path, nextValue);
         } else {
-            changed = !_.isEqual(this.stateObj.state, value)
+            changed = !_.isEqual(this.stateObj.state, value);
             this.stateObj.state = this._conditionallyMerge(
                 this.stateObj.state,
                 value,
@@ -104,7 +135,10 @@ class ReactiumSyncState extends EventTarget {
 
         if (update) {
             this.dispatchEvent(new ComponentEvent('set', { path, value }));
-            if (changed) this.dispatchEvent(new ComponentEvent('change', { path, value }));
+            if (changed)
+                this.dispatchEvent(
+                    new ComponentEvent('change', { path, value }),
+                );
         }
 
         return this;
