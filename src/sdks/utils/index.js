@@ -3,8 +3,10 @@ import SplitParts from './splitter';
 import cn from 'classnames';
 import Registry from './registry';
 
-export const conditionalWindow = () => typeof window !== 'undefined' ? window : undefined;
-export const conditionalDocument = () => typeof document !== 'undefined' ? document : undefined;
+export const conditionalWindow = () =>
+    typeof window !== 'undefined' ? window : undefined;
+export const conditionalDocument = () =>
+    typeof document !== 'undefined' ? document : undefined;
 
 /**
  * @api {Function} Reactium.Utils.isWindow(iframeWindow) Utils.isWindow()
@@ -18,7 +20,7 @@ Reactium.Utils.isWindow();
 // Returns: true if executed in a browser.
 // Returns: false if executed in node (server side rendering).
  */
-export const isWindow = iWindow => {
+export const isWindow = (iWindow) => {
     iWindow = iWindow || conditionalWindow();
     return typeof iWindow !== 'undefined';
 };
@@ -60,7 +62,7 @@ isServerWindow();
 // Returns: true if executed in server SSR context.
 // Returns: false if executed in browser or electron.
  */
-export const isServerWindow = iWindow => {
+export const isServerWindow = (iWindow) => {
     iWindow = iWindow || conditionalWindow();
     return isWindow(iWindow) && iWindow.isJSDOM;
 };
@@ -79,7 +81,7 @@ isBrowserWindow();
 // Returns: true if executed in browser or electron.
 // Returns: false if executed on server.
  */
-export const isBrowserWindow = iWindow => {
+export const isBrowserWindow = (iWindow) => {
     iWindow = iWindow || conditionalWindow();
     return isWindow(iWindow) && !iWindow.isJSDOM;
 };
@@ -109,17 +111,7 @@ export const BREAKPOINTS_DEFAULT = {
  */
 export const breakpoints = (iWindow, iDocument) => {
     iWindow = iWindow || conditionalWindow();
-    iDocument = iDocument || conditionalDocument();
-
-    try {
-        const after = iDocument.querySelector('body');
-        const content = iWindow
-            .getComputedStyle(after, ':after')
-            .getPropertyValue('content');
-        return JSON.parse(JSON.parse(content));
-    } catch (error) {
-        return BREAKPOINTS_DEFAULT;
-    }
+    return iWindow.breakpoints || BREAKPOINTS_DEFAULT;
 };
 
 /**
@@ -175,7 +167,7 @@ Reactium.Utils.abbreviatedNumber(5000);
 Reactium.Utils.abbreviatedNumber(500000);
 // Returns .5m
  */
-export const abbreviatedNumber = value => {
+export const abbreviatedNumber = (value) => {
     if (!value || value === 0) {
         return;
     }
@@ -275,7 +267,7 @@ export const abbreviatedNumber = value => {
  *     );
  * };
  */
-export const splitParts = original => new SplitParts(original);
+export const splitParts = (original) => new SplitParts(original);
 export { SplitParts };
 
 /**
@@ -312,10 +304,12 @@ MyComponent.defaultProps = {
     foo: 'bar',
 };
  */
-export const cxFactory = namespace => (...params) =>
+export const cxFactory =
+    (namespace) =>
+    (...params) =>
         cn(...params)
             .split(' ')
-            .map(cls => _.compact([namespace, cls]).join('-'))
+            .map((cls) => _.compact([namespace, cls]).join('-'))
             .join(' ');
 
 /**
@@ -367,7 +361,8 @@ anotherPlugin();
 import SDK from '@atomic-reactor/reactium-sdk-core';
 export default SDK.Utils.registryFactory('MyRegistry');
  */
-export const registryFactory = (name, idField, mode) => new Registry(name, idField, mode);
+export const registryFactory = (name, idField, mode) =>
+    new Registry(name, idField, mode);
 
 export { Registry };
 
