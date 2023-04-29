@@ -6,10 +6,11 @@ import { Hook } from '../sdks';
 import uuid from 'uuid/v4';
 
 class ReactiumSyncState extends EventTarget {
-    constructor(initialState) {
+    constructor(initialState, options = {}) {
         super();
         this.stateObj = { state: initialState };
         this.listeners = {};
+        this.options = options;
         this._addEventListener = this.addEventListener.bind(this);
         this.addEventListener = (type, listener, third, id = uuid()) => {
             if (!this.listeners[type]) this.listeners[type] = {};
@@ -65,6 +66,7 @@ class ReactiumSyncState extends EventTarget {
 
     _conditionallyMerge = (previous, next) => {
         const noMergeConditions = [
+            () => op.get(options, 'noMerge', false),
             (p, n) => !_.isObject(p) || !_.isObject(n),
             (p, n) => typeof p != typeof n,
             (p, n) => _.isElement(n),
