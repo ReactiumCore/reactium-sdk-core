@@ -275,3 +275,55 @@ Registry.MODES = {
 };
 
 export { Registry as default, Registry };
+
+/**
+ * @api {Function} Utils.registryFactory(name,idField) Utils.registryFactory()
+ * @apiDescription Creates a new instance of a simple registry object. Useful
+ for creating an SDK registry for allowing plugins to register "things". e.g.
+ components that will render inside a component, callbacks that will run.
+
+ More documentation needed:
+ - register method: used to register an object on registry
+ - unregister method: used to unregister an object on registry
+ - list property: getter for list of registered objects
+ - protect method: called to prevent overwriting an id on registry
+ - unprotect method: called to again allow overwriting on id
+
+ * @apiName Utils.registryFactory
+ * @apiGroup Reactium.Utils
+ * @apiExample Basic Reactium Usage
+import Reactium from 'reactium-core/sdk';
+
+// trivial example of creation of new registry
+const myRegistryPlugin = async () => {
+    await Reactium.Plugin.register('MyRegistryPlugin', Reactium.Enums.priority.highest);
+
+    // Using Plugin API to extend the SDK
+    // Adds a new registry to the SDK called `MyRegistry`
+    Reactium.MyRegistry = Reactium.Utils.registryFactory('MyRegistry');
+};
+myRegistryPlugin();
+
+// trivial example of registry usage
+const anotherPlugin = async () => {
+    await Reactium.Plugin.register('AnotherPlugin');
+
+    // register object with id 'anotherId' on registry
+    Reactium.MyRegistry.register('anotherId', {
+        foo: 'bar',
+    });
+
+    // iterate through registered items
+    Reactium.MyRegistry.list.forEach(item => console.log(item));
+
+    // unregister object with id 'anotherId'
+    Reactium.MyRegistry.unregister('anotherId');
+};
+anotherPlugin();
+
+* @apiExample Basic Core Usage
+import SDK from '@atomic-reactor/reactium-sdk-core';
+export default SDK.Utils.registryFactory('MyRegistry');
+ */
+export const registryFactory = (name, idField, mode) =>
+    new Registry(name, idField, mode);

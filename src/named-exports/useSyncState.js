@@ -66,7 +66,7 @@ class ReactiumSyncState extends EventTarget {
 
     _conditionallyMerge = (previous, next) => {
         const noMergeConditions = [
-            () => op.get(options, 'noMerge', false),
+            () => op.get(this.options, 'noMerge', false),
             (p, n) => !_.isObject(p) || !_.isObject(n),
             (p, n) => typeof p != typeof n,
             (p, n) => _.isElement(n),
