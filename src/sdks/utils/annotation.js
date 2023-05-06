@@ -47,6 +47,42 @@ Hook.registerSync(
     `@reactium-file-tag`,
 );
 
+/**
+ * @api {Utils.annotationsFactory} annotationsFactory(namespace,type) annotationsFactory()
+ * @apiName annotationsFactory
+ * @apiGroup Reactium.Utils
+ * @apiDescription Tool for creating documentation objects from @<namespace> annotations.
+ * @apiParam {string} [namespace=reactium] Default the annotation namepace.
+ * @apiParam {string} [type=async] The annotation processors will be processed async or sync. Returns
+ * annotations function.
+ * @apiParam (annotations) {string} [string=''] the string to parse
+ * @apiParam (annotations) {object} [options] the options used by processors
+ * 
+ * @apiExample example.md
+ * # Hello
+ * 
+ * @apiExample Simple
+ * import { annotationsFactory } from '@atomic-reactor/reactium-sdk-core';
+ * import { dirname } from '@atomic-reactor/dirname';
+ * import path from 'node:path';
+ * 
+ * const rootPath = dirname(import.meta.url);
+ * 
+ * const processAnnotations = async () => {
+ *  const annotations = annotationsFactory();
+ *  
+ *  // replaces file tag with markdown
+ *  const output = annotations('@reactium apidoc.example some content [file:example.md]', { rootPath })
+ *  
+ *  // output:
+ *  // {
+ *  //   "apidoc": {
+ *  //      "example": "some content # Hello"
+ *  //   }
+ *  // }
+ * }
+ * 
+ */
 export const annotationsFactory = (namespace = 'reactium', type = 'async') => {
     const annotationNS = `@${namespace}`;
 

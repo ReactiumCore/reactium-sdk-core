@@ -2349,7 +2349,7 @@
         "type": "json"
       }
     ],
-    "filename": "src/sdks/utils/index.js",
+    "filename": "src/sdks/utils/number.js",
     "groupTitle": "Reactium.Utils"
   },
   {
@@ -2374,7 +2374,7 @@
         ]
       }
     },
-    "filename": "src/sdks/utils/index.js",
+    "filename": "src/sdks/utils/window.js",
     "groupTitle": "Reactium.Utils"
   },
   {
@@ -2385,7 +2385,7 @@
     "group": "Reactium.Utils",
     "name": "Utils.breakpoints",
     "description": "<p>Get breakpoints from browser body:after psuedo element or <code>Utils.BREAKPOINTS_DEFAULT</code> if unset or node.</p> <table> <thead> <tr> <th>Breakpoint</th> <th>Range</th> </tr> </thead> <tbody> <tr> <td>xs</td> <td>0 - 640</td> </tr> <tr> <td>sm</td> <td>641 - 990</td> </tr> <tr> <td>md</td> <td>991 - 1280</td> </tr> <tr> <td>lg</td> <td>1281 - 1440</td> </tr> <tr> <td>xl</td> <td>1600+</td> </tr> </tbody> </table>",
-    "filename": "src/sdks/utils/index.js",
+    "filename": "src/sdks/utils/window.js",
     "groupTitle": "Reactium.Utils"
   },
   {
@@ -2416,7 +2416,7 @@
       }
     ],
     "version": "0.0.0",
-    "filename": "src/sdks/utils/index.js",
+    "filename": "src/sdks/utils/classnames.js",
     "groupTitle": "Reactium.Utils"
   },
   {
@@ -2447,7 +2447,7 @@
         "type": "json"
       }
     ],
-    "filename": "src/sdks/utils/index.js",
+    "filename": "src/sdks/utils/window.js",
     "groupTitle": "Reactium.Utils"
   },
   {
@@ -2470,7 +2470,7 @@
       }
     ],
     "version": "0.0.0",
-    "filename": "src/sdks/utils/index.js",
+    "filename": "src/sdks/utils/registry.js",
     "groupTitle": "Reactium.Utils"
   },
   {
@@ -2501,7 +2501,68 @@
       }
     ],
     "version": "0.0.0",
-    "filename": "src/sdks/utils/index.js",
+    "filename": "src/sdks/utils/splitter.js",
+    "groupTitle": "Reactium.Utils"
+  },
+  {
+    "type": "Utils.annotationsFactory",
+    "url": "annotationsFactory(namespace,type)",
+    "title": "annotationsFactory()",
+    "name": "annotationsFactory",
+    "group": "Reactium.Utils",
+    "description": "<p>Tool for creating documentation objects from @<namespace> annotations.</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": true,
+            "field": "namespace",
+            "defaultValue": "reactium",
+            "description": "<p>Default the annotation namepace.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": true,
+            "field": "type",
+            "defaultValue": "async",
+            "description": "<p>The annotation processors will be processed async or sync. Returns annotations function.</p>"
+          }
+        ],
+        "annotations": [
+          {
+            "group": "annotations",
+            "type": "string",
+            "optional": true,
+            "field": "string",
+            "description": "<p>the string to parse</p>"
+          },
+          {
+            "group": "annotations",
+            "type": "object",
+            "optional": true,
+            "field": "options",
+            "description": "<p>the options used by processors</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "example.md",
+        "content": "# Hello",
+        "type": "json"
+      },
+      {
+        "title": "Simple",
+        "content": "import { annotationsFactory } from '@atomic-reactor/reactium-sdk-core';\nimport { dirname } from '@atomic-reactor/dirname';\nimport path from 'node:path';\n\nconst rootPath = dirname(import.meta.url);\n\nconst processAnnotations = async () => {\n const annotations = annotationsFactory();\n \n // replaces file tag with markdown\n const output = annotations('@reactium apidoc.example some content [file:example.md]', { rootPath })\n \n // output:\n // {\n //   \"apidoc\": {\n //      \"example\": \"some content # Hello\"\n //   }\n // }\n}",
+        "type": "json"
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "src/sdks/utils/annotation.js",
     "groupTitle": "Reactium.Utils"
   },
   {
@@ -2532,7 +2593,7 @@
         "type": "json"
       }
     ],
-    "filename": "src/sdks/utils/index.js",
+    "filename": "src/sdks/utils/window.js",
     "groupTitle": "Reactium.Utils"
   },
   {
@@ -2563,7 +2624,7 @@
         "type": "json"
       }
     ],
-    "filename": "src/sdks/utils/index.js",
+    "filename": "src/sdks/utils/window.js",
     "groupTitle": "Reactium.Utils"
   },
   {
@@ -2594,7 +2655,7 @@
         "type": "json"
       }
     ],
-    "filename": "src/sdks/utils/index.js",
+    "filename": "src/sdks/utils/window.js",
     "groupTitle": "Reactium.Utils"
   },
   {
