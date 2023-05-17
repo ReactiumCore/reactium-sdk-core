@@ -3,12 +3,13 @@ import _ from 'underscore';
 import { Hook } from '../hook';
 import { Enums } from '../enums';
 import Registry, { registryFactory } from '../utils/registry';
-import fs from 'fs';
-import path from 'path';
 
 Hook.registerSync(
     '@reactium',
     (processors) => {
+        const fs = require('fs');
+        const path = require('path');
+        
         processors.register('file-tag', {
             processor: async (content, original, config = {}) => {
                 const rootPath = op.get(config, 'rootPath', __dirname);
