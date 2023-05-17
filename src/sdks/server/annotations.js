@@ -9,7 +9,7 @@ Hook.registerSync(
     (processors) => {
         const fs = require('fs');
         const path = require('path');
-        
+
         processors.register('file-tag', {
             processor: async (content, original, config = {}) => {
                 const rootPath = op.get(config, 'rootPath', __dirname);
@@ -63,7 +63,7 @@ Hook.registerSync(
  * # Hello
  *
  * @apiExample Simple
- * import { annotationsFactory } from '@atomic-reactor/reactium-sdk-core/sdks/server';
+ * import { annotationsFactory } from '@atomic-reactor/reactium-sdk-core/sdks/server/annotations';
  * import { dirname } from '@atomic-reactor/dirname';
  * import path from 'node:path';
  *

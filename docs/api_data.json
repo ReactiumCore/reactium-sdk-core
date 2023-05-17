@@ -2557,12 +2557,12 @@
       },
       {
         "title": "Simple",
-        "content": "import { annotationsFactory } from '@atomic-reactor/reactium-sdk-core/sdks/server';\nimport { dirname } from '@atomic-reactor/dirname';\nimport path from 'node:path';\n\nconst rootPath = dirname(import.meta.url);\n\nconst processAnnotations = async () => {\n const annotations = annotationsFactory();\n\n // replaces file tag with markdown\n const output = annotations('@reactium apidoc.example some content [file:example.md]', { rootPath })\n\n // output:\n // {\n //   \"apidoc\": {\n //      \"example\": \"some content # Hello\"\n //   }\n // }\n}",
+        "content": "import { annotationsFactory } from '@atomic-reactor/reactium-sdk-core/sdks/server/annotations';\nimport { dirname } from '@atomic-reactor/dirname';\nimport path from 'node:path';\n\nconst rootPath = dirname(import.meta.url);\n\nconst processAnnotations = async () => {\n const annotations = annotationsFactory();\n\n // replaces file tag with markdown\n const output = annotations('@reactium apidoc.example some content [file:example.md]', { rootPath })\n\n // output:\n // {\n //   \"apidoc\": {\n //      \"example\": \"some content # Hello\"\n //   }\n // }\n}",
         "type": "json"
       }
     ],
     "version": "0.0.0",
-    "filename": "src/sdks/server/annotation.js",
+    "filename": "src/sdks/server/annotations.js",
     "groupTitle": "Reactium.Utils"
   },
   {

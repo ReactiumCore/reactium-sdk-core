@@ -1,5 +1,5 @@
 import { Hook } from '../lib';
-import { annotationsFactory } from '../lib/sdks/server';
+import { annotationsFactory } from '../lib/sdks/server/annotations';
 import op from 'object-path';
 import path from 'path';
 
