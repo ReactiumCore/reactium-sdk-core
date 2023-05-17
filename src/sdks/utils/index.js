@@ -7,14 +7,12 @@ import * as windowUtils from './window';
 import * as splitterUtils from './splitter';
 import * as numberUtils from './number';
 import * as classnamesUtils from './classnames';
-import * as annotationUtils from './annotation';
 
 export * from './registry';
 export * from './window';
 export * from './splitter';
 export * from './number';
 export * from './classnames';
-export * from './annotation';
 
 export { SplitParts, Registry };
 
@@ -24,7 +22,6 @@ export const Utils = {
     ...splitterUtils,
     ...numberUtils,
     ...classnamesUtils,
-    ...annotationUtils,
     SplitParts,
     Registry,
 };

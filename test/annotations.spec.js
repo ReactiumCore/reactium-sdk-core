@@ -1,4 +1,5 @@
-import { Hook, annotationsFactory } from '../lib';
+import { Hook } from '../lib';
+import { annotationsFactory } from '../lib/sdks/server';
 import op from 'object-path';
 import path from 'path';
 
@@ -72,6 +73,7 @@ describe('Processing @reactium annotations with [file:path/to/file] tags', () =>
         const obj = await annotations(examples, {
             rootPath: path.resolve(__dirname, 'fixtures'),
         });
+        // console.log(JSON.stringify(obj, null, 2))
         expect(op.get(obj, 'Reactium.State.Tools')).toBe(
             'collection of useful components <MyDemo> # Help Doc\n\nStuff here',
         );

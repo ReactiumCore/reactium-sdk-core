@@ -2,7 +2,7 @@ import op from 'object-path';
 import _ from 'underscore';
 import { Hook } from '../hook';
 import { Enums } from '../enums';
-import Registry, { registryFactory } from './registry';
+import Registry, { registryFactory } from '../utils/registry';
 import fs from 'fs';
 import path from 'path';
 
@@ -57,23 +57,23 @@ Hook.registerSync(
  * annotations function.
  * @apiParam (annotations) {string} [string=''] the string to parse
  * @apiParam (annotations) {object} [options] the options used by processors
- * 
+ *
  * @apiExample example.md
  * # Hello
- * 
+ *
  * @apiExample Simple
- * import { annotationsFactory } from '@atomic-reactor/reactium-sdk-core';
+ * import { annotationsFactory } from '@atomic-reactor/reactium-sdk-core/sdks/server';
  * import { dirname } from '@atomic-reactor/dirname';
  * import path from 'node:path';
- * 
+ *
  * const rootPath = dirname(import.meta.url);
- * 
+ *
  * const processAnnotations = async () => {
  *  const annotations = annotationsFactory();
- *  
+ *
  *  // replaces file tag with markdown
  *  const output = annotations('@reactium apidoc.example some content [file:example.md]', { rootPath })
- *  
+ *
  *  // output:
  *  // {
  *  //   "apidoc": {
@@ -81,7 +81,7 @@ Hook.registerSync(
  *  //   }
  *  // }
  * }
- * 
+ *
  */
 export const annotationsFactory = (namespace = 'reactium', type = 'async') => {
     const annotationNS = `@${namespace}`;

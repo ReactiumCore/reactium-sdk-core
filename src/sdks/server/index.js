@@ -5,3 +5,5 @@ const Server = {};
 Server.Middleware = registryFactory('ExpressMiddleware', 'name', Registry.MODES.CLEAN);
 
 export { Server as default, Server };
+
+export * from './annotation';
