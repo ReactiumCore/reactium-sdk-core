@@ -139,7 +139,7 @@ by a CMS.
  * @apiGroup Registered Component
  * @apiExample PageHeader.js
 import React from 'react';
-import { useHookComponent } from 'reactium-core/sdk';
+import { useHookComponent } from '@atomic-reactor/reactium-core/sdk';
 
 // PageHeader is not hard-coded, but adaptable by plugins
 export default props => {
@@ -151,7 +151,7 @@ export default props => {
     );
 };
 * @apiExample src/app/components/plugin-src/MyHeaderPlugin/index.js
-import Reactium from 'reactium-core/sdk';
+import Reactium from '@atomic-reactor/reactium-core/sdk';
 import MyHeaderWidget from './MyHeaderWidget';
 
 const registerPlugin = async () => {
@@ -190,7 +190,7 @@ export default props => {
   * @apiGroup ReactHook
   * @apiExample Example
  import React from 'react';
- import { useZoneComponents } from 'reactium-core/sdk';
+ import { useZoneComponents } from '@atomic-reactor/reactium-core/sdk';
 
  export props => {
      const zoneComponents = useZoneComponents('my-zone');
@@ -203,7 +203,7 @@ export default props => {
  };
  * @apiExample NoDereference
 import React from 'react';
-import { useZoneComponents } from 'reactium-core/sdk';
+import { useZoneComponents } from '@atomic-reactor/reactium-core/sdk';
 
 // Use this method when the zone components are not refreshing smoothly on
 // rendering.

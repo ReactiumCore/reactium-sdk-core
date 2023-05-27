@@ -8,7 +8,7 @@ import op from 'object-path';
  * @apiName Prefs.clear
  * @apiGroup Reactium.Prefs
  * @apiExample Example
- import Reactium from 'reactium-core/sdk';
+ import Reactium from '@atomic-reactor/reactium-core/sdk';
 
  Reactium.Prefs.clear();
  */
@@ -41,7 +41,7 @@ const clear = key => {
  * @apiName Prefs.get
  * @apiGroup Reactium.Prefs
  * @apiExample Example
- import Reactium from 'reactium-core/sdk';
+ import Reactium from '@atomic-reactor/reactium-core/sdk';
 
  const myPref = Reactium.Prefs.get('my.object.path', { someDefault: 'foo' });
  */
@@ -64,7 +64,7 @@ const get = (key, defaultValue) => {
  * @apiName Prefs.set
  * @apiGroup Reactium.Prefs
  * @apiExample Example
- import Reactium from 'reactium-core/sdk';
+ import Reactium from '@atomic-reactor/reactium-core/sdk';
 
  Reactium.Prefs.set('my.object.path', { value: 'foo' });
  */

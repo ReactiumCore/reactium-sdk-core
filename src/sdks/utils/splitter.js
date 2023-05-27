@@ -75,7 +75,7 @@ export { SplitParts as default, SplitParts };
  * @apiExample
  *
  * import React from 'react';
- * import Reactium, { __ } from 'reactium-core/sdk';
+ * import Reactium, { __ } from '@atomic-reactor/reactium-core/sdk';
  * import moment from 'moment';
  * import md5 from 'md5';
  *

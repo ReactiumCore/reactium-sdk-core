@@ -15,7 +15,7 @@ except that it returns a sync state object (see useSyncState) and will cause rer
 * @apiGroup ReactHook
 * @apiExample Counter.js
 import React, { useState } from 'react';
-import { useRegisterSyncHandle } from 'reactium-core/sdk';
+import { useRegisterSyncHandle } from '@atomic-reactor/reactium-core/sdk';
 
 const Counter = ({id = 1}) => {
     const state = useRegisterSyncHandle('counter', {
@@ -39,7 +39,7 @@ const Counter = ({id = 1}) => {
 export default Counter;
 * @apiExample CounterControl.js
 import React from 'react';
-import { useSelectHandle } from 'reactium-core/sdk';
+import { useSelectHandle } from '@atomic-reactor/reactium-core/sdk';
 
 const noop = () => {};
 const CounterControl = () => {

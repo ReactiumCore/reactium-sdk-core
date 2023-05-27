@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react';
  * @apiExample Reactium Usage
 import cn from 'classnames';
 import React, { useRef } from 'react';
-import { useFocusEffect } from 'reactium-core/sdk';
+import { useFocusEffect } from '@atomic-reactor/reactium-core/sdk';
 
 const MyComponent = props => {
     const containerRef = useRef();

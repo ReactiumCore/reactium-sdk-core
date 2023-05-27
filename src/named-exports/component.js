@@ -13,7 +13,7 @@ import op from 'object-path';
  * @apiGroup ReactHook
  * @apiExample parent.js
 import React from 'react';
-import { useHookComponent } from 'reactium-core/sdk';
+import { useHookComponent } from '@atomic-reactor/reactium-core/sdk';
 
 // component to be used unless overriden by Reactium.Component.register()
 const DefaultComponent = () => <div>Default or Placeholder component</div>
@@ -28,7 +28,7 @@ export props => {
 };
 * @apiExample reactium-hooks.js
 import React from 'react';
-import Reactium from 'reactium-core/sdk';
+import Reactium from '@atomic-reactor/reactium-core/sdk';
 
 // component to be used unless overriden by Reactium.Component.register()
 const ReplacementComponent = () => <div>My Plugin's Component</div>

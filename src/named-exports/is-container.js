@@ -25,7 +25,7 @@ happened within the specified container.
  * @apiParam {Node} element The inner most element. Consider this the starting point.
  * @apiParam {Node} container The outer most element. Consider this the destination.
  * @apiExample Example
-import { useIsContainer } from 'reactium-core/sdk';
+import { useIsContainer } from '@atomic-reactor/reactium-core/sdk';
 import React, { useEffect, useRef, useState } from 'react';
 
 export const Dropdown = props => {

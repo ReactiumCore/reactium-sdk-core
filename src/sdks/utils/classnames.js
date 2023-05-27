@@ -9,7 +9,7 @@ sub-class. Uses the same syntax as the `classnames` library.
  * @apiName Utils.cxFactory
  * @apiGroup Reactium.Utils
  * @apiExample Usage:
-import Reactium from 'reactium-core/sdk';
+import Reactium from '@atomic-reactor/reactium-core/sdk';
 import React from 'react';
 
 const MyComponent = props => {

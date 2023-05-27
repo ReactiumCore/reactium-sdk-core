@@ -303,7 +303,7 @@ export { Registry as default, Registry };
  * @apiName Utils.registryFactory
  * @apiGroup Reactium.Utils
  * @apiExample Basic Reactium Usage
-import Reactium from 'reactium-core/sdk';
+import Reactium from '@atomic-reactor/reactium-core/sdk';
 
 // trivial example of creation of new registry
 const myRegistryPlugin = async () => {

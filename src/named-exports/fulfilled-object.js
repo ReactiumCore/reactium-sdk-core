@@ -14,7 +14,7 @@ import { useRef, useState } from 'react';
  * @apiExample Example Usage:
 
 import React, { useEffect, useState } from 'react';
-import { useFulfilledObject } from 'reactium-core/sdk';
+import { useFulfilledObject } from '@atomic-reactor/reactium-core/sdk';
 
 const MyComponent = () => {
 

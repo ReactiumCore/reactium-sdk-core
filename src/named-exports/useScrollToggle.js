@@ -13,7 +13,7 @@ import { isBrowserWindow } from '../sdks/utils';
 * @apiExample NPM Usage
 import { useScrollToggle } from '@atomic-reactor/reactium-sdk-core';
 * @apiExample Reactium Usage
-import { useScrollToggle } from 'reactium-core/sdk';
+import { useScrollToggle } from '@atomic-reactor/reactium-core/sdk';
 * @apiExample Modal.js
 import React, { useRef } from 'react';
 import ReactDOM from 'react-dom';

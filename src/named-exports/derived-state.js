@@ -37,7 +37,7 @@ const shallowEquals = require('shallow-equals');
 const [state, setState, forceRefresh] = useDerivedState(props, ['path.to.value1', 'path.to.value2']);
 * @apiExample Usage
 import React from 'react';
-import { useDerivedState } from 'reactium-core/sdk';
+import { useDerivedState } from '@atomic-reactor/reactium-core/sdk';
 import op from 'object-path';
 
 const MyComponent = props => {

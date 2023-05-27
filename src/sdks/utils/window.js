@@ -30,7 +30,7 @@ export const isWindow = (iWindow) => {
  * @apiDescription Determine if window is an electron window. Useful for detecting electron usage.
  * @apiParam {Window} [iframeWindow] iframe window reference.
  * @apiExample Example Usage:
-import { isElectronWindow } from 'reactium-core/sdk';
+import { isElectronWindow } from '@atomic-reactor/reactium-core/sdk';
 isElectronWindow();
 // Returns: true if executed in electron.
 // Returns: false if executed in node or browser.
@@ -54,7 +54,7 @@ export const isElectronWindow = (iWindow) => {
  context is a JSON window object (not in the browser or electron)
  * @apiParam {Window} [iframeWindow] iframe window reference.
  * @apiExample Example Usage:
-import { isServerWindow } from 'reactium-core/sdk';
+import { isServerWindow } from '@atomic-reactor/reactium-core/sdk';
 isServerWindow();
 // Returns: true if executed in server SSR context.
 // Returns: false if executed in browser or electron.
@@ -73,7 +73,7 @@ export const isServerWindow = (iWindow) => {
  context may be browser or electron. Use isElectronWindow() to know the latter.
  * @apiParam {Window} [iframeWindow] iframe window reference.
  * @apiExample Example Usage:
-import { isBrowserWindow } from 'reactium-core/sdk';
+import { isBrowserWindow } from '@atomic-reactor/reactium-core/sdk';
 isBrowserWindow();
 // Returns: true if executed in browser or electron.
 // Returns: false if executed on server.
