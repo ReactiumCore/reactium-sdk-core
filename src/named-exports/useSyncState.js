@@ -5,10 +5,13 @@ import { ComponentEvent, useEventEffect } from './event-handle';
 import { Hook } from '../sdks';
 import uuid from 'uuid/v4';
 
+const INITIAL_STATE = Symbol('INITIAL_STATE');
+const STATE = Symbol('STATE');
+
 class ReactiumSyncState extends EventTarget {
     constructor(initialState, options = {}) {
         super();
-        this.stateObj = { state: initialState };
+        this[INITIAL_STATE] = this[STATE] = initialState;
         this.listeners = {};
         this.options = options;
         this._addEventListener = this.addEventListener.bind(this);
@@ -16,14 +19,37 @@ class ReactiumSyncState extends EventTarget {
             if (!this.listeners[type]) this.listeners[type] = {};
             if (this.listeners[type][id]) {
                 this.removeEventListener(type, this.listeners[type][id]);
-                console.warn && console.warn(`Duplicate ${type} event with id ${id}`);
+                console.warn &&
+                    console.warn(`Duplicate ${type} event with id ${id}`);
             }
-    
+
             this.listeners[type][id] = listener;
             this._addEventListener(type, listener, third);
-            return () => this.removeEventListener(type, this.listeners[type][id]);
-        };    
+            return () =>
+                this.removeEventListener(type, this.listeners[type][id]);
+        };
     }
+
+    get stateObj() {
+        console.warn('Use this.state or this.get() instead.');
+        return { state: this.state };
+    }
+
+    get state() {
+        return this[STATE];
+    }
+
+    set state(value) {
+        return (this[STATE] = value);
+    }
+
+    get initial() {
+        return this[INITIAL_STATE];
+    }
+
+    reset = () => {
+        return (this[STATE] = this.initial);
+    };
 
     removeEventListenerById = (type, id) => {
         if (op.has(this.listeners, [type, id])) {
@@ -37,15 +63,15 @@ class ReactiumSyncState extends EventTarget {
             Object.entries(this.listeners[type]).forEach(([id, listener]) => {
                 this.removeEventListener(type, listener);
                 op.del(this.listeners, [type, id]);
-            })
+            });
         }
     };
 
     get = (path, defaultValue) => {
         if (typeof path == 'string' || Array.isArray(path)) {
-            return op.get(this.stateObj.state, path, defaultValue);
+            return op.get(this.state, path, defaultValue);
         } else {
-            return this.stateObj.state;
+            return this.state;
         }
     };
 
@@ -66,7 +92,6 @@ class ReactiumSyncState extends EventTarget {
 
     _conditionallyMerge = (previous, next) => {
         const noMergeConditions = [
-            () => op.get(this.options, 'noMerge', false),
             (p, n) => !_.isObject(p) || !_.isObject(n),
             (p, n) => typeof p != typeof n,
             (p, n) => _.isElement(n),
@@ -89,6 +114,7 @@ class ReactiumSyncState extends EventTarget {
 
         // merge not possible or necessary
         if (
+            op.get(this.options, 'noMerge', false) ||
             !_.isEmpty(
                 noMergeConditions.filter((condition) =>
                     condition(previous, next),
@@ -110,39 +136,58 @@ class ReactiumSyncState extends EventTarget {
         }
     };
 
-    set = (pathArg, valueArg, update = true) => {
-        const [path, value] = this._setArgs(pathArg, valueArg);
-
-        if (update)
-            this.dispatchEvent(
-                new ComponentEvent('before-set', { path, value }),
-            );
+    del = (path, update = true) => {
+        if (update) this.dispatch('before-del', { path });
 
         let changed = false;
         if (path) {
-            const currentValue = op.get(this.stateObj.state, path);
-            const nextValue = this._conditionallyMerge(
-                op.get(this.stateObj.state, path),
-                value,
-            );
+            const currentValue = op.get(this.state, path);
+            op.del(this.state, path);
+            const nextValue = op.get(this.state, path);
             changed = !_.isEqual(currentValue, nextValue);
-            op.set(this.stateObj.state, path, nextValue);
         } else {
-            changed = !_.isEqual(this.stateObj.state, value);
-            this.stateObj.state = this._conditionallyMerge(
-                this.stateObj.state,
-                value,
-            );
+            this.state = undefined;
+            changed = true;
         }
 
         if (update) {
-            this.dispatchEvent(new ComponentEvent('set', { path, value }));
-            if (changed)
-                this.dispatchEvent(
-                    new ComponentEvent('change', { path, value }),
-                );
+            this.dispatch('del', { path });
+            if (changed) this.dispatch('change', { path });
         }
 
+        return this;
+    };
+
+    set = (pathArg, valueArg, update = true, forceMerge = false) => {
+        const [path, value] = this._setArgs(pathArg, valueArg);
+
+        if (update) this.dispatch('before-set', { path, value });
+
+        let changed = false;
+        if (path) {
+            const currentValue = op.get(this.state, path);
+            const nextValue = this._conditionallyMerge(
+                op.get(this.state, path),
+                value,
+                forceMerge,
+            );
+            changed = !_.isEqual(currentValue, nextValue);
+            op.set(this.state, path, nextValue);
+        } else {
+            changed = !_.isEqual(this.state, value);
+            this.state = this._conditionallyMerge(this.state, value);
+        }
+
+        if (update) {
+            this.dispatch('set', { path, value });
+            if (changed) this.dispatch('change', { path, value });
+        }
+
+        return this;
+    };
+
+    dispatch = (type, payload = {}) => {
+        this.dispatchEvent(new ComponentEvent('type', payload));
         return this;
     };
 }

@@ -1,45 +1,32 @@
-import Registry from '../utils/registry';
+import { ReactiumSyncState } from '../../named-exports/useSyncState';
 import op from 'object-path';
 
 /**
- * @api {Function} Component.register(hook,component,order) Component.register()
+ * @api {Function} Component.register(hook,component) Component.register()
  * @apiGroup Reactium.Component
  * @apiName Component.register
  * @apiDescription Register a React component to be used with a specific useHookComponent React hook. This must be called before the useHookComponent that defines the hook.
  * @apiParam {String} hook The hook name
  * @apiParam {Mixed} component component(s) to be output by useHookComponent
- * @apiParam {Number} order precedent of this if Component.register is called multiple times (e.g. if you are trying to override core or another plugin)
  * @apiExample reactium-hooks.js
 import React from 'react';
-import Reactium from 'reactium-core/sdk';
+import { Component } from '@atomic-reactor/reactium-core/sdk';
 
-// component to be used unless overriden by Reactium.Component.register()
-const ReplacementComponentA = () => <div>My Plugin's Component</div>
-const ReplacementComponentB = () => <div>My Alternative Component</div>
+// component to be used unless overriden by Component.register() somewhere else
+const ReplacementComponent = () => <div>My Plugin's Component</div>
 
 // Simple Version
-Reactium.Component.register('my-component', ReplacementComponentA);
+Component.register('MyComponent', ReplacementComponentA);
 
-// Advanced Form using Reactium.Hook SDK
-Reactium.Hook.register('my-component', async (...params) => {
-    const context = params.pop(); // context is last argument
-    const [param] = params;
-    if (param === 'test') {
-        context.component = ReplacementComponentA;
-    } else {
-        context.component = ReplacementComponentB;
-    }
-}
-})
  * @apiExample parent.js
 import React from 'react';
-import { useHookComponent } from 'reactium-core/sdk';
+import { useHookComponent } from '@atomic-reactor/reactium-core/sdk';
 
 // component to be used unless overriden by Reactium.Component.register()
 const DefaultComponent = () => <div>Default or Placeholder component</div>
 
 export props => {
-    const MyComponent = useHookComponent('my-component', DefaultComponent, 'test');
+    const MyComponent = useHookComponent('MyComponent', DefaultComponent);
     return (
         <div>
             <MyComponent {...props} />
@@ -47,20 +34,36 @@ export props => {
     );
 };
  */
-class Component extends Registry {
-    constructor(name, idField, mode) {
-        super(name, idField, mode);
+export class RegisteredComponent extends ReactiumSyncState {
+    constructor() {
+        super({}, { noMerge: true });
     }
 
-    get(id, defaultComponent) {
-        const obj = Registry.prototype.get.call(this, id);
-        return op.get(obj, 'component', defaultComponent);
+    register(...params) {
+        return this.set(...params);
     }
 
-    register(id, component) {
-        return Registry.prototype.register.call(this, id, { component });
+    unregister(...params) {
+        return this.del(...params);
+    }
+
+    get listById() {
+        const list = {};
+        this.listEntries.forEach(([key, value]) => {
+            list[key] = value;
+        });
+
+        return list;
+    }
+
+    get list() {
+        return Object.values(this.stateObj.state);
+    }
+
+    get listEntries() {
+        return Object.entries(this.stateObj.state);
     }
 }
 
-const ReactiumComponent = new Component('Component', 'id', Registry.MODES.CLEAN);
-export { ReactiumComponent as default, ReactiumComponent as Component };
+export const Component = new RegisteredComponent();
+export { Component as default };

@@ -5,6 +5,10 @@ import CommonSDK, { useHookComponent } from '../../lib';
 export const DefaultComponent = () => 'DefaultComponent';
 export const ComponentToRegister = () => 'RegisteredComponent';
 export const RegisteredComponent = () => {
-    const Component = useHookComponent('registered-component', DefaultComponent);
+    const Component = useHookComponent('ComponentToRegister', DefaultComponent);
+    return <Component />;
+};
+export const RegisteredLibrary = () => {
+    const Component = useHookComponent('Lib.Foo.ComponentToRegister', DefaultComponent);
     return <Component />;
 };

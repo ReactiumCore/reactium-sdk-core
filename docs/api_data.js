@@ -1022,7 +1022,7 @@ define({ "api": [
   },
   {
     "type": "Function",
-    "url": "Component.register(hook,component,order)",
+    "url": "Component.register(hook,component)",
     "title": "Component.register()",
     "group": "Reactium.Component",
     "name": "Component.register",
@@ -1043,13 +1043,6 @@ define({ "api": [
             "optional": false,
             "field": "component",
             "description": "<p>component(s) to be output by useHookComponent</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "order",
-            "description": "<p>precedent of this if Component.register is called multiple times (e.g. if you are trying to override core or another plugin)</p>"
           }
         ]
       }
@@ -1057,12 +1050,12 @@ define({ "api": [
     "examples": [
       {
         "title": "reactium-hooks.js",
-        "content": "import React from 'react';\nimport Reactium from 'reactium-core/sdk';\n\n// component to be used unless overriden by Reactium.Component.register()\nconst ReplacementComponentA = () => <div>My Plugin's Component</div>\nconst ReplacementComponentB = () => <div>My Alternative Component</div>\n\n// Simple Version\nReactium.Component.register('my-component', ReplacementComponentA);\n\n// Advanced Form using Reactium.Hook SDK\nReactium.Hook.register('my-component', async (...params) => {\n    const context = params.pop(); // context is last argument\n    const [param] = params;\n    if (param === 'test') {\n        context.component = ReplacementComponentA;\n    } else {\n        context.component = ReplacementComponentB;\n    }\n}\n})",
+        "content": "import React from 'react';\nimport { Component } from '@atomic-reactor/reactium-core/sdk';\n\n// component to be used unless overriden by Component.register() somewhere else\nconst ReplacementComponent = () => <div>My Plugin's Component</div>\n\n// Simple Version\nComponent.register('MyComponent', ReplacementComponentA);",
         "type": "json"
       },
       {
         "title": "parent.js",
-        "content": "import React from 'react';\nimport { useHookComponent } from 'reactium-core/sdk';\n\n// component to be used unless overriden by Reactium.Component.register()\nconst DefaultComponent = () => <div>Default or Placeholder component</div>\n\nexport props => {\n    const MyComponent = useHookComponent('my-component', DefaultComponent, 'test');\n    return (\n        <div>\n            <MyComponent {...props} />\n        </div>\n    );\n};",
+        "content": "import React from 'react';\nimport { useHookComponent } from '@atomic-reactor/reactium-core/sdk';\n\n// component to be used unless overriden by Reactium.Component.register()\nconst DefaultComponent = () => <div>Default or Placeholder component</div>\n\nexport props => {\n    const MyComponent = useHookComponent('MyComponent', DefaultComponent);\n    return (\n        <div>\n            <MyComponent {...props} />\n        </div>\n    );\n};",
         "type": "json"
       }
     ],
@@ -1539,118 +1532,6 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "src/sdks/hook/index.js",
     "groupTitle": "Reactium.Hook"
-  },
-  {
-    "type": "Function",
-    "url": "Plugin.isActive(ID)",
-    "title": "Plugin.isActive()",
-    "group": "Reactium.Plugin",
-    "name": "Plugin.isActive",
-    "description": "<p>Determine if a plugin ID is active.</p>",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "ID",
-            "description": "<p>the plugin id.</p>"
-          }
-        ]
-      }
-    },
-    "examples": [
-      {
-        "title": "Example Usage:",
-        "content": "Reactium.Plugin.isActive('Media');",
-        "type": "json"
-      }
-    ],
-    "version": "0.0.0",
-    "filename": "src/sdks/plugin/index.js",
-    "groupTitle": "Reactium.Plugin"
-  },
-  {
-    "type": "Function",
-    "url": "Plugin.list()",
-    "title": "Plugin.list()",
-    "group": "Reactium.Plugin",
-    "name": "Plugin.list",
-    "description": "<p>Return the list of registered plugins.</p>",
-    "version": "0.0.0",
-    "filename": "src/sdks/plugin/index.js",
-    "groupTitle": "Reactium.Plugin"
-  },
-  {
-    "type": "Function",
-    "url": "Plugin.register(ID,order)",
-    "title": "Plugin.register()",
-    "name": "Plugin.register",
-    "description": "<p>Register a Reactium plugin.</p>",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "ID",
-            "description": "<p>the plugin id</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Integer",
-            "optional": true,
-            "field": "order",
-            "defaultValue": "Enums.priority.neutral",
-            "description": "<p>Priority of the plugin initialization respective to other existing plugins.</p>"
-          }
-        ]
-      }
-    },
-    "group": "Reactium.Plugin",
-    "examples": [
-      {
-        "title": "Example Usage:",
-        "content": "import Reactium from 'reactium-core/sdk';\n\nconst newReducer = (state = { active: false }, action) => {\n    if (action.type === 'ACTIVATE') {\n        return {\n            ...state,\n            active: true,\n        };\n    }\n    return state;\n};\n\nconst register = async () => {\n    await Reactium.Plugin.register('myPlugin');\n    Reactium.Reducer.register('myPlugin', newReducer);\n};\n\nregister();",
-        "type": "json"
-      }
-    ],
-    "version": "0.0.0",
-    "filename": "src/sdks/plugin/index.js",
-    "groupTitle": "Reactium.Plugin"
-  },
-  {
-    "type": "Function",
-    "url": "Plugin.unregister(ID)",
-    "title": "Plugin.unregister()",
-    "name": "Plugin.unregister",
-    "description": "<p>Unregister a Reactium plugin by unique id. This can only be called prior to the <code>plugin-dependencies</code> hook, or <code>Reactium.Plugin.ready === true</code>.</p>",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "ID",
-            "description": "<p>the plugin id</p>"
-          }
-        ]
-      }
-    },
-    "group": "Reactium.Plugin",
-    "examples": [
-      {
-        "title": "Example Usage:",
-        "content": "import Reactium from 'reactium-core/sdk';\n\n// Before Reactium.Plugin.ready\nReactium.Hook.register('plugin-dependencies', () => {\n    // Prevent myPlugin registration callback from occurring\n    Reactium.Plugin.unregister('myPlugin');\n    return Promise.resolve();\n}, Enums.priority.highest)",
-        "type": "json"
-      }
-    ],
-    "version": "0.0.0",
-    "filename": "src/sdks/plugin/index.js",
-    "groupTitle": "Reactium.Plugin"
   },
   {
     "type": "Function",
@@ -3175,7 +3056,7 @@ define({ "api": [
             "type": "Getter",
             "optional": false,
             "field": "mode",
-            "description": "<p>get current mode (Default Utils.Registry.MODES.HISTORY)</p>"
+            "description": "<p>get current mode (Default Utils.Registry.MODES.CLEAN)</p>"
           },
           {
             "group": "Parameter",
@@ -3252,7 +3133,7 @@ define({ "api": [
             "type": "Method",
             "optional": false,
             "field": "unregister",
-            "description": "<p><code>reg.unregister(id)</code> pass an identifier to unregister an object. When in HISTORY mode (default), previous registration will be retained, but the object will not be listed. In CLEAN mode, the previous registrations will be removed, unless protected.</p>"
+            "description": "<p><code>reg.unregister(id)</code> pass an identifier to unregister an object. When in HISTORY mode, previous registration will be retained, but the object will not be listed. In CLEAN mode (default), the previous registrations will be removed, unless protected.</p>"
           },
           {
             "group": "Parameter",

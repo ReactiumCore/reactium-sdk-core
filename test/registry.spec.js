@@ -27,7 +27,7 @@ describe('Registry in default mode', () => {
     });
 
     it('should retain unregistered item', () => {
-        const registry = new SDK.Utils.Registry('TestRegistry');
+        const registry = new SDK.Utils.Registry('TestRegistry', 'id', SDK.Utils.Registry.MODES.HISTORY);
         const id = uuid();
         registry.register(id, {
             name: 'test item',

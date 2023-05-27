@@ -18,8 +18,8 @@ import uuid from 'uuid/v4';
  * @apiParam {Getter} protected get list of protected registrations ids
  * @apiParam {Getter} unregistered get list of all existing registered objects ids that have been subsequently unregistered.
  * @apiParam {Getter} banned get list of all banned objects ids.
- * @apiParam {Getter} mode get current mode (Default Utils.Registry.MODES.HISTORY)
- * @apiParam {Setter} mode set current mode (Default Utils.Registry.MODES.HISTORY)
+ * @apiParam {Getter} mode get current mode (Default Utils.Registry.MODES.CLEAN)
+ * @apiParam {Setter} mode set current mode (Default Utils.Registry.MODES.CLEAN)
  * @apiParam {Method} get `reg.get(id,defaultValue)` pass the identifier of an object get that object from the registry. Optionally provide a default value if the id doesn't exist in the registry.
  * @apiParam {Method} isProtected pass the identifier of an object to see if it has been protected
  * @apiParam {Method} isRegistered pass the identifier of an object to see if it has been registered
@@ -33,7 +33,7 @@ import uuid from 'uuid/v4';
  * @apiParam (register) {String} id the id of the data object to be registered
  * @apiParam (register) {Object} data the object to be registered
  * @apiParam {Method} unprotect `reg.unprotect(id)` pass an identifier to unprotect an object
- * @apiParam {Method} unregister `reg.unregister(id)` pass an identifier to unregister an object. When in HISTORY mode (default), previous registration will be retained, but the object will not be listed. In CLEAN mode, the previous registrations will be removed, unless protected.
+ * @apiParam {Method} unregister `reg.unregister(id)` pass an identifier to unregister an object. When in HISTORY mode, previous registration will be retained, but the object will not be listed. In CLEAN mode (default), the previous registrations will be removed, unless protected.
  * @apiParam {Method} flush `reg.flush()` clear all registrations. Resets registry to newly constructed state.
  * @apiParam {Method} subscribe `reg.subscribe(cb,id)` Adds a callback to indicate changes to the registry. Callback is called on register, unregister, protect, unprotect, ban, cleanup, and flush. Returns unsubscribe function.
  * @apiParam (subscribe) {Function} cb Callback to be invoked on changes to the registry.
@@ -44,7 +44,7 @@ import uuid from 'uuid/v4';
  */
 
 class Registry {
-    constructor(name, idField, mode = Registry.MODES.HISTORY) {
+    constructor(name, idField = 'id', mode = Registry.MODES.CLEAN) {
         this.__name = name || 'Registry';
         this.__idField = idField || 'id';
         this.__registered = [];
@@ -52,7 +52,7 @@ class Registry {
         this.__unregister = {};
         this.__banned = {};
         this.__subscribers = {};
-        this.__mode = mode in Registry.MODES ? mode : Registry.MODES.HISTORY;
+        this.__mode = mode in Registry.MODES ? mode : Registry.MODES.CLEAN;
     }
 
     get protected() {
@@ -75,7 +75,7 @@ class Registry {
         const unregister = this.__unregister;
         const banned = this.__banned;
         const registered = Array.from(this.__registered).filter(
-            item =>
+            (item) =>
                 !(item[this.__idField] in unregister) &&
                 !(item[this.__idField] in banned),
         );
@@ -100,7 +100,21 @@ class Registry {
     }
 
     get(id, defaultValue) {
-        return op.get(this.listById, [id], defaultValue);
+        let itemId = id,
+            item,
+            path = [];
+        if (Array.isArray(id)) {
+            [itemId, ...path] = id;
+        } else if (typeof id == 'string') {
+            if (/\./.test(id)) {
+                [itemId, ...path] = id.split('.');
+            }
+        }
+
+        item = op.get(this.listById, [itemId], defaultValue);
+
+        if (path.length === 0) return item;
+        return op.get(item, path, defaultValue);
     }
 
     isProtected(id) {
@@ -121,7 +135,7 @@ class Registry {
 
     ban(id) {
         const ids = _.flatten([id]);
-        ids.forEach(id => op.set(this.__banned, [id], id));
+        ids.forEach((id) => op.set(this.__banned, [id], id));
 
         if (this.__mode === Registry.MODES.CLEAN) {
             this.cleanup(id);
@@ -137,7 +151,7 @@ class Registry {
         if (this.isProtected(remove)) return this;
 
         this.__registered = this.__registered.filter(
-            item => item[this.__idField] !== remove,
+            (item) => item[this.__idField] !== remove,
         );
 
         this.notify({ type: 'cleanup', id });
@@ -156,7 +170,7 @@ class Registry {
 
     protect(id) {
         const ids = _.flatten([id]);
-        ids.forEach(id => op.set(this.__protected, [id], id));
+        ids.forEach((id) => op.set(this.__protected, [id], id));
 
         this.notify({
             type: 'protect',
@@ -207,7 +221,7 @@ class Registry {
 
     unprotect(id) {
         const ids = _.flatten([id]);
-        ids.forEach(id => op.del(this.__protected, id));
+        ids.forEach((id) => op.del(this.__protected, id));
 
         this.notify({
             type: 'unprotect',
@@ -220,12 +234,9 @@ class Registry {
     unregister(id) {
         if (!id) return this;
 
-        const ids = _.chain([id])
-            .flatten()
-            .uniq()
-            .value();
+        const ids = _.chain([id]).flatten().uniq().value();
 
-        ids.forEach(id => {
+        ids.forEach((id) => {
             if (id in this.__protected) return;
 
             if (this.__mode === Registry.MODES.CLEAN) {
@@ -325,5 +336,5 @@ anotherPlugin();
 import SDK from '@atomic-reactor/reactium-sdk-core';
 export default SDK.Utils.registryFactory('MyRegistry');
  */
-export const registryFactory = (name, idField, mode) =>
+export const registryFactory = (name, idField = 'id', mode = Registry.MODES.CLEAN) =>
     new Registry(name, idField, mode);
