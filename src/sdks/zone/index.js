@@ -385,7 +385,7 @@ export { ZoneRegistry as default, ZoneRegistry };
   will take in list of mappers in this zone
  * @apiGroup Reactium.Zone
  * @apiExample Example Usage
-import Reactium from 'reactium-core/sdk';
+import Reactium from '@atomic-reactor/reactium-core/sdk';
 import React from 'react';
 import VIPBadge from './some/path/Vip';
 // for this zone, if component is of type "vip", add a VIPBage component to the component
@@ -407,7 +407,7 @@ const id = Reactium.Zone.addMapper('zone-1', mapper)
 * @apiParam {String} id the id of the mapper to remove from the zone
 * @apiGroup Reactium.Zone
 * @apiExample Example Usage
-import Reactium from 'reactium-core/sdk';
+import Reactium from '@atomic-reactor/reactium-core/sdk';
 Reactium.Zone.removeMapper(mapperId);
 */
 
@@ -422,7 +422,7 @@ components will appear in `<Zone />` Returns unique id.
 will take in list of filters in this zone
 * @apiGroup Reactium.Zone
 * @apiExample reactium-hooks.js
-import Reactium from 'reactium-core/sdk';
+import Reactium from '@atomic-reactor/reactium-core/sdk';
 
 const registerPlugin = async () => {
     await Reactium.Plugin.register('MyVIPView');
@@ -445,7 +445,7 @@ registerPlugin();
 * @apiParam {String} id the id of the filter to remove
 * @apiGroup Reactium.Zone
 * @apiExample Example Usage
-import Reactium from 'reactium-core/sdk';
+import Reactium from '@atomic-reactor/reactium-core/sdk';
 Reactium.Zone.removeFilter(filterId);
 */
 
@@ -462,7 +462,7 @@ Reactium.Zone.removeFilter(filterId);
   take in list of sorts in this zone
  * @apiGroup Reactium.Zone
  * @apiExample Example Usage
-import Reactium from 'reactium-core/sdk';
+import Reactium from '@atomic-reactor/reactium-core/sdk';
 
 // sort by zone component.type property
 Reactium.Zone.addSort('zone-1', 'type')
@@ -476,7 +476,7 @@ Reactium.Zone.addSort('zone-1', 'type')
  //   * @apiParam {String} zone the zone to remove this sort from
   * @apiGroup Reactium.Zone
   * @apiExample Example Usage
-import Reactium from 'reactium-core/sdk';
+import Reactium from '@atomic-reactor/reactium-core/sdk';
 Reactium.Zone.removeSort('myPlugin', 'zone-1');
   */
 
@@ -493,7 +493,7 @@ Reactium.Zone.removeSort('myPlugin', 'zone-1');
  * @apiGroup Reactium.Zone
  * @apiExample plugin-example.js
 import SomeComponent from './path/to/SomeComponent';
-import Reactium from 'reactium-core/sdk';
+import Reactium from '@atomic-reactor/reactium-core/sdk';
 
 Reactium.Plugin.register('myPlugin').then(() => {
     // When the component is initialized, `<SomeComponent>` will render in
@@ -589,7 +589,7 @@ Reactium.Plugin.register('myPlugin').then(() => {
   * @apiParam {Function} callback a function that will be called when a change occurs to zone.
   * @apiGroup Reactium.Zone
   * @apiExample useZoneComponents.js
-  import Reactium from 'reactium-core/sdk';
+  import Reactium from '@atomic-reactor/reactium-core/sdk';
   import { useState, useEffect } from 'react';
 
   export const useZoneComponents = zone => {

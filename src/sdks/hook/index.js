@@ -97,7 +97,7 @@ Hook._register =
  * @apiParam {String} [domain] domain the hook belongs to. Useful for deregistering a whole set of hook callbacks from one domain.
  * @apiGroup Reactium.Hook
  * @apiExample Example Usage
-import Reactium from 'reactium-core/sdk';
+import Reactium from '@atomic-reactor/reactium-core/sdk';
 Reactium.Hook.register('plugin-init', async context => {
 // mutate context object asynchrounously here
     console.log('Plugins initialized!');
@@ -117,7 +117,7 @@ Hook.register = Hook._register('async');
  * @apiParam {String} [domain] domain the hook belongs to. Useful for deregistering a whole set of hook callbacks from one domain.
  * @apiGroup Reactium.Hook
  * @apiExample Example Usage
-import Reactium from 'reactium-core/sdk';
+import Reactium from '@atomic-reactor/reactium-core/sdk';
 Reactium.Hook.registerSync('my-sync-hook', context => {
     // mutate context object synchrounously here
     console.log('my-sync-hook run!');

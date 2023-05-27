@@ -37,7 +37,7 @@ class Handle {
      * @apiGroup Reactium.Handle
      * @apiExample MyComponent.js
 import React, {useState, useEffect} from 'react';
-import Reactium from 'reactium-core/sdk';
+import Reactium from '@atomic-reactor/reactium-core/sdk';
 import op from 'object-path'
 
 export default () => {
@@ -75,7 +75,7 @@ export default () => {
      * @apiGroup Reactium.Handle
      * @apiExample MyControllableComponent.js
 import React, {useEffect, useState, useRef} from 'react';
-import Reactium from 'reactium-core/sdk';
+import Reactium from '@atomic-reactor/reactium-core/sdk';
 
 // This component is externally controllable on registered handle
 // with id: 'controlled.handle' or ['controlled', 'handle']
@@ -143,7 +143,7 @@ export default () => {
      export default CountList;
      * @apiExample Counter.js
      import React, { useState } from 'react';
-     import { useRegisterHandle } from 'reactium-core/sdk';
+     import { useRegisterHandle } from '@atomic-reactor/reactium-core/sdk';
 
      const Counter = ({id = 1}) => {
          const [count, setCount] = useState(Number(id));
@@ -165,7 +165,7 @@ export default () => {
      export default Counter;
      * @apiExample CounterControl.js
      import React from 'react';
-     import Reactium from 'reactium-core/sdk';
+     import Reactium from '@atomic-reactor/reactium-core/sdk';
 
      const CounterControl = () => {
         // get object with all handles in the "counter" partial path

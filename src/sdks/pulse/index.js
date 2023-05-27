@@ -510,7 +510,7 @@ retries can be executed, the task will fail.
  * @apiParam {Arguments} [params] Additional parameters to pass to the callback function.
  * @apiExample Example usage:
 import React, { useEffect } from 'react';
-import Reactium from 'reactium-core/sdk';
+import Reactium from '@atomic-reactor/reactium-core/sdk';
 
 const MyComponent = () => {
   const myFunction = (task, ...params) => {
@@ -552,7 +552,7 @@ export default MyComponent;
 
 
 import React, { useEffect } from 'react';
-import Reactium from 'reactium-core/sdk';
+import Reactium from '@atomic-reactor/reactium-core/sdk';
 
 const MyComponent = () => {
 

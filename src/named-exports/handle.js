@@ -37,7 +37,7 @@ component control another.
 * @apiGroup ReactHook
 * @apiExample Counter.js
 import React, { useState } from 'react';
-import { useRegisterHandle } from 'reactium-core/sdk';
+import { useRegisterHandle } from '@atomic-reactor/reactium-core/sdk';
 
 const Counter = ({id = 1}) => {
     const [count, setCount] = useState(Number(id));
@@ -58,7 +58,7 @@ const Counter = ({id = 1}) => {
 export default Counter;
 * @apiExample CounterControl.js
 import React from 'react';
-import { useHandle } from 'reactium-core/sdk';
+import { useHandle } from '@atomic-reactor/reactium-core/sdk';
 
 const noop = () => {};
 const CounterControl = () => {

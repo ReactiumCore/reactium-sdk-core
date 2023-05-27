@@ -48,7 +48,7 @@ conjunction with useImperativeHandle (React built-in) or useRegisterHandle/useHa
  * @apiGroup ReactHook
  * @apiExample EventHandleComponent.js
 import React, { useEffect } from 'react';
-import { useRegisterHandle, useEventHandle } from 'reactium-core/sdk';
+import { useRegisterHandle, useEventHandle } from '@atomic-reactor/reactium-core/sdk';
 
 const EventHandleComponent = () => {
      const [ value, setValue ] = useState(1);
@@ -77,7 +77,7 @@ const EventHandleComponent = () => {
  export default EventHandleComponent;
  * @apiExample EventHandleConsumer.js
 import React, { useEffect, useState } from 'react';
-import { useHandle } from 'reactium-core/sdk';
+import { useHandle } from '@atomic-reactor/reactium-core/sdk';
 
 const EventHandleConsumer = props => {
     const [state, setState] = useState();
@@ -124,7 +124,7 @@ export const useEventHandle = value => {
  * @apiGroup ReactHook
  * @apiExample EventEffectComponent.js
  import React, { useState } from 'react';
- import { useEventEffect } from 'reactium-core/sdk';
+ import { useEventEffect } from '@atomic-reactor/reactium-core/sdk';
 
  const EventEffectComponent = () => {
      const [size, setSize] = useState({

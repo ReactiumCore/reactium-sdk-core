@@ -30,7 +30,7 @@ callback.
  * @apiGroup ReactHook
  * @apiExample Reactium Usage
 import React, { useState } from 'react';
-import { useAsyncEffect } from 'reactium-core/sdk';
+import { useAsyncEffect } from '@atomic-reactor/reactium-core/sdk';
 
 const MyComponent = props => {
     const [show, setShow] = useState(false);
@@ -54,7 +54,7 @@ const MyComponent = props => {
 import { useAsyncEffect } from '@atomic-reactor/reactium-sdk-core';
 * @apiExample Wrong Usage
 import React, { useState } from 'react';
-import { useAsyncEffect } from 'reactium-core/sdk';
+import { useAsyncEffect } from '@atomic-reactor/reactium-core/sdk';
 
 const MyComponent = props => {
     const [show, setShow] = useState(false);

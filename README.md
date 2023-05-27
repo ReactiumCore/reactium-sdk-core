@@ -12,14 +12,15 @@ npm install --save @atomic-reactor/reactium-sdk-core
 
 ## Usage
 
-Non-Reactium projects
+NPM Module
 ```js
 import SDK, { Zone, useHookComponent } from '@atomic-reactor/reactium-sdk-core';
 ```
 
 Reactium projects
 ```js
-import SDK, { Zone, useHookComponent } from 'reactium-core/sdk';
+// As above or with some enhhancements patched in from reactium-core workspace:
+import SDK, { Zone, useHookComponent } from '@atomic-reactor/reactium-core/sdk';
 ```
 
 ## API Description
