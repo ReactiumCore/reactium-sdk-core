@@ -6,5 +6,6 @@ export * from './sync-handle';
 export * from './zone';
 export * from './derived';
 export * from './async-effect';
+export * from './event-effect';
 
 export { default as SDK } from '../../lib';

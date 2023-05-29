@@ -31,7 +31,7 @@ class ComponentTarget extends EventTarget {
 
         super();
 
-        this.update = values =>
+        this.update = (values) =>
             Object.entries(values).forEach(
                 ([key, value]) => (this[key] = value),
             );
@@ -105,9 +105,9 @@ const EventHandleConsumer = props => {
 
 export default EventHandleConsumer;
  */
-export const useEventHandle = value => {
+export const useEventHandle = (value) => {
     const [handle] = useState(new ComponentTarget(value));
-    const setHandle = value => {
+    const setHandle = (value) => {
         handle.update(value);
     };
     return [handle, setHandle];
@@ -164,8 +164,16 @@ export const useEventHandle = value => {
      );
  };
 */
+const isTarget = (target) =>
+    target &&
+    typeof target === 'object' &&
+    target.addEventListener &&
+    target.removeEventListener;
+
 export const useEventEffect = (target = null, handlers = {}, deps) => {
     useEffect(() => {
+        if (!isTarget(target)) return;
+
         const subs = {};
 
         // sanitize handlers
@@ -175,18 +183,13 @@ export const useEventEffect = (target = null, handlers = {}, deps) => {
             }
         });
 
-        // duck-type EventTarget
-        if (
-            typeof target === 'object' &&
-            'addEventListener' in target &&
-            'removeEventListener' in target
-        ) {
-            Object.entries(subs).forEach(([type, cb]) =>
-                target.addEventListener(type, cb),
-            );
-        }
+        Object.entries(subs).forEach(([type, cb]) =>
+            target.addEventListener(type, cb),
+        );
 
         return () => {
+            if (!isTarget(target)) return;
+
             Object.entries(subs).forEach(([type, cb]) =>
                 target.removeEventListener(type, cb),
             );
