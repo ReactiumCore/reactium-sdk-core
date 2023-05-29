@@ -1,9 +1,9 @@
-import EventTarget from './event-target';
-import Event from './event';
-import CustomEvent from './custom-event';
+import EventPolyfill from './event';
+import EventTargetPolyfill from './event-target';
+import CustomEventPolyfill from './custom-event';
 
 if (typeof window === 'undefined') {
-    if (typeof global.EventTarget === 'undefined') global.EventTarget = EventTarget;
-    if (typeof global.CustomEvent === 'undefined') global.CustomEvent = CustomEvent;
-    if (typeof global.Event === 'undefined') global.Event = Event;
+    if (typeof Event === 'undefined') global.Event = EventPolyfill;
+    if (typeof CustomEvent === 'undefined') global.CustomEvent = CustomEventPolyfill;
+    if (typeof EventTarget === 'undefined') global.EventTarget = EventTargetPolyfill;
 }
