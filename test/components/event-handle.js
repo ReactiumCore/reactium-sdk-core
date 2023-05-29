@@ -1,14 +1,21 @@
-import React, { memo, useEffect, useRef, useState, forwardRef } from 'react';
-import CommonSDK, { useHandle, useRegisterHandle, useEventHandle } from '../../lib';
+import React, { useCallback, useEffect, useRef, useState, forwardRef } from 'react';
+import CommonSDK, {
+    useHandle,
+    useRegisterHandle,
+    useEventHandle,
+    useEventEffect,
+} from '../../lib';
 import op from 'object-path';
+import CustomEvent from '../../src/node-polyfill/custom-event';
 
 export const EventHandleComponent = () => {
-    const [ value, setValue ] = useState(1);
+    const [value, setValue] = useState(1);
     const createHandle = () => ({
-        value, setValue,
+        value,
+        setValue,
     });
 
-    const [ handle, setHandle ] = useEventHandle(createHandle());
+    const [handle, setHandle] = useEventHandle(createHandle());
 
     useEffect(() => {
         setHandle(createHandle());
@@ -20,35 +27,36 @@ export const EventHandleComponent = () => {
         if (handle) {
             handle.dispatchEvent(new CustomEvent('do-something'));
         }
-    }
+    };
 
-    return <button id='click-me' onClick={onClick}>Click Me</button>
+    return (
+        <button id='click-me' onClick={onClick}>
+            Click Me
+        </button>
+    );
 };
 
 export const EventHandleParent = () => {
-    const [ state, setState ] = useState();
+    const [state, setState] = useState(1);
     const handle = useHandle('EventHandleComponent');
 
-    const somethingDone = memo(e => {
-        const {value, setValue} = e.target;
+    const somethingDone = useCallback((e) => {
+        const { value, setValue } = e.target;
         setValue(value + 1);
         setState(value);
     });
 
-    useEffect(() => {
-        if (handle) {
-            setState(handle.value);
-            handle.addEventListener('do-something', somethingDone);
-        }
+    useEventEffect(handle, { 'do-something': somethingDone }, [handle]);
+    // useEffect(() => {
+    //     if (handle) {
+    //         setState(handle.value);
+    //         handle.addEventListener('do-something', somethingDone);
+    //     }
 
-        return () => {
-            handle.removeEventListener('do-something', somethingDone);
-        }
-    }, [handle])
+    //     return () => {
+    //         handle.removeEventListener('do-something', somethingDone);
+    //     }
+    // }, [handle])
 
-    return (
-        <>
-            {state}
-        </>
-    );
+    return <>{state}</>;
 };
