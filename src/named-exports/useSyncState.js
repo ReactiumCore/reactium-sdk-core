@@ -187,7 +187,7 @@ class ReactiumSyncState extends EventTarget {
     };
 
     dispatch = (type, payload = {}) => {
-        this.dispatchEvent(new ComponentEvent('type', payload));
+        this.dispatchEvent(new ComponentEvent(type, payload));
         return this;
     };
 }
